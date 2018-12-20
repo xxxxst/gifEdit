@@ -4,9 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:gifEdit.view"
+             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+		     xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
+			 xmlns:opengl="clr-namespace:OpenGL;assembly=OpenGL.Net.WinForms"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="200" MinWidth="100"/>
@@ -17,13 +20,52 @@
 		</Grid.ColumnDefinitions>
 
 		<Grid>
-			<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="资源管理"/>
-			<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
-				<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png"/>
-				<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png"/>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="4"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="0"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<StackPanel Grid.Row="0">
+				<Grid Margin="2,0,0,0" Background="Transparent">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<Border Margin="0,4,0,4" Width="2" HorizontalAlignment="Left">
+						<Border.Style>
+							<Style TargetType="Border">
+								<Setter Property="Visibility" Value="Hidden"/>
+								<Setter Property="Background" Value="#9d9d9d"/>
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
+										<Setter Property="Visibility" Value="Visible"/>
+									</DataTrigger>
+									<DataTrigger Binding="{Binding IsSelect}" Value="True">
+										<Setter Property="Visibility" Value="Visible"/>
+										<Setter Property="Background" Value="#fff"/>
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Border.Style>
+					</Border>
+					<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="#fff" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
+					<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="#fff" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" BorderBrush="#fff" BorderThickness="0,0,0,1" Content="" x:Name="lblProjName"/>
+				</Grid>
 			</StackPanel>
 
-			<ListBox Margin="0,30,0,0" Background="Transparent" BorderThickness="0" Name="lstRes">
+			<Grid Grid.Row="2">
+				<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="发射器"/>
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+					<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png"/>
+					<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png"/>
+				</StackPanel>
+			</Grid>
+
+			<ListBox Grid.Row="4" Background="Transparent" BorderThickness="0" Name="lstRes">
 				<ListBox.ItemContainerStyle>
 					<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
 						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -39,7 +81,7 @@
 					<DataTemplate>
 						<Grid>
 							<Border Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="#fff" Background="Transparent" Visibility="{Binding IsLastVisibile}"></Border>
-							
+
 							<Grid Margin="2,0,0,2" Height="50" Background="Transparent">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto"/>
@@ -86,16 +128,40 @@
 				<RowDefinition Height="100"/>
 				<RowDefinition Height="30"/>
 			</Grid.RowDefinitions>
-			<Grid>
-				
-				<Grid Background="#000" Margin="0,0,0,0"></Grid>
-			</Grid>
+			<local:PointRenderBox x:Name="pointRenderBox"/>
 		</Grid>
 
 		<GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Background="Transparent"/>
 
 		<Grid Grid.Column="4">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="4"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
 			<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" Content="设置"/>
+
+			<!--<StackPanel Grid.Row="3">
+				<supUI:TextBoxLabel Foreground="#fff" ContentColor="#fff" Content="位置"/>
+			</StackPanel>-->
+
+			<Grid Grid.Row="3">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="4*"/>
+					<ColumnDefinition Width="3"/>
+					<ColumnDefinition Width="3*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.ColumnSpan="3" BorderBrush="#777777" BorderThickness="1"/>
+
+				<TextBox Grid.Column="0" Padding="0,3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="12" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" TextAlignment="Right" Background="Transparent" Name="txtAttrDesc" IsReadOnly="True"/>
+				<Grid Background="Transparent"/>
+
+				<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+				<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged"/>
+			</Grid>
 		</Grid>
 
 		<Grid.Style>

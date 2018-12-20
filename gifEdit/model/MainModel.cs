@@ -1,4 +1,5 @@
 ﻿using csharpHelp.services;
+using gifEdit.view;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace gifEdit.model {
 		public ConfigModel configModel = new ConfigModel();
 
 		public PointEditModel pointEditModel = null;
+
+		public MainWindow mainWin = null;
 	}
 
 	[XmlRoot("gifEdit")]
