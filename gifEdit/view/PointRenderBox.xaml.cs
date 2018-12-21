@@ -6,6 +6,7 @@ using gifEdit.services;
 using OpenGL;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -34,19 +35,22 @@ namespace gifEdit.view {
 		//int imageHeight = 0;
 		bool isEngineInited = false;
 
-		long totalRenderIdx = 0;
-		int renderIdx = 0;
-		int maxRenderIdx = 1;
+		int renderTime = 0;
+		int maxRenderTime = 1;
+		//long totalRenderIdx = 0;
+		//int renderIdx = 0;
+		//int maxRenderIdx = 1;
+		GlTime glTime = new GlTime();
+		FpsCtl fpsCtl = new FpsCtl();
 
-		long oldTime = 0;
-		long oldfpsCount = 0;
-		long fpsCount = 0;
+		//long oldTime = 0;
+		//long oldfpsCount = 0;
+		//long fpsCount = 0;
 
 		//private GlProgram _Program;
 		private float[] mMVP = null;
 
 		//uint texId = 0;
-
 		PointEmitter pe = null;
 
 		//Timer timer = null;
@@ -87,20 +91,26 @@ namespace gifEdit.view {
 			//	timer?.Dispose();
 			//	timer = null;
 			//};
+
+			//glControl.AnimationTime = 1;
+			if(DesignerProperties.GetIsInDesignMode(this)) {
+				glControl.Animation = false;
+			}
 		}
 
-		private void onTimerProc() {
-			Dispatcher.Invoke(() => {
-				++renderIdx;
-				renderIdx = renderIdx % maxRenderIdx;
-				//lblFps.Content = "" + renderIdx;
-				update();
-			});
-		}
+		//private void onTimerProc() {
+		//	Dispatcher.Invoke(() => {
+		//		++renderIdx;
+		//		renderIdx = renderIdx % maxRenderIdx;
+		//		//lblFps.Content = "" + renderIdx;
+		//		update();
+		//	});
+		//}
 
 		public void init() {
 			try {
-				maxRenderIdx = 66 * 5;
+				//maxRenderIdx = 66 * 5;
+				maxRenderTime = 5 * 1000;
 
 				PointEditModel md = MainModel.ins.pointEditModel;
 				pe = new PointEmitter(md.lstResource[0]);
@@ -202,21 +212,23 @@ namespace gifEdit.view {
 			pe = null;
 		}
 
+		int idx = 0;
 		private void update() {
-			++fpsCount;
+			//++fpsCount;
 
-			if(oldTime == 0) {
-				oldTime = DateTime.Now.ToFileTimeUtc();
-			}
+			//if(oldTime == 0) {
+			//	oldTime = DateTime.Now.ToFileTimeUtc();
+			//}
 
-			long time = DateTime.Now.ToFileTimeUtc();
-			int ms = (int)((double)(time - oldTime) / (1000 * 10));
-			int idx = ms / 20;
-			if(idx <= totalRenderIdx) {
-				return;
-			}
-			totalRenderIdx = idx;
-			renderIdx = (int)(totalRenderIdx % maxRenderIdx);
+			//long time = DateTime.Now.ToFileTimeUtc();
+			//int ms = (int)((double)(time - oldTime) / (1000 * 10));
+			//int idx = ms / 20;
+			//if(idx <= totalRenderIdx) {
+			//	return;
+			//}
+			//totalRenderIdx = idx;
+			//renderIdx = (int)(totalRenderIdx % maxRenderIdx);
+
 
 			//fps
 			//if(fpsCount - oldfpsCount > 66) {
@@ -232,7 +244,16 @@ namespace gifEdit.view {
 			//		fpsCount = oldfpsCount = 0;
 			//	}
 			//}
-			lblFps.Content = renderIdx;
+			float gapTime = glTime.getTime();
+			renderTime = (int)(renderTime + gapTime);
+			renderTime = renderTime % maxRenderTime;
+
+			fpsCtl.update();
+			++idx;
+			if(idx > 120) {
+				lblFps.Content = fpsCtl.getFps();
+				idx = 0;
+			}
 
 			//return;
 			//if(pImageData == IntPtr.Zero) {
@@ -260,7 +281,7 @@ namespace gifEdit.view {
 			Gl.Viewport(vpx, vpy, vpw, vph);
 			Gl.Clear(ClearBufferMask.ColorBufferBit);
 
-			pe.render(mMVP, renderIdx);
+			pe.render(mMVP, renderTime);
 
 			//Gl.UseProgram(_Program.ProgramName);
 

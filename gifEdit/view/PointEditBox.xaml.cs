@@ -127,8 +127,8 @@ namespace gifEdit.view {
 				"pointEndSizeFloat"		, "粒子结束大小浮动"	,
 				"pointStartAngle"		, "粒子开始角度"		,
 				"pointStartAngleFloat"	, "粒子开始角度浮动"	,
-				"pointEndAngle"			, "粒子结束角度"		,
-				"pointEndAngleFloat"	, "粒子结束角度浮动"	,
+				"pointEndAngle"			, "粒子旋转速度"		,
+				"pointEndAngleFloat"	, "粒子旋转速度浮动"    ,
 			};
 			string strAttrDesc = "";
 			
@@ -168,8 +168,8 @@ namespace gifEdit.view {
 				item.pointEndSizeFloat.ToString(),
 				item.pointStartAngle.ToString(),
 				item.pointStartAngleFloat.ToString(),
-				item.pointEndAngle.ToString(),
-				item.pointEndAngleFloat.ToString(),
+				item.pointRotateSpeed.ToString(),
+				item.pointRotateSpeedFloat.ToString(),
 			};
 
 			//string strAttrDesc = "";

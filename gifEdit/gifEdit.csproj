@@ -114,12 +114,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="control\glEngine\FpsCtl.cs" />
     <Compile Include="control\glEngine\GlObject.cs" />
+    <Compile Include="control\glEngine\GlTime.cs" />
     <Compile Include="control\PointEditCtl.cs" />
     <Compile Include="control\PointEmitter.cs" />
     <Compile Include="model\PointEditModel.cs" />
     <Compile Include="sdk\csharpHelp\dwmapi.cs" />
     <Compile Include="services\EventServer.cs" />
+    <Compile Include="util\ComUtil.cs" />
     <Compile Include="util\SysConst.cs" />
     <Compile Include="view\PointEditBox.xaml.cs">
       <DependentUpon>PointEditBox.xaml</DependentUpon>
@@ -291,6 +294,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="resource\gifEditShader\fPointEmitter.glsl" />
+    <EmbeddedResource Include="resource\gifEditShader\vPointEmitter.glsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

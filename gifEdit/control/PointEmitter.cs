@@ -1,6 +1,7 @@
 ﻿using FreeImageAPI;
 using gifEdit.control.glEngine;
 using gifEdit.model;
+using gifEdit.util;
 using OpenGL;
 using System;
 using System.Collections.Generic;
@@ -20,23 +21,36 @@ namespace gifEdit.control {
 		private int imageHeight = 0;
 
 		//private float[] mMVP = null;
+		uint bufferId = 0;
 		uint texId = 0;
 
 		private uint ProgramName;
 		private int LocationMVP;
-		private int LocationRenderIdx;
+		private int LocationTime;
+		private int LocationPointIndex;
 		private int LocationIndex;
 		//private int LocationColor;
 		private int LocationCoord;
 		private int LocationTex;
 
+		private int LocationPointAttr;
+		//private int LocationPos;
+		//private int LocationPointSpeed;
+		//private int LocationASpeed;
+
+		private MemoryLock lockBufferData = null;
+
 		public PointEmitter(PointResourceModel _md) {
 			md = _md;
 
+			bufferId = Gl.GenBuffer();
 			texId = Gl.GenTexture();
 
-			using(GlObject vObject = new GlObject(ShaderType.VertexShader, _VertexSourceGL))
-			using(GlObject fObject = new GlObject(ShaderType.FragmentShader, _FragmentSourceGL)) {
+			string[] vetex = ComUtil.loadEmbedShader("vPointEmitter.glsl");
+			string[] fragment = ComUtil.loadEmbedShader("fPointEmitter.glsl");
+
+			using(GlObject vObject = new GlObject(ShaderType.VertexShader, vetex))
+			using(GlObject fObject = new GlObject(ShaderType.FragmentShader, fragment)) {
 				// Create program
 				ProgramName = Gl.CreateProgram();
 				// Attach shaders
@@ -60,10 +74,16 @@ namespace gifEdit.control {
 				}
 
 				LocationMVP = getUniformId("uMVP");
-				LocationRenderIdx = getUniformId("aRenderIdx");
+				LocationTime = getUniformId("aTime");
+				LocationPointIndex = getAttrId("pointIndex");
 				LocationIndex = getAttrId("aIndex");
 				LocationCoord = getAttrId("aCoord");
 				LocationTex = getUniformId("tex");
+
+				LocationPointAttr = getUniformId("pointAttr");
+				//LocationPos = getUniformId("pos");
+				//LocationPointSpeed = getUniformId("startSpeed");
+				//LocationASpeed = getUniformId("startAngle");
 			}
 
 			udpateImage();
@@ -78,7 +98,7 @@ namespace gifEdit.control {
 			}
 			//Debug.WriteLine(path);
 
-			//string path = @"E:\00workself\csharp\project\gifEdit\gifEdit\resource\image\snow.png";
+			path = @"E:\00workself\csharp\project\desktopDate\desktopDate\resource\image\icon.png";
 			//var fif = FreeImage FreeImage_GetFileType(FileName, 0);
 
 			if(pImageData != null) {
@@ -133,15 +153,101 @@ namespace gifEdit.control {
 		}
 
 		public void updateAttr() {
+			if(md.pointCount <= 0) {
+				return;
+			}
+
 			var rootMd = MainModel.ins.pointEditModel;
 			//md.
-			var rand = new Random(rootMd.seed);
+			Random rand = null;
+			if(rootMd.isSeedAuto) {
+				rand = new Random();
+			} else {
+				rand = new Random(rootMd.seed);
+			}
 
+			//x, y, gravity, gravityAngle, startSpeed
+			float[] arrAttr = new float[] {
+				0
+			};
+			int indexCount = _ArrayIndex.Length;
+			int[] _arrPointIndex = new int[md.pointCount * indexCount];	//(x1,y1, x2,y2, x3,y3, x4,y4)
+			float[] _arrIndex = new float[md.pointCount * indexCount];		//(x1,y1, x2,y2, x3,y3, x4,y4)
+			float[] _arrCoord = new float[md.pointCount * indexCount];		//(x1,y1, x2,y2, x3,y3, x4,y4)
+
+			float[] _arrPos = new float[md.pointCount * 2];					//(x,y)
+			float[] _arrPointSpeed = new float[md.pointCount * 2];			//(x,y)
+			float[] _arrASpeed = new float[md.pointCount * 2];				//(ax,ay)
+
+			float[] _arrPointAttr = new float[md.pointCount * 2 * 3];		//
+
+			for(int i = 0; i < md.pointCount; ++i) {
+				int x = i * 2;
+				int y = x + 1;
+				float ir0 = (float)rand.NextDouble();
+				float ir1 = (float)rand.NextDouble();
+				float ir2 = (float)rand.NextDouble();
+				float ir3 = (float)rand.NextDouble();
+
+				for(int j = 0; j < indexCount; ++j) {
+					_arrPointIndex[i * indexCount + j] = i;
+				}
+				_ArrayIndex.CopyTo(_arrIndex, i * indexCount);
+				_ArrayCoord.CopyTo(_arrCoord, i * indexCount);
+
+				float px = md.xFloat * (ir0 - 0.5f) * 2;
+				float py = md.yFloat * (ir1 - 0.5f) * 2;
+				_arrPos[x] = md.x + px;
+				_arrPos[y] = md.y + py;
+
+				float speed = md.startSpeed + md.startSpeedFloat * (ir2 - 0.5f) * 2;
+				float sAngle = md.startSpeedAngle * (ir3 - 0.5f) * 2;
+				_arrPointSpeed[x] = (float)(speed * Math.Cos(sAngle / 180 * Math.PI));
+				_arrPointSpeed[y] = (float)(speed * Math.Sin(sAngle / 180 * Math.PI));
+
+				_arrASpeed[x] = 0;
+				_arrASpeed[y] = 0;
+			}
+
+			arrPointIndex = _arrPointIndex;
+			arrIndex = _arrIndex;
+			arrCoord = _arrCoord;
+
+			for(int i = 0; i < md.pointCount; ++i) {
+				_arrPointAttr[i * 2 * 3 + 0] = _arrPos[i * 2 + 0];
+				_arrPointAttr[i * 2 * 3 + 1] = _arrPos[i * 2 + 1];
+				_arrPointAttr[i * 2 * 3 + 2] = _arrPointSpeed[i * 2 + 1];
+				_arrPointAttr[i * 2 * 3 + 3] = _arrPointSpeed[i * 2 + 1];
+				_arrPointAttr[i * 2 * 3 + 4] = _arrASpeed[i * 2 + 1];
+				_arrPointAttr[i * 2 * 3 + 5] = _arrASpeed[i * 2 + 1];
+			}
+
+			//arrPos = _arrPos;
+			//arrPointSpeed = _arrPointSpeed;
+			//arrASpeed = _arrASpeed;
+			arrPointAttr = _arrPointAttr;
+
+			if(lockBufferData != null) {
+				lockBufferData.Dispose();
+			}
+			lockBufferData = new MemoryLock(arrPointAttr);
+			
+			Gl.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
+			Gl.BufferData(BufferTarget.ArrayBuffer, (uint)arrPointAttr.Length, lockBufferData.Address, BufferUsage.StaticDraw); 
+
+			//var lst = rootMd.lstResource;
+			//for(int i = 0; i < lst.Count; ++i) {
+
+			//}
 			//rand.NextDouble();
 		}
 
-		public void render(float[] mMVP, int renderIdx) {
+		public void render(float[] mMVP, int renderTime) {
 			if(!isTextureExist) {
+				return;
+			}
+
+			if(md.pointCount <= 0) {
 				return;
 			}
 
@@ -151,27 +257,36 @@ namespace gifEdit.control {
 			//	_ArrayIndex[i] += 1f;
 			//}
 
-			using(MemoryLock vertexIndexLock = new MemoryLock(_ArrayIndex))
+			using(MemoryLock lockPointIndex = new MemoryLock(arrPointIndex))
+			using(MemoryLock lockIndex = new MemoryLock(arrIndex))
 			//using(MemoryLock vertexColorLock = new MemoryLock(_ArrayColor))
-			using(MemoryLock vertexCoordLock = new MemoryLock(_ArrayCoord)) {
+			using(MemoryLock lockCoord = new MemoryLock(arrCoord)) {
 				//Gl.VertexPointer(2, VertexPointerType.Float, 0, vertexArrayLock.Address);
 				//Gl.EnableClientState(EnableCap.VertexArray);
 
-				Gl.VertexAttribPointer((uint)LocationIndex, 2, VertexAttribType.Float, false, 0, vertexIndexLock.Address);
+				Gl.VertexAttribPointer((uint)LocationPointIndex, 1, VertexAttribType.Float, false, 0, lockPointIndex.Address);
+				Gl.EnableVertexAttribArray((uint)LocationPointIndex);
+
+				Gl.VertexAttribPointer((uint)LocationIndex, 2, VertexAttribType.Float, false, 0, lockIndex.Address);
 				Gl.EnableVertexAttribArray((uint)LocationIndex);
 
-				Gl.VertexAttribPointer((uint)LocationCoord, 2, VertexAttribType.Float, false, 0, vertexCoordLock.Address);
+				Gl.VertexAttribPointer((uint)LocationCoord, 2, VertexAttribType.Float, false, 0, lockCoord.Address);
 				Gl.EnableVertexAttribArray((uint)LocationCoord);
 
 				Gl.UniformMatrix4(LocationMVP, false, mMVP);
 
+				Gl.BindBuffer(BufferTarget.ArrayBuffer, bufferId);
+				//Gl.Uniform1(LocationPointAttr, 0);
+				Gl.VertexAttribPointer((uint)LocationPointAttr, 2, VertexAttribType.Float, false, 0, 0);
+				//Gl.EnableVertexAttribArray((uint)LocationPointAttr);
+
 				//float val = (float)renderIdx;
 				//Gl.Uniform1f(LocationRenderIdx, 1, ref val);
-				Gl.Uniform1(LocationRenderIdx, (float)renderIdx);
+				Gl.Uniform1(LocationTime, (float)renderTime);
 
 				Gl.BindTexture(TextureTarget.Texture2d, texId);
 				Gl.Uniform1(LocationTex, 0);
-
+				
 				Gl.DrawArrays(PrimitiveType.Polygon, 0, _ArrayIndex.Length / 2);
 			}
 		}
@@ -194,49 +309,63 @@ namespace gifEdit.control {
 			return val;
 		}
 
-		private static readonly string[] _VertexSourceGL = {
-			//"#version 150 compatibility\n",
-			"uniform mat4 uMVP;\n",
-			"uniform float aRenderIdx;\n",
-			"in vec2 aIndex;\n",
-			"in vec2 aCoord;\n",
-			"varying vec2 vTexCoord;\n",
-			"void main() {\n",
-			"	vec4 pos = vec4(aIndex, 0.0, 1.0);\n",
-			//"	gl_Position.x += aRenderIdx * 0.1;\n",
-			"	pos.x += aRenderIdx * 0.8;\n",
-			"	pos = uMVP * pos;\n",
-			"	gl_Position = pos;\n",
-			"	vTexCoord = aCoord;\n",
-			"}\n"
+		//private static readonly string[] _VertexSourceGL = {
+		//	//"#version 150 compatibility\n",
+		//	"uniform mat4 uMVP;\n",
+		//	"in vec2 aIndex;\n",
+		//	"in vec2 aCoord;\n",
+		//	"uniform float aTime;\n",
+
+		//	//"in vec2 pos;\n",
+		//	//"in float startSpeed;\n",
+		//	//"in float startAngle;\n",
+
+		//	"varying vec2 vTexCoord;\n",
+		//	"void main() {\n",
+		//	"	vec4 pos = vec4(aIndex, 0.0, 1.0);\n",
+		//	//"	gl_Position.x += aTime * 0.1;\n",
+		//	"	pos.x += aTime * 0.04;\n",
+		//	"	pos = uMVP * pos;\n",
+		//	"	gl_Position = pos;\n",
+		//	"	vTexCoord = aCoord;\n",
+		//	"}\n"
+		//};
+
+		//private static readonly string[] _FragmentSourceGL = {
+		//	//"#version 150 compatibility\n",
+		//	"varying vec2 vTexCoord;\n",
+		//	"uniform sampler2D tex;\n",
+		//	"void main() {\n",
+		//	//"	gl_FragColor = vColor;\n",
+		//	"	gl_FragColor = texture(tex, vTexCoord);\n",
+		//	//"	discard;",
+		//	"}\n"
+		//};
+
+		private int[] arrPointIndex = new int[0];
+		private float[] arrIndex = new float[0];
+		private float[] arrCoord = new float[0];
+
+		private float[] arrPointAttr = new float[0];
+		//private float[] arrPos = new float[0];
+		//private float[] arrPointSpeed = new float[0];
+		//private float[] arrASpeed = new float[0];
+
+		private static readonly float[] _ArrayIndex = new float[] {
+			-1,  1,
+			-1, -1,
+			 1, -1,
+			 1,  1,
 		};
 
-		private static readonly string[] _FragmentSourceGL = {
-			//"#version 150 compatibility\n",
-			"varying vec2 vTexCoord;\n",
-			"uniform sampler2D tex;\n",
-			"void main() {\n",
-			//"	gl_FragColor = vColor;\n",
-			"	gl_FragColor = texture(tex, vTexCoord);\n",
-			//"	discard;",
-			"}\n"
-		};
-
-		private static float[] _ArrayIndex = new float[] {
-			0, 64,
-			0, 0,
-			64, 0,
-			64, 64,
-		};
-
-		private static float[] _ArrayColor = new float[] {
+		private static readonly float[] _ArrayColor = new float[] {
 			0, 0, 0,
 			1, 0, 0,
 			0, 1, 0,
 			0, 0, 1,
 		};
 
-		private static float[] _ArrayCoord = new float[] {
+		private static readonly float[] _ArrayCoord = new float[] {
 			0, 1,
 			0, 0,
 			1, 0,

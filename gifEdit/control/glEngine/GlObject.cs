@@ -11,8 +11,9 @@ namespace gifEdit.control.glEngine {
 	/// </summary>
 	public class GlObject : IDisposable {
 		public GlObject(ShaderType shaderType, string[] source) {
-			if(source == null)
+			if(source == null) {
 				throw new ArgumentNullException(nameof(source));
+			}
 
 			// Create
 			ShaderName = Gl.CreateShader(shaderType);
@@ -24,8 +25,9 @@ namespace gifEdit.control.glEngine {
 			int compiled;
 
 			Gl.GetShader(ShaderName, ShaderParameterName.CompileStatus, out compiled);
-			if(compiled != 0)
+			if(compiled != 0) {
 				return;
+			}
 
 			// Throw exception on compilation errors
 			const int logMaxLength = 1024;
