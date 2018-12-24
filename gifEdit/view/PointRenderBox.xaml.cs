@@ -110,11 +110,17 @@ namespace gifEdit.view {
 		public void init() {
 			try {
 				//maxRenderIdx = 66 * 5;
-				maxRenderTime = 5 * 1000;
 
 				PointEditModel md = MainModel.ins.pointEditModel;
 				pe = new PointEmitter(md.lstResource[0]);
-				
+
+				//maxRenderTime = 5 * 1000;
+				maxRenderTime = 0;
+				for(int i = 0; i < md.lstResource.Count; ++i ) {
+					int ms = (int)(md.lstResource[i].pointLife * 1000);
+					maxRenderTime = Math.Max(maxRenderTime, ms);
+				}
+
 				//udpateImage();
 				updateRenderBoxSize();
 				//Debug.WriteLine("aa:" + Gl.CurrentVersion);
@@ -176,6 +182,8 @@ namespace gifEdit.view {
 			Gl.Enable(EnableCap.AlphaTest);
 			Gl.Enable(EnableCap.Blend);
 			Gl.Enable(EnableCap.Texture2d);
+			//Gl.Enable(EnableCap.PolygonSmooth);
+			//Gl.Enable(EnableCap.PrimitiveRestart);
 			Gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
 			//_Program = new GlProgram(_VertexSourceGL, _FragmentSourceGL);
@@ -197,7 +205,7 @@ namespace gifEdit.view {
 
 			updateGlSize();
 
-			Gl.ClearColor(68f/255, 241f/255, 231f/255, 1.0f);
+			Gl.ClearColor(27 / 255f, 28 / 255f, 32 / 255f, 1.0f);
 
 			isEngineInited = true;
 

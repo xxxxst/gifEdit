@@ -35,8 +35,11 @@ namespace gifEdit.model {
 		[XmlValue("y")]						public float y = 100;						//坐标y
 		[XmlValue("yFloat")]				public float yFloat = 0;					//坐标y浮动
 
-		[XmlValue("gravityValue")]			public float gravityValue = 0;             //重力
-		[XmlValue("gravityAngle")]			public float gravityAngle = 100;           //重力方向
+		[XmlValue("startAlpha")]			public float startAlpha = 1;				//开始透明度
+		[XmlValue("endAlpha")]				public float endAlpha = 1;                  //结束透明度
+
+		[XmlValue("gravityValue")]			public float gravityValue = 0;				//重力
+		[XmlValue("gravityAngle")]			public float gravityAngle = 100;			//重力方向
 
 		[XmlValue("startSpeed")]			public float startSpeed = 20;				//开始速度
 		[XmlValue("startSpeedFloat")]		public float startSpeedFloat = 0;			//开始速度浮动
@@ -51,19 +54,19 @@ namespace gifEdit.model {
 		[XmlValue("directionSpeedFloat")]	public float directionSpeedFloat = 0;		//分离速度方向
 
 		[XmlValue("pointCount")]			public int pointCount = 100;				//粒子数
-		[XmlValue("pointLife")]				public float pointLife = 5;				//粒子生命周期
+		[XmlValue("pointLife")]				public float pointLife = 5;					//粒子生命周期
 		[XmlValue("pointLifeFloat")]		public float pointLifeFloat = 0;			//粒子生命周期浮动
 
 		[XmlValue("pointStartSize")]		public float pointStartSize = 20;			//粒子开始大小
 		[XmlValue("pointStartSizeFloat")]	public float pointStartSizeFloat = 0;		//粒子开始大小浮动
 
-		[XmlValue("pointEndSize")]			public float pointEndSize = 10;			//粒子结束大小
-		[XmlValue("pointEndSizeFloat")]		public float pointEndSizeFloat = 0;		//粒子结束大小浮动
+		[XmlValue("pointEndSize")]			public float pointEndSize = 10;				//粒子结束大小
+		[XmlValue("pointEndSizeFloat")]		public float pointEndSizeFloat = 0;			//粒子结束大小浮动
 
 		[XmlValue("pointStartAngle")]		public float pointStartAngle = 0;			//粒子开始角度
 		[XmlValue("pointStartAngleFloat")]	public float pointStartAngleFloat = 0;		//粒子开始角度浮动
 
 		[XmlValue("pointRotateSpeed")]		public float pointRotateSpeed = 0;			//粒子旋转速度
-		[XmlValue("pointRotateSpeedFloat")]	public float pointRotateSpeedFloat = 0;	//粒子旋转速度浮动
+		[XmlValue("pointRotateSpeedFloat")]	public float pointRotateSpeedFloat = 0;		//粒子旋转速度浮动
 	}																							   
 }
