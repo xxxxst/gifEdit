@@ -17,7 +17,7 @@
 
 		<Border BorderBrush="#777777" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<wfi:WindowsFormsHost Width="300" Height="300" Name="formHost">
-				<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="False" AnimationTime="0" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize"/>
+				<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="False" MultisampleBits="9" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize"/>
 			</wfi:WindowsFormsHost>
 		</Border>
 	</Grid>

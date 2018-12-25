@@ -51,7 +51,8 @@ namespace gifEdit.view {
 		private float[] mMVP = null;
 
 		//uint texId = 0;
-		PointEmitter pe = null;
+		//PointEmitter pe = null;
+		List<PointEmitter> lstEmitter = new List<PointEmitter>();
 
 		//Timer timer = null;
 
@@ -112,7 +113,12 @@ namespace gifEdit.view {
 				//maxRenderIdx = 66 * 5;
 
 				PointEditModel md = MainModel.ins.pointEditModel;
-				pe = new PointEmitter(md.lstResource[0]);
+				//pe = new PointEmitter(md.lstResource[0]);
+
+				for(int i = 0; i < md.lstResource.Count; ++i) {
+					PointEmitter emt = new PointEmitter(md.lstResource[i]);
+					lstEmitter.Add(emt);
+				}
 
 				//maxRenderTime = 5 * 1000;
 				maxRenderTime = 0;
@@ -182,7 +188,8 @@ namespace gifEdit.view {
 			Gl.Enable(EnableCap.AlphaTest);
 			Gl.Enable(EnableCap.Blend);
 			Gl.Enable(EnableCap.Texture2d);
-			//Gl.Enable(EnableCap.PolygonSmooth);
+			Gl.Enable(EnableCap.PolygonSmooth);
+			//Gl.Enable(EnableCap.Multisample);
 			//Gl.Enable(EnableCap.PrimitiveRestart);
 			Gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -205,19 +212,58 @@ namespace gifEdit.view {
 
 			updateGlSize();
 
-			Gl.ClearColor(27 / 255f, 28 / 255f, 32 / 255f, 1.0f);
+			//Gl.ClearColor(27 / 255f, 28 / 255f, 32 / 255f, 1.0f);
+			//glClear("1e2027");
+			glClear("24252c", 1);
+			//glClear(0, 1);
 
 			isEngineInited = true;
 
 			//timer?.Change(100, 15);
 		}
 
+		private void glClear(string strColor) {
+			uint color = 0;
+			try {
+				color = Convert.ToUInt32(strColor, 16);
+			} catch(Exception) { }
+			glClear(color);
+		}
+
+		private void glClear(string strColor, float alpha) {
+			uint color = 0;
+			try {
+				color = Convert.ToUInt32(strColor, 16);
+			} catch(Exception) { }
+			glClear(color, alpha);
+		}
+
+		private void glClear(uint color) {
+			uint a = ((color & 0xff000000) >> 24);
+			uint r = ((color & 0x00ff0000) >> 16);
+			uint g = ((color & 0x0000ff00) >> 8);
+			uint b = ((color & 0x000000ff));
+			Gl.ClearColor(r / 255f, g / 255f, b / 255f, a);
+		}
+
+		private void glClear(uint color, float alpha) {
+			uint r = ((color & 0x00ff0000) >> 16);
+			uint g = ((color & 0x0000ff00) >> 8);
+			uint b = ((color & 0x000000ff));
+			Gl.ClearColor(r / 255f, g / 255f, b / 255f, alpha);
+		}
+
 		private void glControl_ContextDestroying(object sender, GlControlEventArgs e) {
 			//_Program?.Dispose();
 			//_Program = null;
 
-			pe?.Dispose();
-			pe = null;
+			//pe?.Dispose();
+			//pe = null;
+
+			for(int i = 0; i < lstEmitter.Count; ++i) {
+				lstEmitter[i].Dispose();
+			}
+			lstEmitter.Clear();
 		}
 
 		int idx = 0;
@@ -270,9 +316,9 @@ namespace gifEdit.view {
 			if(!isEngineInited) {
 				return;
 			}
-			if(pe == null) {
-				return;
-			}
+			//if(pe == null) {
+			//	return;
+			//}
 
 			//const int GL_NEAREST = 0x2600;
 			//const int GL_LINEAR = 0x2601;
@@ -289,7 +335,10 @@ namespace gifEdit.view {
 			Gl.Viewport(vpx, vpy, vpw, vph);
 			Gl.Clear(ClearBufferMask.ColorBufferBit);
 
-			pe.render(mMVP, renderTime);
+			//pe.render(mMVP, renderTime);
+			for(int i = 0; i < lstEmitter.Count; ++i) {
+				lstEmitter[i].render(mMVP, renderTime);
+			}
 
 			//Gl.UseProgram(_Program.ProgramName);
 
@@ -335,56 +384,56 @@ namespace gifEdit.view {
 			update();
 		}
 
-		private static readonly float[] _ArrayPosition = new float[] {
-			00, 64,
-			00, 00,
-			64, 00,
-			64, 64,
-		};
+		//private static readonly float[] _ArrayPosition = new float[] {
+		//	00, 64,
+		//	00, 00,
+		//	64, 00,
+		//	64, 64,
+		//};
 		
-		private static readonly float[] _ArrayColor = new float[] {
-			0.0f, 0.0f, 0.0f,
-			1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
-		};
+		//private static readonly float[] _ArrayColor = new float[] {
+		//	0.0f, 0.0f, 0.0f,
+		//	1.0f, 0.0f, 0.0f,
+		//	0.0f, 1.0f, 0.0f,
+		//	0.0f, 0.0f, 1.0f,
+		//};
 
-		private static readonly float[] _ArrayTexCoord = new float[] {
-			0.0f, 1.0f,
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f,
-		};
+		//private static readonly float[] _ArrayTexCoord = new float[] {
+		//	0.0f, 1.0f,
+		//	0.0f, 0.0f,
+		//	1.0f, 0.0f,
+		//	1.0f, 1.0f,
+		//};
 
-		private static readonly string[] _VertexSourceGL = {
-			//"#version 150 compatibility\n",
-			//"#version 330 core\n",
-			"uniform mat4 uMVP;\n",
-			"in vec2 aPosition;\n",
-			"in vec2 aTexCoord;\n",
-			"varying vec2 vTexCoord;\n",
-			//"in vec3 aColor;\n",
-			//"out vec4 vColor;\n",
-			"void main() {\n",
-			"	gl_Position = uMVP * vec4(aPosition, 0.0, 1.0);\n",
-			//"	gl_Position = vec4(aPosition, 0.0, 1.0);\n",
-			//"	vColor = aColor;\n",
-			"	vTexCoord = aTexCoord;\n",
-			"}\n"
-		};
+		//private static readonly string[] _VertexSourceGL = {
+		//	//"#version 150 compatibility\n",
+		//	//"#version 330 core\n",
+		//	"uniform mat4 uMVP;\n",
+		//	"in vec2 aPosition;\n",
+		//	"in vec2 aTexCoord;\n",
+		//	"varying vec2 vTexCoord;\n",
+		//	//"in vec3 aColor;\n",
+		//	//"out vec4 vColor;\n",
+		//	"void main() {\n",
+		//	"	gl_Position = uMVP * vec4(aPosition, 0.0, 1.0);\n",
+		//	//"	gl_Position = vec4(aPosition, 0.0, 1.0);\n",
+		//	//"	vColor = aColor;\n",
+		//	"	vTexCoord = aTexCoord;\n",
+		//	"}\n"
+		//};
 
-		private static readonly string[] _FragmentSourceGL = {
-			//"#version 150 compatibility\n",
-			//"#version 330 core\n",
-			//"in vec4 vColor;\n",
-			"varying vec2 vTexCoord;\n",
-			"uniform sampler2D tex;\n",
-			"void main() {\n",
-			//"	gl_FragColor = vColor;\n",
-			"	gl_FragColor = texture(tex, vTexCoord);\n",
-			//"	discard;",
-			"}\n"
-		};
+		//private static readonly string[] _FragmentSourceGL = {
+		//	//"#version 150 compatibility\n",
+		//	//"#version 330 core\n",
+		//	//"in vec4 vColor;\n",
+		//	"varying vec2 vTexCoord;\n",
+		//	"uniform sampler2D tex;\n",
+		//	"void main() {\n",
+		//	//"	gl_FragColor = vColor;\n",
+		//	"	gl_FragColor = texture(tex, vTexCoord);\n",
+		//	//"	discard;",
+		//	"}\n"
+		//};
 
 		private void updateGlSize() {
 			var w = glControl.Width;
