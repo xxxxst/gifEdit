@@ -12,12 +12,13 @@
              d:DesignHeight="400" d:DesignWidth="400">
 	<Grid Background="#414141" Name="grdRenderBox" SizeChanged="grdRenderBox_SizeChanged">
 		<Border BorderBrush="#777777" BorderThickness="1"/>
-		<Label VerticalAlignment="Top" Foreground="#fff" Content="fps:"/>
-		<Label VerticalAlignment="Top" Foreground="#fff" Margin="35,0,0,0" Name="lblFps"/>
+		<Label VerticalAlignment="Top" Foreground="#fff" HorizontalAlignment="Left" Content="fps:"/>
+		<Label VerticalAlignment="Top" Foreground="#fff" HorizontalAlignment="Left" Margin="35,0,0,0" Name="lblFps"/>
+		<!--<Label VerticalAlignment="Top" Foreground="#fff" HorizontalAlignment="Right" Margin="0,0,10,0" Name="lblTest"/>-->
 
 		<Border BorderBrush="#777777" BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<wfi:WindowsFormsHost Width="300" Height="300" Name="formHost">
-				<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="False" MultisampleBits="9" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize"/>
+				<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="False" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize"/>
 			</wfi:WindowsFormsHost>
 		</Border>
 	</Grid>

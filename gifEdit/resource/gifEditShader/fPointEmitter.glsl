@@ -6,7 +6,7 @@ in vec2 fCoord;
 
 in float fAlpha;
 in float fSize;
-uniform int pointCount;
+// uniform int pointCount;
 
 out vec4 out_Color;
 
@@ -25,7 +25,7 @@ void main() {
 	// gl_FragColor = vColor;
 	float a = max(0, min(1, fAlpha));
 
-	vec4 color = vec4(1);
+	// vec4 color = vec4(1);
 
 	// if(pointCount < 8000){
 	// 	vec2 p1 = clamp(fCoord + vec2(-1/fSize, -1/fSize), vec2(0), vec2(1));
@@ -69,7 +69,7 @@ void main() {
 	// 	color.a *= a;
 	// }
 	
-	color = texture(tex, fCoord);
+	vec4 color = texture(tex, fCoord);
 	color.a *= a;
 	
 	out_Color = color;
