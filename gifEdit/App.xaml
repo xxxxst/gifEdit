@@ -14,11 +14,15 @@
 				<ResourceDictionary Source="/sdk/csharpHelp/TextBoxFile/TextBoxFile.xaml" />
 				<ResourceDictionary Source="/sdk/csharpHelp/ComboBoxLabel/ComboBoxLabel.xaml" />
 				<ResourceDictionary Source="/sdk/csharpHelp/MiniButton/MiniButton.xaml" />
+				<ResourceDictionary Source="/sdk/csharpHelp/BorderLabel/BorderLabel.xaml" />
 
 				<ResourceDictionary Source="view/style/ListBoxItemWin7.xaml"/>
 				<ResourceDictionary Source="view/style/ComScrollViewStyle.xaml"/>
 				<ResourceDictionary Source="view/style/ComStyle.xaml"/>
 				<ResourceDictionary Source="view/style/Test.xaml"/>
+				<ResourceDictionary Source="view/style/MenuStyle.xaml"/>
+				<ResourceDictionary Source="view/style/MenuItemStyle.xaml"/>
+				<ResourceDictionary Source="view/IconButton/IconButton.xaml"/>
 
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>

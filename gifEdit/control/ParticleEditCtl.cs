@@ -15,23 +15,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace gifEdit.control {
-	public class PointEditCtl {
-		public ObservableCollection<PointEditVM> lstVM = new ObservableCollection<PointEditVM>();
+	public class ParticleEditCtl {
+		public ObservableCollection<ParticleEditVM> lstVM = new ObservableCollection<ParticleEditVM>();
 		//public List<AttrMd> lstAttrMd = new List<AttrMd>();
+
+		public ParticleEditModel md = null;
+		private XmlModelServer srv = null;
 
 		public void load(string path) {
 			path = path.Trim(new char[] { '/', '\\', ' ', '\t' });
 			string xmlPath = path + "/config.gife";
 
-			PointEditModel md = new PointEditModel();
+			md = new ParticleEditModel();
 			md.path = path;
 			md.name = new Regex(".*?([^\\/]*$)").Replace(path, "$1");
 
-			XmlModelServer srv = new XmlModelServer(md, xmlPath);
+			srv = new XmlModelServer(md, xmlPath);
 			md.srv = srv;
 			md.srv.loadFromXml();
 
-			MainModel.ins.pointEditModel = md;
+			MainModel.ins.particleEditModel = md;
 
 			//md.srv.save();
 
@@ -39,14 +42,14 @@ namespace gifEdit.control {
 			for(int i = 0; i < md.lstResource.Count; ++i) {
 				string imgPath = md.lstResource[i].path;
 				ImageSource img = loadImage(imgPath, path);
-				PointEditVM vm = new PointEditVM() {
+				ParticleEditVM vm = new ParticleEditVM() {
 					Image = img
 				};
 				lstVM.Add(vm);
 			}
 
 			if(lstVM.Count > 0) {
-				//lstVM.Last().IsLast = true;
+				lstVM.Last().IsLast = true;
 			}
 		}
 
@@ -103,9 +106,14 @@ namespace gifEdit.control {
 
 			return null;
 		}
+
+		public void save() {
+			srv?.save();
+		}
+
 	}
 	
-	public class PointEditVM : INotifyPropertyChanged {
+	public class ParticleEditVM : INotifyPropertyChanged {
 		//image
 		ImageSource _Image = null;
 		public ImageSource Image {

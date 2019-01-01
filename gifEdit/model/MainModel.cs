@@ -12,7 +12,7 @@ namespace gifEdit.model {
 
 		public ConfigModel configModel = new ConfigModel();
 
-		public PointEditModel pointEditModel = null;
+		public ParticleEditModel particleEditModel = null;
 
 		public MainWindow mainWin = null;
 	}
@@ -24,8 +24,23 @@ namespace gifEdit.model {
 
 		[XmlAttr("win.x")]		[Bridge("Left")]	public int x = 100;
 		[XmlAttr("win.y")]		[Bridge("Top")]		public int y = 100;
-		[XmlAttr("win.width")]	[Bridge("Width")]	public int width = 800;
-		[XmlAttr("win.height")]	[Bridge("Height")]	public int height = 450;
+		[XmlAttr("win.width")]	[Bridge("Width")]	public int width = 1000;
+		[XmlAttr("win.height")]	[Bridge("Height")]	public int height = 650;
+
+		public int maxParticleCount = 100000;
+
+		[XmlListChild("lastProjectBox.project")]	public List<LastProject> lstLastProject = new List<LastProject>();
 	}
-	
+
+	public class LastProject {
+		[XmlAttr("name")]			public string name = "";
+		[XmlAttr("type")]			public PrjoectType type = PrjoectType.Spirit;
+		[XmlAttr("lastOpenTime")]	public string lastOpenTime = "";
+		[XmlAttr("path")]			public string path = "";
+	}
+
+	public enum PrjoectType {
+		Spirit, Particle
+	}
+
 }

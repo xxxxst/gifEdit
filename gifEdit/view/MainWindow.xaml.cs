@@ -1,9 +1,11 @@
 ﻿using csharpHelp.services;
 using desktopDate.util;
+using gifEdit.control;
 using gifEdit.model;
 using gifEdit.services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ namespace gifEdit.view {
 	/// MainWindow.xaml 的交互逻辑
 	/// </summary>
 	public partial class MainWindow : Window {
+
 		public MainWindow() {
 			InitializeComponent();
 
@@ -35,6 +38,10 @@ namespace gifEdit.view {
 			} catch(Exception) {
 
 			}
+
+			var lastProjectCtl = MainCtl.ins.lastProjectCtl;
+			lastProjectCtl.init();
+			lstLastOpenProject.ItemsSource = lastProjectCtl.lstVM;
 		}
 
 		public IntPtr getHandle() {
@@ -42,7 +49,24 @@ namespace gifEdit.view {
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e) {
-			viewPointEditBox.load(SysConst.rootPath() + "/project/aaa/");
+			//viewPointEditBox.load(SysConst.rootPath() + "/project/aaa/");
+
+			//string path = SysConst.rootPath() + "/project/aaa/";
+			//openProject(path, PrjoectType.Point);
+		}
+
+		public void openProject(string path, PrjoectType type) {
+			switch (type) {
+				case PrjoectType.Spirit: {
+					break;
+				}
+				case PrjoectType.Particle: {
+					grdNav.Visibility = Visibility.Collapsed;
+					viewParticleEditBox.Visibility = Visibility.Visible;
+					viewParticleEditBox.load(path);
+					break;
+				}
+			}
 		}
 
 		private void Window_Closed(object sender, EventArgs e) {
@@ -57,5 +81,16 @@ namespace gifEdit.view {
 			}
 		}
 
+		private void grdLastProject_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+			//Debug.WriteLine(lstLastOpenProject.SelectedIndex);
+
+			int idx = lstLastOpenProject.SelectedIndex;
+			MainCtl.ins.openProject(idx);
+		}
+
+		private void btnNewProject_Click(object sender, RoutedEventArgs e) {
+			NewProjectWin win = new NewProjectWin();
+			win.show(this);
+		}
 	}
 }

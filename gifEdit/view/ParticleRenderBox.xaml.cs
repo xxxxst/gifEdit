@@ -22,10 +22,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace gifEdit.view {
-	/// <summary>
-	/// PointRenderBox.xaml 的交互逻辑
-	/// </summary>
-	public partial class PointRenderBox : UserControl {
+	/// <summary>粒子渲染区域</summary>
+	public partial class ParticleRenderBox : UserControl {
 		bool isEngineInited = false;
 
 		int renderTime = 0;
@@ -36,29 +34,30 @@ namespace gifEdit.view {
 		
 		private float[] mMVP = null;
 		
-		List<PointEmitter> lstEmitter = new List<PointEmitter>();
+		List<ParticleEmitter> lstEmitter = new List<ParticleEmitter>();
 
-		public PointRenderBox() {
+		public ParticleRenderBox() {
 			InitializeComponent();
 			
 			if(DesignerProperties.GetIsInDesignMode(this)) {
 				glControl.Animation = false;
+				glControl.Visible = false;
 			}
 		}
 
 		public void init() {
 			try {
-				PointEditModel md = MainModel.ins.pointEditModel;
+				ParticleEditModel md = MainModel.ins.particleEditModel;
 
 				//maxRenderTime = 5 * 1000;
-				maxRenderTime = 0;
+				maxRenderTime = 1;
 				for(int i = 0; i < md.lstResource.Count; ++i) {
-					int ms = (int)(md.lstResource[i].pointLife * 1000);
+					int ms = (int)(md.lstResource[i].particleLife * 1000);
 					maxRenderTime = Math.Max(maxRenderTime, ms);
 				}
 
 				for(int i = 0; i < md.lstResource.Count; ++i) {
-					PointEmitter emt = new PointEmitter(md.lstResource[i], maxRenderTime);
+					ParticleEmitter emt = new ParticleEmitter(md.lstResource[i], maxRenderTime);
 					lstEmitter.Add(emt);
 				}
 
@@ -73,8 +72,42 @@ namespace gifEdit.view {
 			}
 		}
 
+		public void updateEmitterAttr(int idx) {
+			if (idx < 0 || idx >= lstEmitter.Count) {
+				return;
+			}
+
+			bool isUpdate = updateMaxRenderTime();
+
+			if (!isUpdate) {
+				lstEmitter[idx].updateAttr();
+			}
+		}
+
+		private bool updateMaxRenderTime() {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+
+			var time = 1;
+			for (int i = 0; i < md.lstResource.Count; ++i) {
+				int ms = (int)(md.lstResource[i].particleLife * 1000);
+				time = Math.Max(time, ms);
+			}
+
+			if (time == maxRenderTime) {
+				return false;
+			}
+
+			maxRenderTime = time;
+			renderTime = 0;
+			for (int i = 0; i < lstEmitter.Count; ++i) {
+				lstEmitter[i].updateAttr(maxRenderTime);
+			}
+
+			return true;
+		}
+
 		public void updateRenderBoxSize() {
-			PointEditModel md = MainModel.ins.pointEditModel;
+			ParticleEditModel md = MainModel.ins.particleEditModel;
 			if(md == null) {
 				return;
 			}
@@ -84,6 +117,9 @@ namespace gifEdit.view {
 
 			width = Math.Min(width, (int)grdRenderBox.ActualWidth - 2);
 			height = Math.Min(height, (int)grdRenderBox.ActualHeight - 2);
+
+			width = Math.Max(width, 0);
+			height = Math.Max(height, 0);
 
 			//win.Width = width;
 			//win.Height = height;
@@ -114,6 +150,7 @@ namespace gifEdit.view {
 			//glClear(0, 1);
 
 			isEngineInited = true;
+			EventServer.ins.onPointEngineInited();
 		}
 
 		private void glClear(string strColor) {
@@ -155,7 +192,7 @@ namespace gifEdit.view {
 		}
 
 		int fpsUpdateIdx = 0;
-		int idx = 0;
+		//int idx = 0;
 		private void update() {
 			//time
 			float gapTime = glTime.getTime();

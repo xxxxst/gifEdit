@@ -13,5 +13,10 @@ namespace gifEdit.services {
 		public void onMainWinExited() {
 			mainWinExitedEvent?.Invoke();
 		}
+
+		public event Action pointEngineInitedEvent;
+		public void onPointEngineInited() {
+			pointEngineInitedEvent?.Invoke();
+		}
 	}
 }

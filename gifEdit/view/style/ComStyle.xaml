@@ -60,6 +60,8 @@
 		<Setter Property="BorderThickness" Value="0,0,0,1"/>
 		<Setter Property="BorderBrush" Value="#fff"/>
 		<Setter Property="Foreground" Value="#fff"/>
+		<Setter Property="CaretBrush" Value="#fff"/>
+		<Setter Property="ContentColor" Value="#fff"/>
 		<Setter Property="VerticalContentAlignment" Value="Bottom"/>
 	</Style>
 
@@ -86,6 +88,14 @@
 		<Setter Property="SelectColor" Value="#272727"/>
 		<Setter Property="Padding" Value="0"/>
 		<Setter Property="OverColor" Value="#353535"/>
+	</Style>
+
+	<!--MiniButton-->
+	<Style BasedOn="{StaticResource BaseBorderLabel}" TargetType="{x:Type supUI:BorderLabel}">
+		<Setter Property="Foreground" Value="#fff"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="BorderBrush" Value="#b256b5"/>
 	</Style>
 
 </ResourceDictionary>

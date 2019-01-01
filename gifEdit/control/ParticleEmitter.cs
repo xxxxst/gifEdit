@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 
 namespace gifEdit.control {
 	/// <summary>粒子发射器</summary>
-	public class PointEmitter : IDisposable {
-		private PointResourceModel md = null;
+	public class ParticleEmitter : IDisposable {
+		private ParticleResourceModel md = null;
 		private int maxRenderTime = 0;
 		private int zIndex = 0;
 
@@ -34,14 +34,16 @@ namespace gifEdit.control {
 		private int LocationNowTime;
 		//private int LocationZIndex;
 		private int LocationTotalLifeTime;
-		private int LocationPointCount;
+		private int LocationParticleCount;
 
 		//private int LocationPointAttr;
 
-		private int pointCount = 0;
+		private int particleCount = 0;
 		private MemoryLock lockBufferData = null;
 
-		public PointEmitter(PointResourceModel _md, int _maxRenderTime) {
+		private int nowSeed = -1;
+
+		public ParticleEmitter(ParticleResourceModel _md, int _maxRenderTime) {
 			md = _md;
 			//zIndex = _zIndex;
 			maxRenderTime = _maxRenderTime;
@@ -51,8 +53,8 @@ namespace gifEdit.control {
 			texId = Gl.GenTexture();
 			texFraBufferId = Gl.GenFramebuffer();
 
-			string[] vetex = ComUtil.loadEmbedShader("vPointEmitter.glsl");
-			string[] fragment = ComUtil.loadEmbedShader("fPointEmitter.glsl");
+			string[] vetex = ComUtil.loadEmbedShader("vParticleEmitter.glsl");
+			string[] fragment = ComUtil.loadEmbedShader("fParticleEmitter.glsl");
 
 			using(GlObject vObject = new GlObject(ShaderType.VertexShader, vetex))
 			using(GlObject fObject = new GlObject(ShaderType.FragmentShader, fragment)) {
@@ -85,7 +87,7 @@ namespace gifEdit.control {
 				LocationNowTime = getUniformId("nowTime");
 				//LocationZIndex = getUniformId("zIndex");
 				LocationTotalLifeTime = getUniformId("totalLifeTime");
-				LocationPointCount = getUniformId("pointCount");
+				LocationParticleCount = getUniformId("particleCount");
 			}
 
 			udpateImage();
@@ -94,7 +96,7 @@ namespace gifEdit.control {
 
 		public void udpateImage() {
 			_isTextureExist = false;
-			var rootMd = MainModel.ins.pointEditModel;
+			var rootMd = MainModel.ins.particleEditModel;
 
 			string path = md.path;
 			if(path.Length < 2 || path[1] != ':') {
@@ -171,30 +173,37 @@ namespace gifEdit.control {
 		}
 
 		public void updateAttr(int _maxRenderTime = -1) {
-			if(md.pointCount <= 0) {
+			particleCount = md.particleCount;
+			if (particleCount > MainModel.ins.configModel.maxParticleCount) {
+				particleCount = MainModel.ins.configModel.maxParticleCount;
+			}
+
+			if (md.particleCount <= 0) {
 				return;
 			}
 			if(_maxRenderTime > 0) {
 				maxRenderTime = _maxRenderTime;
 			}
 
-			var rootMd = MainModel.ins.pointEditModel;
+			var rootMd = MainModel.ins.particleEditModel;
 			//md.
 			Random rand = null;
-			if(rootMd.isSeedAuto) {
-				rand = new Random();
-			} else {
-				rand = new Random(rootMd.seed);
+			if(!rootMd.isSeedAuto) {
+				nowSeed = rootMd.seed;
+				
+			} else if (nowSeed < 0) {
+				nowSeed = new Random().Next();
 			}
-			
+			rand = new Random(nowSeed);
+
 			int count = _ArrayIndex.Length;
 			int idxCount = count / 2;
 
 			const int attrCount = 14;
-			
-			float[] _arrPointAttr = new float[md.pointCount * attrCount];
 
-			for(int i = 0; i < md.pointCount; ++i) {
+			float[] _arrParticleAttr = new float[particleCount * attrCount];
+
+			for(int i = 0; i < particleCount; ++i) {
 				int x = i * 2;
 				int y = x + 1;
 				float ir0 = (float)rand.NextDouble();
@@ -226,56 +235,56 @@ namespace gifEdit.control {
 				float aSpeedy = (float)(aSpeed * Math.Sin(aSAngle / 180 * Math.PI));
 
 				//size
-				float startSize = md.pointStartSize + md.pointStartSizeFloat * (ir4 - 0.5f) * 2;
+				float startSize = md.particleStartSize + md.particleStartSizeFloat * (ir4 - 0.5f) * 2;
 				startSize = Math.Max(0, startSize);
-				float endSize = md.pointEndSize + md.pointEndSizeFloat * (ir5 - 0.5f) * 2;
+				float endSize = md.particleEndSize + md.particleEndSizeFloat * (ir5 - 0.5f) * 2;
 				endSize = Math.Max(0, endSize);
-				endSize = (endSize - startSize) / md.pointLife;
-				
-				//point angle
-				float startAngle = md.pointStartAngle + md.pointStartAngleFloat * (ir6 - 0.5f) * 2;
-				float pointRotateSpeed = md.pointRotateSpeed + md.pointRotateSpeedFloat * (ir7 - 0.5f) * 2;
+				endSize = (endSize - startSize) / md.particleLife;
+
+				//particle angle
+				float startAngle = md.particleStartAngle + md.particleStartAngleFloat * (ir6 - 0.5f) * 2;
+				float ParticleRotateSpeed = md.particleRotateSpeed + md.particleRotateSpeedFloat * (ir7 - 0.5f) * 2;
 				startAngle = startAngle / 180 * (float)Math.PI;
-				pointRotateSpeed = pointRotateSpeed / 180 * (float)Math.PI;
+				ParticleRotateSpeed = ParticleRotateSpeed / 180 * (float)Math.PI;
 
 				//alpha
 				float startAlpha = Math.Min(1, Math.Max(0, md.startAlpha));
 				float endAlpha = Math.Min(1, Math.Max(0, md.endAlpha));
-				endAlpha = (endAlpha - startAlpha) / md.pointLife;
+				endAlpha = (endAlpha - startAlpha) / md.particleLife;
 
 				//lifeTime
-				float lifeTime = md.pointLife - md.pointLifeFloat * ir8;
+				float lifeTime = md.particleLife - md.particleLifeFloat * ir8;
 				lifeTime *= 1000;
 
 				//startTime
-				float startTime = (float)(md.pointCount - i) / md.pointCount * maxRenderTime;
+				float startTime = (float)(particleCount - i) / particleCount * maxRenderTime;
 
-				_arrPointAttr[i * attrCount +  0] = px;
-				_arrPointAttr[i * attrCount +  1] = py;
-				_arrPointAttr[i * attrCount +  2] = speedx;
-				_arrPointAttr[i * attrCount +  3] = speedy;
-				_arrPointAttr[i * attrCount +  4] = aSpeedx;
-				_arrPointAttr[i * attrCount +  5] = aSpeedy;
-				_arrPointAttr[i * attrCount +  6] = startSize;
-				_arrPointAttr[i * attrCount +  7] = endSize;
-				_arrPointAttr[i * attrCount +  8] = startAngle;
-				_arrPointAttr[i * attrCount +  9] = pointRotateSpeed;
-				_arrPointAttr[i * attrCount + 10] = startAlpha;
-				_arrPointAttr[i * attrCount + 11] = endAlpha;
-				_arrPointAttr[i * attrCount + 12] = lifeTime;
-				_arrPointAttr[i * attrCount + 13] = startTime;
+				_arrParticleAttr[i * attrCount +  0] = px;
+				_arrParticleAttr[i * attrCount +  1] = py;
+				_arrParticleAttr[i * attrCount +  2] = speedx;
+				_arrParticleAttr[i * attrCount +  3] = speedy;
+				_arrParticleAttr[i * attrCount +  4] = aSpeedx;
+				_arrParticleAttr[i * attrCount +  5] = aSpeedy;
+				_arrParticleAttr[i * attrCount +  6] = startSize;
+				_arrParticleAttr[i * attrCount +  7] = endSize;
+				_arrParticleAttr[i * attrCount +  8] = startAngle;
+				_arrParticleAttr[i * attrCount +  9] = ParticleRotateSpeed;
+				_arrParticleAttr[i * attrCount + 10] = startAlpha;
+				_arrParticleAttr[i * attrCount + 11] = endAlpha;
+				_arrParticleAttr[i * attrCount + 12] = lifeTime;
+				_arrParticleAttr[i * attrCount + 13] = startTime;
 			}
 
-			pointCount = md.pointCount;
-			arrPointAttr = _arrPointAttr;
+			arrParticleAttr = _arrParticleAttr;
 
 			if(lockBufferData != null) {
 				lockBufferData.Dispose();
 			}
-			lockBufferData = new MemoryLock(arrPointAttr);
+			lockBufferData = new MemoryLock(arrParticleAttr);
 
 			Gl.BindBuffer(BufferTarget.ShaderStorageBuffer, attrBufferId);
-			Gl.BufferData(BufferTarget.ShaderStorageBuffer, (uint)arrPointAttr.Length * sizeof(float), lockBufferData.Address, BufferUsage.DynamicDraw);
+			//Gl.BufferData(BufferTarget.ShaderStorageBuffer, (uint)arrPointAttr.Length * sizeof(float), lockBufferData.Address, BufferUsage.DynamicDraw);
+			Gl.BufferData(BufferTarget.ShaderStorageBuffer, (uint)arrParticleAttr.Length * sizeof(float), lockBufferData.Address, BufferUsage.StaticDraw);
 		}
 
 		public void render(float[] mMVP, int renderTime) {
@@ -283,11 +292,7 @@ namespace gifEdit.control {
 				return;
 			}
 
-			if(md.pointCount <= 0) {
-				return;
-			}
-
-			if(pointCount <= 0) {
+			if(particleCount <= 0) {
 				return;
 			}
 
@@ -312,7 +317,7 @@ namespace gifEdit.control {
 				
 				Gl.Uniform1(LocationNowTime, (float)renderTime);
 				Gl.Uniform1(LocationTotalLifeTime, (float)maxRenderTime);
-				Gl.Uniform1(LocationPointCount, pointCount);
+				Gl.Uniform1(LocationParticleCount, particleCount);
 				//Gl.Uniform1(LocationZIndex, (float)zIndex);
 				//Gl.Uniform1(LocationPointCount, pointCount);
 
@@ -321,7 +326,7 @@ namespace gifEdit.control {
 				//Gl.GenerateMipmap(TextureTarget.Texture2d);
 				Gl.Uniform1(LocationTex, 0);
 				
-				Gl.DrawArraysInstanced(PrimitiveType.Polygon, 0, _ArrayIndex.Length / 2, pointCount);
+				Gl.DrawArraysInstanced(PrimitiveType.Polygon, 0, _ArrayIndex.Length / 2, particleCount);
 			}
 
 		}
@@ -344,7 +349,7 @@ namespace gifEdit.control {
 			return val;
 		}
 
-		private float[] arrPointAttr = new float[0];
+		private float[] arrParticleAttr = new float[0];
 
 		private static readonly float[] _ArrayIndex = new float[] {
 			-1,  1,

@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -117,25 +118,32 @@
     <Compile Include="control\glEngine\FpsCtl.cs" />
     <Compile Include="control\glEngine\GlObject.cs" />
     <Compile Include="control\glEngine\GlTime.cs" />
-    <Compile Include="control\PointEditCtl.cs" />
-    <Compile Include="control\PointEmitter.cs" />
-    <Compile Include="model\PointEditModel.cs" />
+    <Compile Include="control\LastProjectCtl.cs" />
+    <Compile Include="control\ParticleEditCtl.cs" />
+    <Compile Include="control\ParticleEmitter.cs" />
+    <Compile Include="model\ParticleEditModel.cs" />
+    <Compile Include="sdk\csharpHelp\BorderLabel\BorderLabel.cs" />
+    <Compile Include="view\util\ColorPicker\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="sdk\csharpHelp\dwmapi.cs" />
     <Compile Include="services\EventServer.cs" />
     <Compile Include="util\ComUtil.cs" />
     <Compile Include="util\SysConst.cs" />
-    <Compile Include="view\PointEditBox.xaml.cs">
-      <DependentUpon>PointEditBox.xaml</DependentUpon>
+    <Compile Include="view\IconButton\IconButton.cs" />
+    <Compile Include="view\NewProjectWin.xaml.cs">
+      <DependentUpon>NewProjectWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="view\PointRenderBox.xaml.cs">
-      <DependentUpon>PointRenderBox.xaml</DependentUpon>
+    <Compile Include="view\ParticleEditBox.xaml.cs">
+      <DependentUpon>ParticleEditBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="view\PointRenderWin.cs">
-      <SubType>Form</SubType>
+    <Compile Include="view\ParticleRenderBox.xaml.cs">
+      <DependentUpon>ParticleRenderBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="view\PointRenderWin.Designer.cs">
-      <DependentUpon>PointRenderWin.cs</DependentUpon>
-    </Compile>
+    <Page Include="sdk\csharpHelp\BorderLabel\BorderLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="sdk\csharpHelp\ButtonLabel\ButtonLabel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -143,6 +151,10 @@
     <Page Include="sdk\csharpHelp\CheckBoxBan\CheckBoxBan.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="view\util\ColorPicker\ColorPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="sdk\csharpHelp\ComboBoxLabel\ComboBoxLabel.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -173,6 +185,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="sdk\csharpHelp\TextBoxTip\TextBoxTip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="view\IconButton\IconButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -239,11 +259,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="view\PointEditBox.xaml">
+    <Page Include="view\NewProjectWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="view\PointRenderBox.xaml">
+    <Page Include="view\ParticleEditBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="view\ParticleRenderBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -258,6 +282,14 @@
     <Page Include="view\style\ListBoxItemWin7.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="view\style\MenuItemStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="view\style\MenuStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="view\style\Test.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -282,9 +314,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="view\PointRenderWin.resx">
-      <DependentUpon>PointRenderWin.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="costura32\.gitkeep" />
     <None Include="costura64\.gitkeep" />
     <None Include="FodyWeavers.xml.install.xdt" />
@@ -294,8 +323,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <EmbeddedResource Include="resource\gifEditShader\fPointEmitter.glsl" />
-    <EmbeddedResource Include="resource\gifEditShader\vPointEmitter.glsl" />
+    <EmbeddedResource Include="resource\gifEditShader\fParticleEmitter.glsl" />
+    <EmbeddedResource Include="resource\gifEditShader\vParticleEmitter.glsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -314,6 +343,8 @@
     <Resource Include="resource\image\snow.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="resource\image\color-picker-h.png" />
+    <Resource Include="resource\image\color-picker-sv.png" />
     <Content Include="sdk\freeImage\x32\FreeImage.dll" />
     <Content Include="sdk\freeImage\x64\FreeImage.dll" />
   </ItemGroup>

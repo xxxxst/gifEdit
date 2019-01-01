@@ -1,0 +1,35 @@
+﻿<Window x:Class="gifEdit.view.NewProjectWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:gifEdit.view"
+	    xmlns:supUI="clr-namespace:csharpHelp.ui"
+        mc:Ignorable="d"
+        Title="新建项目" Height="300" Width="400" WindowStartupLocation="CenterOwner">
+	<Grid Background="#4d4d4d">
+		<Grid Margin="8">
+			<Label Foreground="#fff" VerticalAlignment="Top" HorizontalAlignment="Left" Content="类型"/>
+			<Grid Margin="20,30,20,0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<supUI:MiniButton Grid.Column="0" Height="30" Radius="8,0,0,8" Content="精灵" x:Name="btnSprite" Click="btnSprite_Click"/>
+				<supUI:MiniButton Grid.Column="1" Height="30" Radius="0,8,8,0" IsSelect="True" Content="粒子" x:Name="btnPoint" Click="btnPoint_Click"/>
+				
+				<Border Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="#939393" CornerRadius="8"/>
+			</Grid>
+
+			<supUI:TextBoxLabel Margin="0,0,0,75" Height="28" VerticalAlignment="Bottom" LeftWidth="60" Content="项目名" Text="newProject" x:Name="txtProjectName"/>
+			<supUI:TextBoxFile Margin="0,0,0,45" Height="28" VerticalAlignment="Bottom" IsSelectFolder="True" LeftWidth="60" Content="路径：" x:Name="txtPath"/>
+
+			<Label Foreground="#dc1e1e" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="10" Content="" Name="lblErrorInfo"/>
+
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+				<supUI:MiniButton Margin="0,0,0,0" Height="30" Width="70" Radius="5" Background="#272727" Content="确定" x:Name="btnOk" Click="btnOk_Click"/>
+				<supUI:MiniButton Margin="8,0,0,0" Height="30" Width="70" Radius="5" Background="#272727" Content="取消" x:Name="btnCancel" Click="btnCancel_Click"/>
+			</StackPanel>
+		</Grid>
+    </Grid>
+</Window>

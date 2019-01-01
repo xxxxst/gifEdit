@@ -4,11 +4,92 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:gifEdit.view"
+	    xmlns:supUI="clr-namespace:csharpHelp.ui"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="GIF编辑器" Height="650" Width="1000" Loaded="Window_Loaded" Closed="Window_Closed">
 	<Grid Background="#4d4d4d">
 		<Grid Margin="8">
-			<local:PointEditBox x:Name="viewPointEditBox"/>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="4"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<!--<Menu Height="23" Style="{DynamicResource MenuStyle}" ItemsPanel="{DynamicResource ItemsPanelTemplate}">
+				<MenuItem Header="文件" Template="{DynamicResource MenuItemControlTemplate}">
+					<MenuItem Header="新建" Template="{DynamicResource MenuItemControlTemplateEnd}"/>
+				</MenuItem>
+			</Menu>-->
+			<StackPanel Margin="5,0,0,0" Orientation="Horizontal">
+				<local:IconButton Padding="4,5,8,5" Height="28" ImagePadding="5,5,0,5" Radius="5" Source="/gifEdit;component/resource/image/add.png" Content="新建项目" x:Name="btnNewProject" Click="btnNewProject_Click"/>
+			</StackPanel>
+			
+			<Grid Grid.Row="2" Name="grdNav">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="300"/>
+					<ColumnDefinition Width="4"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				
+				<Grid Width="300">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="30"/>
+						<RowDefinition Height="4"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+
+					<Label Foreground="#fff" VerticalContentAlignment="Center" Content="最近项目"/>
+
+					<ListBox Grid.Row="2" Background="Transparent" BorderThickness="0" Name="lstLastOpenProject">
+						<ListBox.ItemContainerStyle>
+							<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
+								<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+								<Setter Property="Padding" Value="0"/>
+								<Style.Resources>
+									<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+								</Style.Resources>
+							</Style>
+						</ListBox.ItemContainerStyle>
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Grid Background="Transparent" Tag="{Binding .}" Name="grdLastProject" MouseLeftButtonUp="grdLastProject_MouseLeftButtonUp">
+									<!--<Border Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="#fff" Background="Transparent" Visibility="{Binding IsLastVisibile}"></Border>-->
+
+									<Grid Margin="2,0,0,2" Background="Transparent">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="2"/>
+											<ColumnDefinition Width="Auto"/>
+											<ColumnDefinition Width="2"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+
+										<!--<supUI:BorderLabel Grid.Column="2" Foreground="#fff" VerticalContentAlignment="Center" Content="{Binding StrType}"/>-->
+										<supUI:BorderLabel Grid.Column="1" Foreground="#fff" VerticalAlignment="Center" Content="{Binding StrType}"/>
+
+										<Label Grid.Column="3" VerticalContentAlignment="Center" Content="{Binding Path}">
+											<Label.Style>
+												<Style TargetType="Label">
+													<Setter Property="Foreground" Value="#fff"/>
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
+															<Setter Property="Foreground" Value="#b256b5"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Label.Style>
+										</Label>
+									</Grid>
+								</Grid>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+
+				</Grid>
+			</Grid>
+
+			<local:ParticleEditBox Grid.Row="2" Visibility="Hidden" x:Name="viewParticleEditBox"/>
 		</Grid>
 	</Grid>
 </Window>

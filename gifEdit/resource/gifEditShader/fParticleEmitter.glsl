@@ -6,20 +6,9 @@ in vec2 fCoord;
 
 in float fAlpha;
 in float fSize;
-// uniform int pointCount;
+// uniform int particleCount;
 
 out vec4 out_Color;
-
-// float linearstep(float edge0, float edge1, float x) {
-// 	float t = (x - edge0)/(edge1 - edge0);
-// 	return clamp(t, 0.0, 1.0);
-// }
-
-// float smootherstep(float edge0, float edge1, float x) {
-// 	float t = (x - edge0)/(edge1 - edge0);
-// 	float t1 = t*t*t*(t*(t*6. - 15.) + 10.);
-// 	return clamp(t1, 0.0, 1.0);
-// }
 
 void main() {
 	// gl_FragColor = vColor;
@@ -27,7 +16,7 @@ void main() {
 
 	// vec4 color = vec4(1);
 
-	// if(pointCount < 8000){
+	// if(particleCount < 8000){
 	// 	vec2 p1 = clamp(fCoord + vec2(-1/fSize, -1/fSize), vec2(0), vec2(1));
 	// 	vec2 p2 = clamp(fCoord + vec2(       0, -1/fSize), vec2(0), vec2(1));
 	// 	vec2 p3 = clamp(fCoord + vec2( 1/fSize, -1/fSize), vec2(0), vec2(1));
