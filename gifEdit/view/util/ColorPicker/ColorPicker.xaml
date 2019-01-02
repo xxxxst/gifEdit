@@ -5,32 +5,24 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:gifEdit.view"
              mc:Ignorable="d" 
-             d:DesignHeight="223" d:DesignWidth="223">
+             d:DesignHeight="218" d:DesignWidth="218">
 	<Border BorderBrush="#000" BorderThickness="1" Name="bdMain" SizeChanged="bdMain_SizeChanged">
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="1"/>
-				<RowDefinition Height="20"/>
+				<RowDefinition Height="15"/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="1"/>
-				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="15"/>
 			</Grid.ColumnDefinitions>
-
-			<!--线框-->
-			<Border Grid.Row="1" Background="#000"/>
-			<Border Grid.Column="1" Background="#000"/>
-			
-			<!--当前颜色-->
-			<Border Grid.Row="2" Grid.Column="2" Background="#fff"/>
-
 
 			<!--明度/饱和度-->
 			<Grid ClipToBounds="True" Background="Transparent" Name="grdMain" MouseLeftButtonDown="grdMain_MouseLeftButtonDown">
 				<!--<Image Stretch="Fill" Source="/gifEdit;component/resource/image/color-picker-sv.png"/>-->
-				<Border Background="#f00"/>
+				<Border Background="#f00" Name="bdSV"/>
 				<Border>
 					<Border.Background>
 						<LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
@@ -61,7 +53,8 @@
 
 				<!--色相滑块-->
 				<Canvas Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="10" Name="sldH">
-					<Polygon Margin="0,-5,0,0" Fill="#000" Points="0,0 4,5 16,5 20,0 20,10 16,5 4,5 0,10"/>
+					<!--<Polygon Margin="0,-5,0,0" Fill="#000" Points="0,0 4,5 11,5 15,0 15,10 11,5 4,5 0,10"/>-->
+					<Rectangle Margin="-1,-2,0,0" Fill="#000" Stroke="#fff"  Width="17" Height="4"/>
 				</Canvas>
 			</Grid>
 
@@ -72,7 +65,7 @@
 						<ImageBrush TileMode="Tile" Stretch="Uniform" AlignmentX="Left" Viewport="0,0,45,45" ViewportUnits="Absolute" ImageSource="/gifEdit;component/resource/image/transparent.png"/>
 					</Border.Background>
 				</Border>
-				<Border>
+				<Border Name="bdA">
 					<Border.Background>
 						<LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
 							<GradientStop Color="#00ffffff" Offset="0"/>
@@ -83,13 +76,28 @@
 
 				<!--透明度滑块-->
 				<Canvas Margin="200,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="10" Name="sldT">
-					<Polygon Margin="4,0,0,0" Fill="#000" Points="0,0 4,5 16,5 20,0 20,10 16,5 4,5 0,10">
+					<!--<Polygon Margin="4,0,0,0" Fill="#000" Stroke="#fff" Points="0,0 4,5 11,5 15,0 15,10 11,5 4,5 0,10">
 						<Polygon.RenderTransform>
 							<RotateTransform CenterX="0.5" CenterY="0.5" Angle="90"/>
 						</Polygon.RenderTransform>
-					</Polygon>
+					</Polygon>-->
+					<Rectangle Margin="-2,-1,0,0" Fill="#000" Stroke="#fff"  Width="4" Height="17"/>
 				</Canvas>
 			</Grid>
+
+			<!--当前颜色-->
+			<Border Grid.Row="2" Grid.Column="2">
+				<Border.Background>
+					<ImageBrush TileMode="Tile" Stretch="Uniform" AlignmentX="Left" Viewport="0,0,45,45" ViewportUnits="Absolute" ImageSource="/gifEdit;component/resource/image/transparent.png"/>
+				</Border.Background>
+				
+				<Border Margin="1" Background="#fff" Name="bdCurrentColor"/>
+			</Border>
+
+			<!--线框-->
+			<Border Grid.Row="1" Background="#000"/>
+			<Border Grid.Column="1" Background="#000"/>
+			
 		</Grid>
 	</Border>
 </UserControl>

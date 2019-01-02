@@ -131,7 +131,7 @@
 			<local:ParticleRenderBox x:Name="pointRenderBox"/>
 
 			<Grid Grid.Row="2">
-				<local:ColorPicker HorizontalAlignment="Left" Height="150" Width="150"/>
+				<local:ColorPicker HorizontalAlignment="Left" VerticalAlignment="Bottom" Value="0xffffff" Height="100" Width="100"/>
 			</Grid>
 		</Grid>
 
