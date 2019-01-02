@@ -125,13 +125,25 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="4"/>
-				<RowDefinition Height="150"/>
+				<RowDefinition Height="140"/>
 				<RowDefinition Height="30"/>
 			</Grid.RowDefinitions>
 			<local:ParticleRenderBox x:Name="pointRenderBox"/>
 
 			<Grid Grid.Row="2">
-				<local:ColorPicker HorizontalAlignment="Left" VerticalAlignment="Bottom" Value="0xffffff" Height="100" Width="100"/>
+				<Border BorderBrush="#777777" BorderThickness="1"/>
+				<Grid>
+					<StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Left">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="100"/>
+							</Grid.RowDefinitions>
+							<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
+							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Value="0xff24252c" Height="100" Width="100"/>
+						</Grid>
+					</StackPanel>
+				</Grid>
 			</Grid>
 		</Grid>
 

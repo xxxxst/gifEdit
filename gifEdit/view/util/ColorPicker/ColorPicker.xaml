@@ -95,8 +95,8 @@
 			</Border>
 
 			<!--线框-->
-			<Border Grid.Row="1" Background="#000"/>
-			<Border Grid.Column="1" Background="#000"/>
+			<Border Grid.Row="1" Grid.ColumnSpan="3" Background="#000"/>
+			<Border Grid.Column="1" Grid.RowSpan="3" Background="#000"/>
 			
 		</Grid>
 	</Border>
