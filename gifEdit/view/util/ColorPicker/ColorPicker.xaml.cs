@@ -62,7 +62,7 @@ namespace gifEdit.view {
 			ele.tPercent = a;
 			ele.updateColor();
 
-			Debug.WriteLine("" + ele.isSerValueInner + "," + Convert.ToString(ele.Value, 16));
+			//Debug.WriteLine("" + ele.isSerValueInner + "," + Convert.ToString(ele.Value, 16));
 		}
 
 		//Value Changed Event

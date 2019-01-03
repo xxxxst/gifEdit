@@ -72,6 +72,23 @@ namespace gifEdit.view {
 			}
 		}
 
+		public void updateGlobalAttr() {
+			if(!isEngineInited) {
+				return;
+			}
+
+			try {
+				ParticleEditModel md = MainModel.ins.particleEditModel;
+
+				glClear(md.background);
+
+				updateRenderBoxSize();
+
+			} catch(Exception) {
+
+			}
+		}
+
 		public void updateEmitterAttr(int idx) {
 			if (idx < 0 || idx >= lstEmitter.Count) {
 				return;
@@ -146,7 +163,13 @@ namespace gifEdit.view {
 
 			//Gl.ClearColor(27 / 255f, 28 / 255f, 32 / 255f, 1.0f);
 			//glClear("1e2027");
-			glClear("24252c", 1);
+			//glClear("24252c", 1);
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				glClear("24252c", 1);
+			} else {
+				glClear(md.background, 1);
+			}
 			//glClear(0, 1);
 
 			isEngineInited = true;

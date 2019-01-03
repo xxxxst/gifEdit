@@ -4,9 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:gifEdit.view"
-             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-		     xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-			 xmlns:opengl="clr-namespace:OpenGL;assembly=OpenGL.Net.WinForms"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000" Loaded="UserControl_Loaded">
@@ -140,7 +137,7 @@
 								<RowDefinition Height="100"/>
 							</Grid.RowDefinitions>
 							<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
-							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Value="0xff24252c" Height="100" Width="100"/>
+							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Value="0xff24252c" Height="100" Width="100" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
 						</Grid>
 					</StackPanel>
 				</Grid>
@@ -165,11 +162,12 @@
 				<supUI:TextBoxLabel Foreground="#fff" ContentColor="#fff" Content="位置"/>
 			</StackPanel>-->
 
-			<Grid Grid.Row="3" Name="grdProjectSetting">
-				
-			</Grid>
+			<!--<Grid Grid.Row="3" Name="grdProjectSetting">-->
+			<local:AttrText Grid.Row="3" x:Name="atxProject" TextChangedByUser="atxProject_TextChangedByUser"/>
+			<local:AttrText Grid.Row="3" Visibility="Collapsed" x:Name="atxEmitter" TextChangedByUser="atxEmitter_TextChangedByUser"/>
+			<!--</Grid>-->
 
-			<Grid Grid.Row="3" Visibility="Collapsed" Name="grdParticleSetting">
+			<!--<Grid Grid.Row="3" Visibility="Collapsed" Name="grdParticleSetting">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="4*"/>
 					<ColumnDefinition Width="3"/>
@@ -182,7 +180,7 @@
 				<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
 
 				<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged" TextChanged="txtAttrValue_TextChanged"/>
-			</Grid>
+			</Grid>-->
 		</Grid>
 
 		<Grid.Style>

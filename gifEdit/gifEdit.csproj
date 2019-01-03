@@ -123,6 +123,9 @@
     <Compile Include="control\ParticleEmitter.cs" />
     <Compile Include="model\ParticleEditModel.cs" />
     <Compile Include="sdk\csharpHelp\BorderLabel\BorderLabel.cs" />
+    <Compile Include="view\AttrText\AttrText.xaml.cs">
+      <DependentUpon>AttrText.xaml</DependentUpon>
+    </Compile>
     <Compile Include="view\util\ColorPicker\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
     <Page Include="sdk\csharpHelp\CheckBoxBan\CheckBoxBan.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="view\AttrText\AttrText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="view\util\ColorPicker\ColorPicker.xaml">
       <SubType>Designer</SubType>

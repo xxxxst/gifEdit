@@ -31,8 +31,10 @@ namespace gifEdit.view {
 
 		private string cachePath = "";
 		private bool isEngineInited = false;
-		private bool isUpdatTextInner = false;
+		//private bool isUpdatTextInner = false;
 		private int selectEmitter = -1;
+
+		private bool isEditGlobalAttrInner = false;
 
 		public ParticleEditBox() {
 			InitializeComponent();
@@ -49,11 +51,156 @@ namespace gifEdit.view {
 				}
 			};
 
-			initAttrDesc();
+			initAttr();
+			//initAttrDesc();
 		}
 
 		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
 
+		}
+
+		private void initAttr() {
+			atxProject.setData(null,
+				new string[] {
+					"背景颜色",
+					"宽度",
+					"高度",
+				},
+				new string[] {
+					"4D4D4D",
+					"400",
+					"400",
+				},
+				new Func<object, string>[] {
+					(m) => ((ParticleEditModel)m).background,
+					(m) => ((ParticleEditModel)m).width.ToString(),
+					(m) => ((ParticleEditModel)m).height.ToString(),
+				},
+				new Action<object, string>[] {
+					(m, s)=> ((ParticleEditModel)m).background = s,
+					(m, s)=> ((ParticleEditModel)m).width = getInt(s, 0),
+					(m, s)=> ((ParticleEditModel)m).height = getInt(s, 0),
+				}
+			);
+
+			atxEmitter.setData(null,
+				new string[] {
+					 "坐标x"				,
+					 "坐标x浮动"			,
+					 "坐标y"				,
+					 "坐标y浮动"			,
+					 "开始透明度"			,
+					 "结束透明度"			,
+					 "重力"					,
+					 "重力方向"				,
+					 "开始速度"				,
+					 "开始速度浮动"			,
+					 "开始速度方向"			,
+					 "开始速度方向浮动"		,
+					 "旋转速度"				,
+					 "旋转速度浮动"			,
+					 "分离速度"				,
+					 "分离速度方向"			,
+					 "粒子数"				,
+					 "粒子生命周期"			,
+					 "粒子生命周期浮动"		,
+					 "粒子开始大小"			,
+					 "粒子开始大小浮动"		,
+					 "粒子结束大小"			,
+					 "粒子结束大小浮动"		,
+					 "粒子开始角度"			,
+					 "粒子开始角度浮动"		,
+					 "粒子旋转速度"			,
+					 "粒子旋转速度浮动"		,
+				},
+				new string[] {
+					 "坐标x"				,
+					 "坐标x浮动"			,
+					 "坐标y"				,
+					 "坐标y浮动"			,
+					 "开始透明度"			,
+					 "结束透明度"			,
+					 "重力"					,
+					 "重力方向"				,
+					 "开始速度"				,
+					 "开始速度浮动"			,
+					 "开始速度方向"			,
+					 "开始速度方向浮动"		,
+					 "旋转速度"				,
+					 "旋转速度浮动"			,
+					 "分离速度"				,
+					 "分离速度方向"			,
+					 "粒子数"				,
+					 "粒子生命周期"			,
+					 "粒子生命周期浮动"		,
+					 "粒子开始大小"			,
+					 "粒子开始大小浮动"		,
+					 "粒子结束大小"			,
+					 "粒子结束大小浮动"		,
+					 "粒子开始角度"			,
+					 "粒子开始角度浮动"		,
+					 "粒子旋转速度"			,
+					 "粒子旋转速度浮动"		,
+				},
+				new Func<object, string>[] {
+					(m) => ((ParticleResourceModel)m).x.ToString(),
+					(m) => ((ParticleResourceModel)m).xFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).y.ToString(),
+					(m) => ((ParticleResourceModel)m).yFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).startAlpha.ToString(),
+					(m) => ((ParticleResourceModel)m).endAlpha.ToString(),
+					(m) => ((ParticleResourceModel)m).gravityValue.ToString(),
+					(m) => ((ParticleResourceModel)m).gravityAngle.ToString(),
+					(m) => ((ParticleResourceModel)m).startSpeed.ToString(),
+					(m) => ((ParticleResourceModel)m).startSpeedFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).startSpeedAngle.ToString(),
+					(m) => ((ParticleResourceModel)m).startSpeedAngleFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).rotateSpeed.ToString(),
+					(m) => ((ParticleResourceModel)m).rotateSpeedFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).directionSpeed.ToString(),
+					(m) => ((ParticleResourceModel)m).directionSpeedFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).particleCount.ToString(),
+					(m) => ((ParticleResourceModel)m).particleLife.ToString(),
+					(m) => ((ParticleResourceModel)m).particleLifeFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).particleStartSize.ToString(),
+					(m) => ((ParticleResourceModel)m).particleStartSizeFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).particleEndSize.ToString(),
+					(m) => ((ParticleResourceModel)m).particleEndSizeFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).particleStartAngle.ToString(),
+					(m) => ((ParticleResourceModel)m).particleStartAngleFloat.ToString(),
+					(m) => ((ParticleResourceModel)m).particleRotateSpeed.ToString(),
+					(m) => ((ParticleResourceModel)m).particleRotateSpeedFloat.ToString(),
+				},
+				new Action<object, string>[] {
+					(m, s) => ((ParticleResourceModel)m).x = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).xFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).y = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).yFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).startAlpha = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).endAlpha = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).gravityValue = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).gravityAngle = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).startSpeed = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).startSpeedFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).startSpeedAngle = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).startSpeedAngleFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).rotateSpeed = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).rotateSpeedFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).directionSpeed = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).directionSpeedFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleCount = getInt(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleLife = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleLifeFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleStartSize = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleStartSizeFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleEndSize = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleEndSizeFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleStartAngle = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleStartAngleFloat = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleRotateSpeed = getFloat(s, 0),
+					(m, s) => ((ParticleResourceModel)m).particleRotateSpeedFloat = getFloat(s, 0),
+				}
+			);
 		}
 
 		public void load(string path) {
@@ -75,6 +222,8 @@ namespace gifEdit.view {
 
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 			lblProjName.Content = md.name;
+
+			atxProject.setModel(md);
 
 			//dgrdAttr.ItemsSource = ctl.lstAttrMd;
 
@@ -133,163 +282,167 @@ namespace gifEdit.view {
 		//	//return isEmbedSuccess;
 		//}
 
-		private void initAttrDesc() {
-			string[] arrDesc = new string[] {
-				"x"						, "坐标x"				,
-				"xFloat"				, "坐标x浮动"			,
-				"y"						, "坐标y"				,
-				"yFloat"				, "坐标y浮动"			,
-				"startAlpha"            , "开始透明度"          ,
-				"endAlpha"              , "结束透明度"          ,
-				"gravityValue"			, "重力"				,
-				"gravityAngle"			, "重力方向"			,
-				"startSpeed"			, "开始速度"			,
-				"startSpeedFloat"		, "开始速度浮动"		,
-				"startSpeedAngle"		, "开始速度方向"		,
-				"startSpeedAngleFloat"	, "开始速度方向浮动"	,
-				"rotateSpeed"			, "旋转速度"			,
-				"rotateSpeedFloat"		, "旋转速度浮动"		,
-				"directionSpeed"		, "分离速度"			,
-				"directionSpeedFloat"	, "分离速度方向"		,
-				"pointCount"			, "粒子数"				,
-				"pointLife"				, "粒子生命周期"		,
-				"pointLifeFloat"		, "粒子生命周期浮动"	,
-				"pointStartSize"		, "粒子开始大小"		,
-				"pointStartSizeFloat"	, "粒子开始大小浮动"	,
-				"pointEndSize"			, "粒子结束大小"		,
-				"pointEndSizeFloat"		, "粒子结束大小浮动"	,
-				"pointStartAngle"		, "粒子开始角度"		,
-				"pointStartAngleFloat"	, "粒子开始角度浮动"	,
-				"pointEndAngle"			, "粒子旋转速度"		,
-				"pointEndAngleFloat"	, "粒子旋转速度浮动"    ,
-			};
-			string strAttrDesc = "";
-			
-			for(int i = 0; i < arrDesc.Length; i+=2) {
-				strAttrDesc += (i == 0) ? "" : "\r\n";
-				strAttrDesc += arrDesc[i + 1];
-			}
-			txtAttrDesc.Text = strAttrDesc;
-		}
+		//private void initAttrDesc() {
+		//	string[] arrDesc = new string[] {
+		//		"x"						, "坐标x"				,
+		//		"xFloat"				, "坐标x浮动"			,
+		//		"y"						, "坐标y"				,
+		//		"yFloat"				, "坐标y浮动"			,
+		//		"startAlpha"            , "开始透明度"          ,
+		//		"endAlpha"              , "结束透明度"          ,
+		//		"gravityValue"			, "重力"				,
+		//		"gravityAngle"			, "重力方向"			,
+		//		"startSpeed"			, "开始速度"			,
+		//		"startSpeedFloat"		, "开始速度浮动"		,
+		//		"startSpeedAngle"		, "开始速度方向"		,
+		//		"startSpeedAngleFloat"	, "开始速度方向浮动"	,
+		//		"rotateSpeed"			, "旋转速度"			,
+		//		"rotateSpeedFloat"		, "旋转速度浮动"		,
+		//		"directionSpeed"		, "分离速度"			,
+		//		"directionSpeedFloat"	, "分离速度方向"		,
+		//		"pointCount"			, "粒子数"				,
+		//		"pointLife"				, "粒子生命周期"		,
+		//		"pointLifeFloat"		, "粒子生命周期浮动"	,
+		//		"pointStartSize"		, "粒子开始大小"		,
+		//		"pointStartSizeFloat"	, "粒子开始大小浮动"	,
+		//		"pointEndSize"			, "粒子结束大小"		,
+		//		"pointEndSizeFloat"		, "粒子结束大小浮动"	,
+		//		"pointStartAngle"		, "粒子开始角度"		,
+		//		"pointStartAngleFloat"	, "粒子开始角度浮动"	,
+		//		"pointEndAngle"			, "粒子旋转速度"		,
+		//		"pointEndAngleFloat"	, "粒子旋转速度浮动"    ,
+		//	};
+		//	string strAttrDesc = "";
 
-		private void updateAttrText() {
-			int idx = selectEmitter;
-			if (idx < 0) {
-				return;
-			}
+		//	for(int i = 0; i < arrDesc.Length; i+=2) {
+		//		strAttrDesc += (i == 0) ? "" : "\r\n";
+		//		strAttrDesc += arrDesc[i + 1];
+		//	}
+		//	txtAttrDesc.Text = strAttrDesc;
+		//}
 
-			ParticleEditCtl ctl = MainCtl.ins.particleEditCtl;
-			ParticleEditModel md = MainModel.ins.particleEditModel;
-			var item = md.lstResource[idx];
+		//private void updateAttrText() {
 
-			string[] arr = new string[] {
-				item.x.ToString(),
-				item.xFloat.ToString(),
-				item.y.ToString(),
-				item.yFloat.ToString(),
-				item.startAlpha.ToString(),
-				item.endAlpha.ToString(),
-				item.gravityValue.ToString(),
-				item.gravityAngle.ToString(),
-				item.startSpeed.ToString(),
-				item.startSpeedFloat.ToString(),
-				item.startSpeedAngle.ToString(),
-				item.startSpeedAngleFloat.ToString(),
-				item.rotateSpeed.ToString(),
-				item.rotateSpeedFloat.ToString(),
-				item.directionSpeed.ToString(),
-				item.directionSpeedFloat.ToString(),
-				item.particleCount.ToString(),
-				item.particleLife.ToString(),
-				item.particleLifeFloat.ToString(),
-				item.particleStartSize.ToString(),
-				item.particleStartSizeFloat.ToString(),
-				item.particleEndSize.ToString(),
-				item.particleEndSizeFloat.ToString(),
-				item.particleStartAngle.ToString(),
-				item.particleStartAngleFloat.ToString(),
-				item.particleRotateSpeed.ToString(),
-				item.particleRotateSpeedFloat.ToString(),
-			};
+		//}
 
-			//string strAttrDesc = "";
-			string strAttrValue = "";
-			//for(int i = 0; i < ctl.lstAttrMd.Count; ++i) {
-			//	var item = ctl.lstAttrMd[i];
+		//private void updateAttrText() {
+		//	int idx = selectEmitter;
+		//	if (idx < 0) {
+		//		return;
+		//	}
 
-			//	if(i != 0) {
-			//		strAttrDesc += "\r\n";
-			//		strAttrValue += "\r\n";
-			//	}
+		//	ParticleEditCtl ctl = MainCtl.ins.particleEditCtl;
+		//	ParticleEditModel md = MainModel.ins.particleEditModel;
+		//	var item = md.lstResource[idx];
 
-			//	strAttrDesc += item.desc;
-			//	strAttrValue += item.value;
-			//}
+		//	string[] arr = new string[] {
+		//		item.x.ToString(),
+		//		item.xFloat.ToString(),
+		//		item.y.ToString(),
+		//		item.yFloat.ToString(),
+		//		item.startAlpha.ToString(),
+		//		item.endAlpha.ToString(),
+		//		item.gravityValue.ToString(),
+		//		item.gravityAngle.ToString(),
+		//		item.startSpeed.ToString(),
+		//		item.startSpeedFloat.ToString(),
+		//		item.startSpeedAngle.ToString(),
+		//		item.startSpeedAngleFloat.ToString(),
+		//		item.rotateSpeed.ToString(),
+		//		item.rotateSpeedFloat.ToString(),
+		//		item.directionSpeed.ToString(),
+		//		item.directionSpeedFloat.ToString(),
+		//		item.particleCount.ToString(),
+		//		item.particleLife.ToString(),
+		//		item.particleLifeFloat.ToString(),
+		//		item.particleStartSize.ToString(),
+		//		item.particleStartSizeFloat.ToString(),
+		//		item.particleEndSize.ToString(),
+		//		item.particleEndSizeFloat.ToString(),
+		//		item.particleStartAngle.ToString(),
+		//		item.particleStartAngleFloat.ToString(),
+		//		item.particleRotateSpeed.ToString(),
+		//		item.particleRotateSpeedFloat.ToString(),
+		//	};
 
-			//txtAttrDesc.Text = strAttrDesc;
+		//	//string strAttrDesc = "";
+		//	string strAttrValue = "";
+		//	//for(int i = 0; i < ctl.lstAttrMd.Count; ++i) {
+		//	//	var item = ctl.lstAttrMd[i];
 
-			for(int i = 0; i < arr.Length; ++i) {
-				strAttrValue += (i == 0) ? "" : "\r\n";
-				strAttrValue += arr[i];
-			}
+		//	//	if(i != 0) {
+		//	//		strAttrDesc += "\r\n";
+		//	//		strAttrValue += "\r\n";
+		//	//	}
 
-			isUpdatTextInner = true;
-			txtAttrValue.Text = strAttrValue;
-			txtAttrValue.IsUndoEnabled = false;
-			txtAttrValue.IsUndoEnabled = true;
-			isUpdatTextInner = false;
-		}
+		//	//	strAttrDesc += item.desc;
+		//	//	strAttrValue += item.value;
+		//	//}
 
-		private void updateAttrByText() {
-			int idx = selectEmitter;
-			if (idx < 0) {
-				return;
-			}
+		//	//txtAttrDesc.Text = strAttrDesc;
 
-			string str = txtAttrValue.Text;
+		//	for(int i = 0; i < arr.Length; ++i) {
+		//		strAttrValue += (i == 0) ? "" : "\r\n";
+		//		strAttrValue += arr[i];
+		//	}
 
-			const int attrCount = 27;
+		//	//isUpdatTextInner = true;
+		//	//txtAttrValue.Text = strAttrValue;
+		//	//txtAttrValue.IsUndoEnabled = false;
+		//	//txtAttrValue.IsUndoEnabled = true;
+		//	//isUpdatTextInner = false;
+		//}
 
-			string[] arr = str.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-			List<string> lstStr = new List<string>(arr);
-			for (int i = lstStr.Count; i < attrCount; ++i) {
-				lstStr.Add("");
-			}
+		//private void updateAttrByText() {
+		//	int idx = selectEmitter;
+		//	if (idx < 0) {
+		//		return;
+		//	}
+
+		//	string str = txtAttrValue.Text;
+
+		//	const int attrCount = 27;
+
+		//	string[] arr = str.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+		//	List<string> lstStr = new List<string>(arr);
+		//	for (int i = lstStr.Count; i < attrCount; ++i) {
+		//		lstStr.Add("");
+		//	}
 
 
-			ParticleEditModel md = MainModel.ins.particleEditModel;
-			var item = md.lstResource[idx];
+		//	ParticleEditModel md = MainModel.ins.particleEditModel;
+		//	var item = md.lstResource[idx];
 
-			item.x = 						getFloat(lstStr[ 0], item.x);
-			item.xFloat = 					getFloat(lstStr[ 1], item.xFloat);
-			item.y = 						getFloat(lstStr[ 2], item.y);
-			item.yFloat = 					getFloat(lstStr[ 3], item.yFloat);
-			item.startAlpha = 				getFloat(lstStr[ 4], item.startAlpha);
-			item.endAlpha = 				getFloat(lstStr[ 5], item.endAlpha);
-			item.gravityValue = 			getFloat(lstStr[ 6], item.gravityValue);
-			item.gravityAngle = 			getFloat(lstStr[ 7], item.gravityAngle);
-			item.startSpeed = 				getFloat(lstStr[ 8], item.startSpeed);
-			item.startSpeedFloat = 			getFloat(lstStr[ 9], item.startSpeedFloat);
-			item.startSpeedAngle = 			getFloat(lstStr[10], item.startSpeedAngle);
-			item.startSpeedAngleFloat = 	getFloat(lstStr[11], item.startSpeedAngleFloat);
-			item.rotateSpeed = 				getFloat(lstStr[12], item.rotateSpeed);
-			item.rotateSpeedFloat = 		getFloat(lstStr[13], item.rotateSpeedFloat);
-			item.directionSpeed = 			getFloat(lstStr[14], item.directionSpeed);
-			item.directionSpeedFloat = 		getFloat(lstStr[15], item.directionSpeedFloat);
-			item.particleCount = 				getInt  (lstStr[16], item.particleCount);
-			item.particleLife = 				getFloat(lstStr[17], item.particleLife);
-			item.particleLifeFloat = 			getFloat(lstStr[18], item.particleLifeFloat);
-			item.particleStartSize = 			getFloat(lstStr[19], item.particleStartSize);
-			item.particleStartSizeFloat = 		getFloat(lstStr[20], item.particleStartSizeFloat);
-			item.particleEndSize = 			getFloat(lstStr[21], item.particleEndSize);
-			item.particleEndSizeFloat = 		getFloat(lstStr[22], item.particleEndSizeFloat);
-			item.particleStartAngle = 			getFloat(lstStr[23], item.particleStartAngle);
-			item.particleStartAngleFloat = 	getFloat(lstStr[24], item.particleStartAngleFloat);
-			item.particleRotateSpeed = 		getFloat(lstStr[25], item.particleRotateSpeed);
-			item.particleRotateSpeedFloat = 	getFloat(lstStr[26], item.particleRotateSpeedFloat);
+		//	item.x = 						getFloat(lstStr[ 0], item.x);
+		//	item.xFloat = 					getFloat(lstStr[ 1], item.xFloat);
+		//	item.y = 						getFloat(lstStr[ 2], item.y);
+		//	item.yFloat = 					getFloat(lstStr[ 3], item.yFloat);
+		//	item.startAlpha = 				getFloat(lstStr[ 4], item.startAlpha);
+		//	item.endAlpha = 				getFloat(lstStr[ 5], item.endAlpha);
+		//	item.gravityValue = 			getFloat(lstStr[ 6], item.gravityValue);
+		//	item.gravityAngle = 			getFloat(lstStr[ 7], item.gravityAngle);
+		//	item.startSpeed = 				getFloat(lstStr[ 8], item.startSpeed);
+		//	item.startSpeedFloat = 			getFloat(lstStr[ 9], item.startSpeedFloat);
+		//	item.startSpeedAngle = 			getFloat(lstStr[10], item.startSpeedAngle);
+		//	item.startSpeedAngleFloat = 	getFloat(lstStr[11], item.startSpeedAngleFloat);
+		//	item.rotateSpeed = 				getFloat(lstStr[12], item.rotateSpeed);
+		//	item.rotateSpeedFloat = 		getFloat(lstStr[13], item.rotateSpeedFloat);
+		//	item.directionSpeed = 			getFloat(lstStr[14], item.directionSpeed);
+		//	item.directionSpeedFloat = 		getFloat(lstStr[15], item.directionSpeedFloat);
+		//	item.particleCount = 				getInt  (lstStr[16], item.particleCount);
+		//	item.particleLife = 				getFloat(lstStr[17], item.particleLife);
+		//	item.particleLifeFloat = 			getFloat(lstStr[18], item.particleLifeFloat);
+		//	item.particleStartSize = 			getFloat(lstStr[19], item.particleStartSize);
+		//	item.particleStartSizeFloat = 		getFloat(lstStr[20], item.particleStartSizeFloat);
+		//	item.particleEndSize = 			getFloat(lstStr[21], item.particleEndSize);
+		//	item.particleEndSizeFloat = 		getFloat(lstStr[22], item.particleEndSizeFloat);
+		//	item.particleStartAngle = 			getFloat(lstStr[23], item.particleStartAngle);
+		//	item.particleStartAngleFloat = 	getFloat(lstStr[24], item.particleStartAngleFloat);
+		//	item.particleRotateSpeed = 		getFloat(lstStr[25], item.particleRotateSpeed);
+		//	item.particleRotateSpeedFloat = 	getFloat(lstStr[26], item.particleRotateSpeedFloat);
 
-			pointRenderBox.updateEmitterAttr(idx);
-		}
+		//	pointRenderBox.updateEmitterAttr(idx);
+		//}
 
 		private float getFloat(string str, float def) {
 			if (str == "") {
@@ -309,26 +462,26 @@ namespace gifEdit.view {
 			return isOk ? rst : def;
 		}
 
-		private void txtAttrValue_ScrollChanged(object sender, ScrollChangedEventArgs e) {
-			txtAttrDesc.ScrollToVerticalOffset(e.VerticalOffset);
-		}
+		//private void txtAttrValue_ScrollChanged(object sender, ScrollChangedEventArgs e) {
+		//	txtAttrDesc.ScrollToVerticalOffset(e.VerticalOffset);
+		//}
 
-		private void txtAttrValue_TextChanged(object sender, TextChangedEventArgs e) {
-			if (!isEngineInited) {
-				return;
-			}
+		//private void txtAttrValue_TextChanged(object sender, TextChangedEventArgs e) {
+		//	if (!isEngineInited) {
+		//		return;
+		//	}
 
-			if (selectEmitter < 0) {
-				return;
-			}
+		//	if (selectEmitter < 0) {
+		//		return;
+		//	}
 			
-			if (isUpdatTextInner) {
-				return;
-			}
+		//	if (isUpdatTextInner) {
+		//		return;
+		//	}
 
-			updateAttrByText();
-			//updateAttrText();
-		}
+		//	updateAttrByText();
+		//	//updateAttrText();
+		//}
 
 		private void grdProjectName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
 			if (vm.IsSelectProjectName) {
@@ -341,8 +494,8 @@ namespace gifEdit.view {
 
 			selectEmitter = -1;
 			lstRes.SelectedIndex = -1;
-			grdParticleSetting.Visibility = Visibility.Collapsed;
-			grdProjectSetting.Visibility = Visibility.Visible;
+			atxEmitter.Visibility = Visibility.Collapsed;
+			atxProject.Visibility = Visibility.Visible;
 
 			vm.IsSelectProjectName = true;
 		}
@@ -359,8 +512,8 @@ namespace gifEdit.view {
 
 			if (vm.IsSelectProjectName) {
 				vm.IsSelectProjectName = false;
-				grdProjectSetting.Visibility = Visibility.Collapsed;
-				grdParticleSetting.Visibility = Visibility.Visible;
+				atxProject.Visibility = Visibility.Collapsed;
+				atxEmitter.Visibility = Visibility.Visible;
 			}
 
 			if (selectEmitter >= 0 && selectEmitter < ctl.lstVM.Count) {
@@ -369,9 +522,38 @@ namespace gifEdit.view {
 
 			selectEmitter = idx;
 			ctl.lstVM[idx].IsSelect = true;
-			updateAttrText();
+			//updateAttrText();
+
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			atxEmitter.setModel(md.lstResource[idx]);
 		}
 
+		private void atxProject_TextChangedByUser(object sender, RoutedEventArgs e) {
+			if(!isEngineInited) {
+				return;
+			}
+
+			pointRenderBox.updateGlobalAttr();
+
+
+		}
+
+		private void atxEmitter_TextChangedByUser(object sender, RoutedEventArgs e) {
+			if(!isEngineInited) {
+				return;
+			}
+
+			int idx = selectEmitter;
+			if(idx < 0) {
+				return;
+			}
+
+			pointRenderBox.updateEmitterAttr(idx);
+		}
+
+		private void cpkBackground_ValueChanged(object sender, RoutedEventArgs e) {
+
+		}
 	}
 
 	class ParticleEditBoxVM : INotifyPropertyChanged {

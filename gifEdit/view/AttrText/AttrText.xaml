@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="gifEdit.view.AttrText"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:gifEdit.view"
+	         xmlns:supUI="clr-namespace:csharpHelp.ui"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="4*"/>
+			<ColumnDefinition Width="3"/>
+			<ColumnDefinition Width="3*"/>
+		</Grid.ColumnDefinitions>
+
+		<TextBox Grid.Column="0" Padding="0,3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="12" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" TextAlignment="Right" Background="Transparent" IsReadOnly="True" Name="txtAttrDesc"/>
+		<Grid Background="Transparent"/>
+
+		<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+		<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#a0a0a0" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtHintInfo"/>
+		<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#ffffff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="Transparent" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged" TextChanged="txtAttrValue_TextChanged"/>
+
+		<Grid.Style>
+			<Style TargetType="Grid">
+				<Style.Triggers>
+					<DataTrigger Binding="{supUI:IsDesignBind}" Value="True">
+						<Setter Property="Background" Value="#4d4d4d"/>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Grid.Style>
+	</Grid>
+</UserControl>

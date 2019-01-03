@@ -15,7 +15,7 @@ namespace gifEdit.model {
 
 		[XmlAttr("dataVersion")]			public string dataVersion = "1.0.0";
 
-		[XmlValue("config.background")]		public string background = "#4d4d4d";
+		[XmlValue("config.background")]		public string background = "24252c";
 		[XmlValue("config.seed")]			public int seed = 0;
 		[XmlValue("config.isSeedAuto")]		public bool isSeedAuto = true;
 		[XmlValue("config.fps")]			public int fps = 60;
