@@ -34,7 +34,8 @@ namespace gifEdit.view {
 		//private bool isUpdatTextInner = false;
 		private int selectEmitter = -1;
 
-		private bool isEditGlobalAttrInner = false;
+		private bool isEditGlobalAttrByText = false;
+		private bool isEditGlobalAttrByUI = false;
 
 		public ParticleEditBox() {
 			InitializeComponent();
@@ -65,21 +66,25 @@ namespace gifEdit.view {
 					"背景颜色",
 					"宽度",
 					"高度",
+					"隐藏超出部分",
 				},
 				new string[] {
 					"4D4D4D",
 					"400",
 					"400",
+					"true | false",
 				},
 				new Func<object, string>[] {
 					(m) => ((ParticleEditModel)m).background,
 					(m) => ((ParticleEditModel)m).width.ToString(),
 					(m) => ((ParticleEditModel)m).height.ToString(),
+					(m) => ((ParticleEditModel)m).isMaskBox.ToString().ToLower(),
 				},
 				new Action<object, string>[] {
 					(m, s)=> ((ParticleEditModel)m).background = s,
 					(m, s)=> ((ParticleEditModel)m).width = getInt(s, 0),
 					(m, s)=> ((ParticleEditModel)m).height = getInt(s, 0),
+					(m, s)=> ((ParticleEditModel)m).isMaskBox = s.Trim().ToLower().FirstOrDefault() == 't',
 				}
 			);
 
@@ -224,6 +229,7 @@ namespace gifEdit.view {
 			lblProjName.Content = md.name;
 
 			atxProject.setModel(md);
+			setCpkBackgroundColor(md.background);
 
 			//dgrdAttr.ItemsSource = ctl.lstAttrMd;
 
@@ -495,7 +501,9 @@ namespace gifEdit.view {
 			selectEmitter = -1;
 			lstRes.SelectedIndex = -1;
 			atxEmitter.Visibility = Visibility.Collapsed;
+
 			atxProject.Visibility = Visibility.Visible;
+			grdSetUIProject.Visibility = Visibility.Visible;
 
 			vm.IsSelectProjectName = true;
 		}
@@ -513,6 +521,8 @@ namespace gifEdit.view {
 			if (vm.IsSelectProjectName) {
 				vm.IsSelectProjectName = false;
 				atxProject.Visibility = Visibility.Collapsed;
+				grdSetUIProject.Visibility = Visibility.Collapsed;
+
 				atxEmitter.Visibility = Visibility.Visible;
 			}
 
@@ -528,6 +538,14 @@ namespace gifEdit.view {
 			atxEmitter.setModel(md.lstResource[idx]);
 		}
 
+		private void setCpkBackgroundColor(string color) {
+			UInt32.TryParse(color, System.Globalization.NumberStyles.HexNumber, null, out uint coBackground);
+
+			isEditGlobalAttrByText = true;
+			cpkBackground.Value = coBackground;
+			isEditGlobalAttrByText = false;
+		}
+
 		private void atxProject_TextChangedByUser(object sender, RoutedEventArgs e) {
 			if(!isEngineInited) {
 				return;
@@ -535,7 +553,17 @@ namespace gifEdit.view {
 
 			pointRenderBox.updateGlobalAttr();
 
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
+			//UInt32.TryParse(md.background, System.Globalization.NumberStyles.HexNumber, null, out uint coBackground);
+			
+			//isEditGlobalAttrByText = true;
+			//cpkBackground.Value = coBackground;
+			//isEditGlobalAttrByText = false;
 
+			setCpkBackgroundColor(md.background);
 		}
 
 		private void atxEmitter_TextChangedByUser(object sender, RoutedEventArgs e) {
@@ -552,7 +580,24 @@ namespace gifEdit.view {
 		}
 
 		private void cpkBackground_ValueChanged(object sender, RoutedEventArgs e) {
+			if(isEditGlobalAttrByText) {
+				return;
+			}
 
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
+
+			uint co = cpkBackground.Value;
+			co = co & 0xffffff;
+			md.background = Convert.ToString(co, 16);
+
+			pointRenderBox.updateGlobalAttr();
+
+			isEditGlobalAttrByUI = true;
+			atxProject.updateText();
+			isEditGlobalAttrByUI = false;
 		}
 	}
 

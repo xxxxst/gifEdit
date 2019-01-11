@@ -22,6 +22,7 @@ namespace gifEdit.model {
 		[XmlValue("config.exportPath")]		public string exportPath = "";
 		[XmlValue("config.width")]			public int width = 400;
 		[XmlValue("config.height")]			public int height = 400;
+		[XmlValue("config.isMaskBox")]		public bool isMaskBox = true;
 
 		[XmlListChild("resourceBox.res")]	public List<ParticleResourceModel> lstResource = new List<ParticleResourceModel>();
 	}

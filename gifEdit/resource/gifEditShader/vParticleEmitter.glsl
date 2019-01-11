@@ -30,6 +30,7 @@ uniform float nowTime;
 uniform float totalLifeTime;
 // uniform float zIndex;
 uniform int particleCount;
+uniform vec2 startPos;
 
 out vec2 fCoord;
 out float fAlpha;
@@ -103,7 +104,7 @@ void main() {
 	// mat2 rm = rotateMatrix(nowTime / 5000 * 2 * M_PI);
 	mat2 rm = rotateMatrix(startAngle + particleRotateSpeed * t);
 
-	pos2 = pos2 + (sm * (rm * index));
+	pos2 = startPos + pos2 + (sm * (rm * index));
 	// vec2 pos2 = vec2(16,16) + (sm * (rm * aIndex));
 
 	vec4 pos4 = vec4(pos2, 0.0, 1);

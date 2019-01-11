@@ -25,9 +25,10 @@ namespace gifEdit.model {
 		[XmlAttr("win.x")]		[Bridge("Left")]	public int x = 100;
 		[XmlAttr("win.y")]		[Bridge("Top")]		public int y = 100;
 		[XmlAttr("win.width")]	[Bridge("Width")]	public int width = 1000;
-		[XmlAttr("win.height")]	[Bridge("Height")]	public int height = 650;
+		[XmlAttr("win.height")]	[Bridge("Height")]	public int height = 670;
 
-		public int maxParticleCount = 100000;
+		public int maxParticleCount = 100 * 1000;
+		//public int maxParticleCount = 10000 * 1000;
 
 		[XmlListChild("lastProjectBox.project")]	public List<LastProject> lstLastProject = new List<LastProject>();
 	}

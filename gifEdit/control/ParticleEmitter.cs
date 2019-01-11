@@ -16,7 +16,7 @@ namespace gifEdit.control {
 	public class ParticleEmitter : IDisposable {
 		private ParticleResourceModel md = null;
 		private int maxRenderTime = 0;
-		private int zIndex = 0;
+		//private int zIndex = 0;
 
 		private IntPtr pImageData = IntPtr.Zero;
 		private int imageWidth = 0;
@@ -35,6 +35,7 @@ namespace gifEdit.control {
 		//private int LocationZIndex;
 		private int LocationTotalLifeTime;
 		private int LocationParticleCount;
+		private int LocationStartPos;
 
 		//private int LocationPointAttr;
 
@@ -42,6 +43,8 @@ namespace gifEdit.control {
 		private MemoryLock lockBufferData = null;
 
 		private int nowSeed = -1;
+
+		private float[] arrStartPos = new float[2] { 0, 0 };
 
 		public ParticleEmitter(ParticleResourceModel _md, int _maxRenderTime) {
 			md = _md;
@@ -88,10 +91,16 @@ namespace gifEdit.control {
 				//LocationZIndex = getUniformId("zIndex");
 				LocationTotalLifeTime = getUniformId("totalLifeTime");
 				LocationParticleCount = getUniformId("particleCount");
+				LocationStartPos = getUniformId("startPos");
 			}
 
 			udpateImage();
 			updateAttr();
+		}
+
+		public void setStartPos(int x, int y) {
+			arrStartPos[0] = x;
+			arrStartPos[1] = y;
 		}
 
 		public void udpateImage() {
@@ -155,6 +164,7 @@ namespace gifEdit.control {
 
 		private void initTexture() {
 			//Gl.ActiveTexture(TextureUnit.Texture0);
+
 			Gl.BindTexture(TextureTarget.Texture2d, texId);
 			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, new int[] { GL_REPEAT });
 			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, new int[] { GL_REPEAT });
@@ -163,6 +173,8 @@ namespace gifEdit.control {
 			Gl.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, GL_REPLACE);
 
 			Gl.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgba, imageWidth, imageHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pImageData);
+			Gl.BindTexture(TextureTarget.Texture2d, 0);
+
 			//Gl.TexImage2DMultisample(TextureTarget.Texture2dMultisample, 0, InternalFormat.Rgba, imageWidth, imageHeight, true);
 			//Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2dMultisample, texId, 0);
 
@@ -196,8 +208,8 @@ namespace gifEdit.control {
 			}
 			rand = new Random(nowSeed);
 
-			int count = _ArrayIndex.Length;
-			int idxCount = count / 2;
+			//int count = _ArrayIndex.Length;
+			//int idxCount = count / 2;
 
 			const int attrCount = 14;
 
@@ -318,16 +330,19 @@ namespace gifEdit.control {
 				Gl.Uniform1(LocationNowTime, (float)renderTime);
 				Gl.Uniform1(LocationTotalLifeTime, (float)maxRenderTime);
 				Gl.Uniform1(LocationParticleCount, particleCount);
-				//Gl.Uniform1(LocationZIndex, (float)zIndex);
-				//Gl.Uniform1(LocationPointCount, pointCount);
+				Gl.Uniform2(LocationStartPos, arrStartPos[0], arrStartPos[1]);
 
 				//texture
 				Gl.BindTexture(TextureTarget.Texture2d, texId);
 				//Gl.GenerateMipmap(TextureTarget.Texture2d);
 				Gl.Uniform1(LocationTex, 0);
-				
+
 				Gl.DrawArraysInstanced(PrimitiveType.Polygon, 0, _ArrayIndex.Length / 2, particleCount);
+				//Gl.DrawArraysInstanced(PrimitiveType.Points, 0, _ArrayIndex.Length / 2, particleCount);
 			}
+
+			Gl.BindTexture(TextureTarget.Texture2d, 0);
+			Gl.UseProgram(0);
 
 		}
 
@@ -350,6 +365,10 @@ namespace gifEdit.control {
 		}
 
 		private float[] arrParticleAttr = new float[0];
+
+		//private static readonly float[] _ArrayIndex = new float[] {
+		//	-0,  0,
+		//};
 
 		private static readonly float[] _ArrayIndex = new float[] {
 			-1,  1,

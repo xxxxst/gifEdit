@@ -35,6 +35,9 @@ namespace gifEdit.view {
 		private float[] mMVP = null;
 		
 		List<ParticleEmitter> lstEmitter = new List<ParticleEmitter>();
+		
+		int boxWidth = 0;
+		int boxHeight = 0;
 
 		public ParticleRenderBox() {
 			InitializeComponent();
@@ -129,12 +132,17 @@ namespace gifEdit.view {
 				return;
 			}
 
+			boxWidth = (int)grdRenderBox.ActualWidth - 2;
+			boxHeight = (int)grdRenderBox.ActualHeight - 2;
+
 			int width = md.width;
 			int height = md.height;
 
-			width = Math.Min(width, (int)grdRenderBox.ActualWidth - 2);
-			height = Math.Min(height, (int)grdRenderBox.ActualHeight - 2);
-
+			//width = Math.Min(width, (int)grdRenderBox.ActualWidth - 2);
+			//height = Math.Min(height, (int)grdRenderBox.ActualHeight - 2);
+			width = boxWidth;
+			height = boxHeight;
+			
 			width = Math.Max(width, 0);
 			height = Math.Max(height, 0);
 
@@ -153,6 +161,7 @@ namespace gifEdit.view {
 			Gl.Enable(EnableCap.Blend);
 			Gl.Enable(EnableCap.Texture2d);
 			Gl.Enable(EnableCap.PolygonSmooth);
+			Gl.Enable(EnableCap.LineSmooth);
 			//Gl.Enable(EnableCap.DepthTest);
 			//Gl.Enable(EnableCap.Multisample);
 			//Gl.Enable(EnableCap.PrimitiveRestart);
@@ -255,9 +264,65 @@ namespace gifEdit.view {
 			Gl.Viewport(vpx, vpy, vpw, vph);
 			Gl.Clear(ClearBufferMask.ColorBufferBit);
 			//Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+			
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || boxWidth == 0 || boxHeight == 0) {
+				return;
+			}
 
+			var w = boxWidth;
+			var h = boxHeight;
+
+			float x = (boxWidth - md.width) / 2 + 0.5f;
+			float y = (boxHeight - md.height) / 2 + 0.5f;
+
+			Gl.MatrixMode(MatrixMode.Projection);
+			Gl.LoadIdentity();
+			Gl.Ortho(0.0, w, 0.0, h, 0.0, 1.0);
+
+			Gl.MatrixMode(MatrixMode.Modelview);
+			Gl.LoadIdentity();
+
+			//line 1
+			float xl1 = x;
+			float yl1 = y;
+
+			Gl.LineWidth(1f);
+			Gl.Begin(PrimitiveType.LineLoop);
+			Gl.Color3(1.0f, 1.0f, 1.0f);
+			Gl.Vertex2(xl1, yl1);
+			Gl.Vertex2(xl1 + md.width, yl1);
+			Gl.Vertex2(xl1 + md.width, yl1 + md.height);
+			Gl.Vertex2(xl1, yl1 + md.height);
+			Gl.End();
+
+			//line 2
+			float xl2 = x - 1;
+			float yl2 = y - 1;
+
+			Gl.Begin(PrimitiveType.LineLoop);
+			Gl.Color3(0.0f, 0.0f, 0.0f);
+			Gl.Vertex2(xl2, yl2);
+			Gl.Vertex2(xl2 + md.width + 2, yl2);
+			Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
+			Gl.Vertex2(xl2, yl2 + md.height + 2);
+			Gl.End();
+
+			//mask
+			if(md.isMaskBox) {
+				Gl.Enable(EnableCap.ScissorTest);
+				Gl.Scissor((int)x, (int)y, md.width, md.height);
+			}
+
+			//emitter
 			for(int i = 0; i < lstEmitter.Count; ++i) {
+				lstEmitter[i].setStartPos((int)x, (int)y);
 				lstEmitter[i].render(mMVP, renderTime);
+			}
+
+			//mask
+			if(md.isMaskBox) {
+				Gl.Disable(EnableCap.ScissorTest);
 			}
 		}
 

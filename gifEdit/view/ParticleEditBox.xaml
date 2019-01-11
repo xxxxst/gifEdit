@@ -129,7 +129,7 @@
 
 			<Grid Grid.Row="2">
 				<Border BorderBrush="#777777" BorderThickness="1"/>
-				<Grid>
+				<Grid Name="grdSetUIProject">
 					<StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Left">
 						<Grid>
 							<Grid.RowDefinitions>
@@ -137,7 +137,7 @@
 								<RowDefinition Height="100"/>
 							</Grid.RowDefinitions>
 							<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
-							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Value="0xff24252c" Height="100" Width="100" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
+							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Height="100" Width="100" EnableAlpha="False" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
 						</Grid>
 					</StackPanel>
 				</Grid>

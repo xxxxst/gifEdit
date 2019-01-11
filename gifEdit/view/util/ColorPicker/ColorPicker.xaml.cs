@@ -24,7 +24,14 @@ namespace gifEdit.view {
 		public ColorPicker() {
 			InitializeComponent();
 		}
-		
+
+		//Enable Alpha
+		public static readonly DependencyProperty EnableAlphaProperty = DependencyProperty.Register("EnableAlpha", typeof(bool), typeof(ColorPicker), new PropertyMetadata(true));
+		public bool EnableAlpha {
+			get { return (bool)GetValue(EnableAlphaProperty); }
+			set { SetCurrentValue(EnableAlphaProperty, value); }
+		}
+
 		//Value
 		//public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(uint), typeof(ColorPicker), new PropertyMetadata(0));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(uint), typeof(ColorPicker), new FrameworkPropertyMetadata(0xffffffff, new PropertyChangedCallback(OnValueChanged)));
@@ -52,6 +59,10 @@ namespace gifEdit.view {
 			r /= 255;
 			g /= 255;
 			b /= 255;
+
+			if(!ele.EnableAlpha) {
+				a = 1;
+			}
 
 			Rgb rgb = new Rgb(r, g, b);
 			Hsv hsv = rgb2hsv(rgb);
