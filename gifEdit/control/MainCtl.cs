@@ -69,6 +69,23 @@ namespace gifEdit.control {
 			return path;
 		}
 
+		public static string formatPath(string basePath, string path) {
+			string rootPath = Path.GetFullPath(basePath);
+
+			if(!isAbsolutePath(path)) {
+				return path;
+			}
+
+			path = Path.GetFullPath(path);
+			if(path.IndexOf(rootPath) == 0) {
+				path = path.Substring(rootPath.Length);
+			}
+
+			path = new Regex("[/\\\\]+").Replace(path, "/");
+
+			return path;
+		}
+
 		public static bool isAbsolutePath(string path) {
 			return path.Length >= 2 && path[1] == ':';
 		}

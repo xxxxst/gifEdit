@@ -9,11 +9,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -39,6 +41,11 @@ namespace gifEdit.view {
 		int boxWidth = 0;
 		int boxHeight = 0;
 
+		int slbX = 0;
+		int slbY = 0;
+
+		uint glbufOutput = 0;
+
 		public ParticleRenderBox() {
 			InitializeComponent();
 			
@@ -50,6 +57,8 @@ namespace gifEdit.view {
 
 		public void init() {
 			try {
+				clear();
+
 				ParticleEditModel md = MainModel.ins.particleEditModel;
 
 				//maxRenderTime = 5 * 1000;
@@ -58,7 +67,7 @@ namespace gifEdit.view {
 					int ms = (int)(md.lstResource[i].particleLife * 1000);
 					maxRenderTime = Math.Max(maxRenderTime, ms);
 				}
-
+				
 				for(int i = 0; i < md.lstResource.Count; ++i) {
 					ParticleEmitter emt = new ParticleEmitter(md.lstResource[i], maxRenderTime);
 					lstEmitter.Add(emt);
@@ -73,6 +82,29 @@ namespace gifEdit.view {
 			} catch(Exception ex) {
 				Debug.WriteLine(ex.ToString());
 			}
+		}
+
+		public void createEmitter(int idx) {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+
+			ParticleEmitter emt = new ParticleEmitter(md.lstResource[idx], maxRenderTime);
+			lstEmitter.Add(emt);
+
+			bool isUpdate = updateMaxRenderTime();
+			if(!isUpdate) {
+				emt.updateAttr();
+			}
+		}
+
+		public void removeEmitter(int idx) {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+
+			ParticleEmitter emt = lstEmitter[idx];
+			lstEmitter.RemoveAt(idx);
+
+			emt.Dispose();
+
+			updateMaxRenderTime();
 		}
 
 		public void updateGlobalAttr() {
@@ -104,11 +136,19 @@ namespace gifEdit.view {
 			}
 		}
 
+		public void updateEmitterImage(int idx) {
+			if(idx < 0 || idx >= lstEmitter.Count) {
+				return;
+			}
+			
+			lstEmitter[idx].updateImage();
+		}
+
 		private bool updateMaxRenderTime() {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 
 			var time = 1;
-			for (int i = 0; i < md.lstResource.Count; ++i) {
+			for (int i = 0; i < lstEmitter.Count; ++i) {
 				int ms = (int)(md.lstResource[i].particleLife * 1000);
 				time = Math.Max(time, ms);
 			}
@@ -132,14 +172,14 @@ namespace gifEdit.view {
 				return;
 			}
 
-			boxWidth = (int)grdRenderBox.ActualWidth - 2;
-			boxHeight = (int)grdRenderBox.ActualHeight - 2;
+			boxWidth = (int)bdRenderBox.ActualWidth;
+			boxHeight = (int)bdRenderBox.ActualHeight;
 
 			int width = md.width;
 			int height = md.height;
 
-			//width = Math.Min(width, (int)grdRenderBox.ActualWidth - 2);
-			//height = Math.Min(height, (int)grdRenderBox.ActualHeight - 2);
+			//width = Math.Min(width, (int)bdRenderBox.ActualWidth - 2);
+			//height = Math.Min(height, (int)bdRenderBox.ActualHeight - 2);
 			width = boxWidth;
 			height = boxHeight;
 			
@@ -150,9 +190,11 @@ namespace gifEdit.view {
 			//win.Height = height;
 			formHost.Width = width;
 			formHost.Height = height;
+
+			updateScrollBarSize();
 		}
 
-		private void grdRenderBox_SizeChanged(object sender, SizeChangedEventArgs e) {
+		private void bdRenderBox_SizeChanged(object sender, SizeChangedEventArgs e) {
 			updateRenderBoxSize();
 		}
 		
@@ -167,6 +209,8 @@ namespace gifEdit.view {
 			//Gl.Enable(EnableCap.PrimitiveRestart);
 			Gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 			//Gl.DepthFunc(DepthFunction.Less);
+
+			glbufOutput = Gl.GenFramebuffer();
 
 			updateGlSize();
 
@@ -216,11 +260,17 @@ namespace gifEdit.view {
 			Gl.ClearColor(r / 255f, g / 255f, b / 255f, alpha);
 		}
 
+		private void clear() {
+			try {
+				for(int i = 0; i < lstEmitter.Count; ++i) {
+					lstEmitter[i].Dispose();
+				}
+				lstEmitter.Clear();
+			} catch(Exception) { }
+		}
+
 		private void glControl_ContextDestroying(object sender, GlControlEventArgs e) {
-			for(int i = 0; i < lstEmitter.Count; ++i) {
-				lstEmitter[i].Dispose();
-			}
-			lstEmitter.Clear();
+			clear();
 		}
 
 		int fpsUpdateIdx = 0;
@@ -246,7 +296,8 @@ namespace gifEdit.view {
 			fpsCtl.update();
 			++fpsUpdateIdx;
 			if(fpsUpdateIdx > 60) {
-				lblFps.Content = fpsCtl.getFps();
+				//lblFps.Content = fpsCtl.getFps();
+				EventServer.ins.onUpdateFPSEvent(fpsCtl.getFps());
 				fpsUpdateIdx = 0;
 			}
 			
@@ -254,27 +305,109 @@ namespace gifEdit.view {
 				return;
 			}
 
-			var senderControl = glControl;
+			//var senderControl = glControl;
 
-			int vpx = 0;
-			int vpy = 0;
-			int vpw = senderControl.ClientSize.Width;
-			int vph = senderControl.ClientSize.Height;
-
-			Gl.Viewport(vpx, vpy, vpw, vph);
-			Gl.Clear(ClearBufferMask.ColorBufferBit);
+			//int vpx = 0;
+			//int vpy = 0;
+			//int vpw = senderControl.ClientSize.Width;
+			//int vph = senderControl.ClientSize.Height;
 			//Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-			
+
+			//ParticleEditModel md = MainModel.ins.particleEditModel;
+			//if(md == null || boxWidth == 0 || boxHeight == 0) {
+			//	return;
+			//}
+
+			bool isOk = isRenderToBuffer;
+			isRenderToBuffer = false;
+			if(isOk) {
+				_renderToBuffer();
+			} else {
+				renderGl();
+			}
+
+			//var w = boxWidth;
+			//var h = boxHeight;
+
+			//float x = slbX + (boxWidth - md.width) / 2 + 0.5f;
+			//float y = slbY + (boxHeight - md.height) / 2 + 0.5f;
+
+			//Gl.Viewport(vpx, vpy, vpw, vph);
+			//Gl.Clear(ClearBufferMask.ColorBufferBit);
+
+			//Gl.MatrixMode(MatrixMode.Projection);
+			//Gl.LoadIdentity();
+			//Gl.Ortho(0.0, w, 0.0, h, 0.0, 1.0);
+
+			//Gl.MatrixMode(MatrixMode.Modelview);
+			//Gl.LoadIdentity();
+
+			////line 1
+			//float xl1 = x;
+			//float yl1 = y;
+
+			//Gl.LineWidth(1f);
+			//Gl.Begin(PrimitiveType.LineLoop);
+			//Gl.Color3(1.0f, 1.0f, 1.0f);
+			//Gl.Vertex2(xl1, yl1);
+			//Gl.Vertex2(xl1 + md.width, yl1);
+			//Gl.Vertex2(xl1 + md.width, yl1 + md.height);
+			//Gl.Vertex2(xl1, yl1 + md.height);
+			//Gl.End();
+
+			////line 2
+			//float xl2 = x - 1;
+			//float yl2 = y - 1;
+
+			//Gl.Begin(PrimitiveType.LineLoop);
+			//Gl.Color3(0.0f, 0.0f, 0.0f);
+			//Gl.Vertex2(xl2, yl2);
+			//Gl.Vertex2(xl2 + md.width + 2, yl2);
+			//Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
+			//Gl.Vertex2(xl2, yl2 + md.height + 2);
+			//Gl.End();
+
+			////mask
+			//if(md.isMaskBox) {
+			//	Gl.Enable(EnableCap.ScissorTest);
+			//	Gl.Scissor((int)x, (int)y, md.width, md.height);
+			//}
+
+			////emitter
+			//for(int i = 0; i < lstEmitter.Count; ++i) {
+			//	lstEmitter[i].setStartPos((int)x, (int)y);
+			//	lstEmitter[i].render(mMVP, renderTime);
+			//}
+
+			////mask
+			//if(md.isMaskBox) {
+			//	Gl.Disable(EnableCap.ScissorTest);
+			//}
+		}
+
+		private void renderGl(bool isOutput = false) {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
-			if(md == null || boxWidth == 0 || boxHeight == 0) {
+			if(md == null || md.width == 0 || md.height == 0) {
 				return;
+			}
+
+			float x = 0;
+			float y = 0;
+			if(!isOutput) {
+				x = slbX + (boxWidth - md.width) / 2 + 0.5f;
+				y = slbY + (boxHeight - md.height) / 2 + 0.5f;
 			}
 
 			var w = boxWidth;
 			var h = boxHeight;
 
-			float x = (boxWidth - md.width) / 2 + 0.5f;
-			float y = (boxHeight - md.height) / 2 + 0.5f;
+			int vpx = 0;
+			int vpy = 0;
+			int vpw = w;
+			int vph = h;
+
+			Gl.Viewport(vpx, vpy, vpw, vph);
+			Gl.Clear(ClearBufferMask.ColorBufferBit);
 
 			Gl.MatrixMode(MatrixMode.Projection);
 			Gl.LoadIdentity();
@@ -283,30 +416,32 @@ namespace gifEdit.view {
 			Gl.MatrixMode(MatrixMode.Modelview);
 			Gl.LoadIdentity();
 
-			//line 1
-			float xl1 = x;
-			float yl1 = y;
+			if(!isOutput) {
+				//line 1
+				float xl1 = x;
+				float yl1 = y;
 
-			Gl.LineWidth(1f);
-			Gl.Begin(PrimitiveType.LineLoop);
-			Gl.Color3(1.0f, 1.0f, 1.0f);
-			Gl.Vertex2(xl1, yl1);
-			Gl.Vertex2(xl1 + md.width, yl1);
-			Gl.Vertex2(xl1 + md.width, yl1 + md.height);
-			Gl.Vertex2(xl1, yl1 + md.height);
-			Gl.End();
+				Gl.LineWidth(1f);
+				Gl.Begin(PrimitiveType.LineLoop);
+				Gl.Color3(1.0f, 1.0f, 1.0f);
+				Gl.Vertex2(xl1, yl1);
+				Gl.Vertex2(xl1 + md.width, yl1);
+				Gl.Vertex2(xl1 + md.width, yl1 + md.height);
+				Gl.Vertex2(xl1, yl1 + md.height);
+				Gl.End();
 
-			//line 2
-			float xl2 = x - 1;
-			float yl2 = y - 1;
+				//line 2
+				float xl2 = x - 1;
+				float yl2 = y - 1;
 
-			Gl.Begin(PrimitiveType.LineLoop);
-			Gl.Color3(0.0f, 0.0f, 0.0f);
-			Gl.Vertex2(xl2, yl2);
-			Gl.Vertex2(xl2 + md.width + 2, yl2);
-			Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
-			Gl.Vertex2(xl2, yl2 + md.height + 2);
-			Gl.End();
+				Gl.Begin(PrimitiveType.LineLoop);
+				Gl.Color3(0.0f, 0.0f, 0.0f);
+				Gl.Vertex2(xl2, yl2);
+				Gl.Vertex2(xl2 + md.width + 2, yl2);
+				Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
+				Gl.Vertex2(xl2, yl2 + md.height + 2);
+				Gl.End();
+			}
 
 			//mask
 			if(md.isMaskBox) {
@@ -324,6 +459,58 @@ namespace gifEdit.view {
 			if(md.isMaskBox) {
 				Gl.Disable(EnableCap.ScissorTest);
 			}
+		}
+
+		bool isRenderToBuffer = false;
+
+		public void renderToBuffer() {
+			isRenderToBuffer = true;
+			return;
+		}
+
+		public void _renderToBuffer() {
+			if(!isEngineInited) {
+				return;
+			}
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.width == 0 || md.height == 0) {
+				return;
+			}
+			//glControl.Animation = false;
+			const int pxSize = 4;
+
+			int w = md.width;
+			int h = md.height;
+
+			try {
+				Gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, glbufOutput);
+				renderGl(true);
+
+				int size = w * h * pxSize;
+				IntPtr pBuffer = Marshal.AllocHGlobal(size);
+
+				Gl.ReadPixels(0, 0, w, h, PixelFormat.Bgra, PixelType.UnsignedByte, pBuffer);
+				IntPtr pData = Gl.MapBuffer(BufferTarget.PixelPackBuffer, BufferAccess.ReadOnly);
+
+				byte[] data = new byte[size];
+				Marshal.Copy(pBuffer, data, 0, data.Length);
+
+				Marshal.Release(pBuffer);
+
+				Gl.UnmapBuffer(BufferTarget.PixelPackBuffer);
+				Gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, 0);
+				
+				FIBITMAP dib = FreeImage.Allocate(w, h, 32, 8, 8, 8);
+				IntPtr pFibData = FreeImage.GetBits(dib);
+				Marshal.Copy(data, 0, pFibData, data.Length);
+
+				FreeImage.Save(FREE_IMAGE_FORMAT.FIF_PNG, dib, "bbb.png", FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+				FreeImage.Unload(dib);
+
+			} catch(Exception ex) {
+				Debug.WriteLine(ex.ToString());
+			}
+
 		}
 
 		private void glControl_Render(object sender, GlControlEventArgs e) {
@@ -351,5 +538,59 @@ namespace gifEdit.view {
 			updateGlSize();
 		}
 
+		private void updateScrollBarSize() {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || boxWidth == 0 || boxHeight == 0) {
+				return;
+			}
+
+			int gap = 50;
+
+			int maxHor = (md.width + gap * 2 - boxWidth) / 2;
+			maxHor = Math.Max(0, maxHor);
+			slbHor.ViewportSize = boxWidth;
+			slbHor.Minimum = -maxHor;
+			slbHor.Maximum = maxHor;
+			if(md.width < boxWidth) {
+				slbHor.Value = 0;
+				//slbHor.Minimum = 0;
+				//slbHor.Maximum = 0;
+			}
+
+			int maxVer = (md.height + gap * 2 - boxHeight) / 2;
+			maxVer = Math.Max(0, maxVer);
+			slbVer.ViewportSize = boxHeight;
+			slbVer.Minimum = -maxVer;
+			slbVer.Maximum = maxVer;
+			if(md.height < boxHeight) {
+				slbVer.Value = 0;
+				//slbVer.Minimum = 0;
+				//slbVer.Maximum = 0;
+			}
+		}
+
+		private void slbHor_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			slbX = -(int)slbHor.Value;
+		}
+
+		private void slbVer_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+			slbY = (int)slbVer.Value;
+		}
+
+		private void glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e) {
+			ScrollBar slb = isDownShift() ? slbHor : slbVer;
+
+			double oldVal = slb.Value;
+			double newVal = oldVal + slb.SmallChange * (e.Delta < 0 ? 1 : -1);
+			if(oldVal * newVal < 0) {
+				newVal = 0;
+			}
+
+			slb.Value = newVal;
+		}
+
+		private bool isDownShift() {
+			return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+		}
 	}
 }

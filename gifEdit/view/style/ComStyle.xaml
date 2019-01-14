@@ -98,4 +98,6 @@
 		<Setter Property="BorderBrush" Value="#b256b5"/>
 	</Style>
 
+	<SolidColorBrush x:Key="comBorderColor" Color="#5a5a5a"/>
+
 </ResourceDictionary>

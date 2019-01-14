@@ -2,11 +2,13 @@
 using gifEdit.control;
 using gifEdit.model;
 using gifEdit.services;
+using Microsoft.Win32;
 using OpenGL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -45,11 +47,19 @@ namespace gifEdit.view {
 			EventServer.ins.pointEngineInitedEvent += () => {
 				isEngineInited = true;
 
-				if (cachePath != "") {
+				if(cachePath != "") {
 					string path = cachePath;
 					cachePath = "";
 					load(path);
 				}
+			};
+
+			EventServer.ins.updateFPSEvent += (fps) => {
+				lblFps.Content = fps;
+			};
+
+			EventServer.ins.copyToClipboard += () => {
+				pointRenderBox.renderToBuffer();
 			};
 
 			initAttr();
@@ -90,62 +100,62 @@ namespace gifEdit.view {
 
 			atxEmitter.setData(null,
 				new string[] {
-					 "坐标x"				,
-					 "坐标x浮动"			,
-					 "坐标y"				,
-					 "坐标y浮动"			,
-					 "开始透明度"			,
-					 "结束透明度"			,
-					 "重力"					,
-					 "重力方向"				,
-					 "开始速度"				,
-					 "开始速度浮动"			,
-					 "开始速度方向"			,
-					 "开始速度方向浮动"		,
-					 "旋转速度"				,
-					 "旋转速度浮动"			,
-					 "分离速度"				,
-					 "分离速度方向"			,
-					 "粒子数"				,
-					 "粒子生命周期"			,
-					 "粒子生命周期浮动"		,
-					 "粒子开始大小"			,
-					 "粒子开始大小浮动"		,
-					 "粒子结束大小"			,
-					 "粒子结束大小浮动"		,
-					 "粒子开始角度"			,
-					 "粒子开始角度浮动"		,
-					 "粒子旋转速度"			,
-					 "粒子旋转速度浮动"		,
+					 "坐标x"              ,
+					 "坐标x浮动"            ,
+					 "坐标y"              ,
+					 "坐标y浮动"            ,
+					 "开始透明度"            ,
+					 "结束透明度"            ,
+					 "重力"                   ,
+					 "重力方向"             ,
+					 "开始速度"             ,
+					 "开始速度浮动"           ,
+					 "开始速度方向"           ,
+					 "开始速度方向浮动"     ,
+					 "旋转速度"             ,
+					 "旋转速度浮动"           ,
+					 "分离速度"             ,
+					 "分离速度方向"           ,
+					 "粒子数"              ,
+					 "粒子生命周期"           ,
+					 "粒子生命周期浮动"     ,
+					 "粒子开始大小"           ,
+					 "粒子开始大小浮动"     ,
+					 "粒子结束大小"           ,
+					 "粒子结束大小浮动"     ,
+					 "粒子开始角度"           ,
+					 "粒子开始角度浮动"     ,
+					 "粒子旋转速度"           ,
+					 "粒子旋转速度浮动"     ,
 				},
 				new string[] {
-					 "坐标x"				,
-					 "坐标x浮动"			,
-					 "坐标y"				,
-					 "坐标y浮动"			,
-					 "开始透明度"			,
-					 "结束透明度"			,
-					 "重力"					,
-					 "重力方向"				,
-					 "开始速度"				,
-					 "开始速度浮动"			,
-					 "开始速度方向"			,
-					 "开始速度方向浮动"		,
-					 "旋转速度"				,
-					 "旋转速度浮动"			,
-					 "分离速度"				,
-					 "分离速度方向"			,
-					 "粒子数"				,
-					 "粒子生命周期"			,
-					 "粒子生命周期浮动"		,
-					 "粒子开始大小"			,
-					 "粒子开始大小浮动"		,
-					 "粒子结束大小"			,
-					 "粒子结束大小浮动"		,
-					 "粒子开始角度"			,
-					 "粒子开始角度浮动"		,
-					 "粒子旋转速度"			,
-					 "粒子旋转速度浮动"		,
+					 "坐标x"              ,
+					 "坐标x浮动"            ,
+					 "坐标y"              ,
+					 "坐标y浮动"            ,
+					 "开始透明度"            ,
+					 "结束透明度"            ,
+					 "重力"                   ,
+					 "重力方向"             ,
+					 "开始速度"             ,
+					 "开始速度浮动"           ,
+					 "开始速度方向"           ,
+					 "开始速度方向浮动"     ,
+					 "旋转速度"             ,
+					 "旋转速度浮动"           ,
+					 "分离速度"             ,
+					 "分离速度方向"           ,
+					 "粒子数"              ,
+					 "粒子生命周期"           ,
+					 "粒子生命周期浮动"     ,
+					 "粒子开始大小"           ,
+					 "粒子开始大小浮动"     ,
+					 "粒子结束大小"           ,
+					 "粒子结束大小浮动"     ,
+					 "粒子开始角度"           ,
+					 "粒子开始角度浮动"     ,
+					 "粒子旋转速度"           ,
+					 "粒子旋转速度浮动"     ,
 				},
 				new Func<object, string>[] {
 					(m) => ((ParticleResourceModel)m).x.ToString(),
@@ -209,7 +219,7 @@ namespace gifEdit.view {
 		}
 
 		public void load(string path) {
-			if (!isEngineInited) {
+			if(!isEngineInited) {
 				cachePath = path;
 				return;
 			}
@@ -220,7 +230,7 @@ namespace gifEdit.view {
 			path = MainCtl.getFullPath(path);
 
 			ctl = MainCtl.ins.particleEditCtl;
-			
+
 			ctl.load(path);
 
 			lstRes.ItemsSource = ctl.lstVM;
@@ -249,7 +259,7 @@ namespace gifEdit.view {
 				try {
 					//win.Close();
 					ctl.save();
-				} catch (Exception) { }
+				} catch(Exception) { }
 			};
 			pointRenderBox.init();
 
@@ -451,7 +461,7 @@ namespace gifEdit.view {
 		//}
 
 		private float getFloat(string str, float def) {
-			if (str == "") {
+			if(str == "") {
 				return def;
 			}
 
@@ -460,7 +470,7 @@ namespace gifEdit.view {
 		}
 
 		private int getInt(string str, int def) {
-			if (str == "") {
+			if(str == "") {
 				return def;
 			}
 
@@ -480,7 +490,7 @@ namespace gifEdit.view {
 		//	if (selectEmitter < 0) {
 		//		return;
 		//	}
-			
+
 		//	if (isUpdatTextInner) {
 		//		return;
 		//	}
@@ -490,11 +500,21 @@ namespace gifEdit.view {
 		//}
 
 		private void grdProjectName_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-			if (vm.IsSelectProjectName) {
+			setSelectProject();
+		}
+
+		private void grdEmitterBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+			int idx = lstRes.SelectedIndex;
+
+			setSelectEmitter(idx);
+		}
+
+		private void setSelectProject() {
+			if(vm.IsSelectProjectName) {
 				return;
 			}
 
-			if (selectEmitter >= 0 && selectEmitter < ctl.lstVM.Count) {
+			if(selectEmitter >= 0 && selectEmitter < ctl.lstVM.Count) {
 				ctl.lstVM[selectEmitter].IsSelect = false;
 			}
 
@@ -508,17 +528,16 @@ namespace gifEdit.view {
 			vm.IsSelectProjectName = true;
 		}
 
-		private void grdEmitterBox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-			int idx = lstRes.SelectedIndex;
-			if (idx < 0 || idx >= ctl.lstVM.Count) {
+		private void setSelectEmitter(int idx) {
+			if(idx < 0 || idx >= ctl.lstVM.Count) {
 				return;
 			}
 
-			if (idx == selectEmitter) {
+			if(idx == selectEmitter) {
 				return;
 			}
 
-			if (vm.IsSelectProjectName) {
+			if(vm.IsSelectProjectName) {
 				vm.IsSelectProjectName = false;
 				atxProject.Visibility = Visibility.Collapsed;
 				grdSetUIProject.Visibility = Visibility.Collapsed;
@@ -526,11 +545,12 @@ namespace gifEdit.view {
 				atxEmitter.Visibility = Visibility.Visible;
 			}
 
-			if (selectEmitter >= 0 && selectEmitter < ctl.lstVM.Count) {
+			if(selectEmitter >= 0 && selectEmitter < ctl.lstVM.Count) {
 				ctl.lstVM[selectEmitter].IsSelect = false;
 			}
 
 			selectEmitter = idx;
+			lstRes.SelectedIndex = idx;
 			ctl.lstVM[idx].IsSelect = true;
 			//updateAttrText();
 
@@ -558,7 +578,7 @@ namespace gifEdit.view {
 				return;
 			}
 			//UInt32.TryParse(md.background, System.Globalization.NumberStyles.HexNumber, null, out uint coBackground);
-			
+
 			//isEditGlobalAttrByText = true;
 			//cpkBackground.Value = coBackground;
 			//isEditGlobalAttrByText = false;
@@ -598,6 +618,125 @@ namespace gifEdit.view {
 			isEditGlobalAttrByUI = true;
 			atxProject.updateText();
 			isEditGlobalAttrByUI = false;
+		}
+
+		private void imgEmitter_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+			ParticleEditVM vm = (sender as Image)?.Tag as ParticleEditVM;
+			if(vm == null) {
+				return;
+			}
+
+			int idx = vm.idx;
+
+			string path = selectFile(vm.md.path);
+			setEmitterImage(idx, path);
+		}
+
+		private void setEmitterImage(int idx, string path) {
+			if(path == "") {
+				return;
+			}
+
+			if(idx < 0 || idx >= ctl.lstVM.Count) {
+				return;
+			}
+
+			ParticleEditVM vm = ctl.lstVM[idx];
+
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
+
+			vm.md.path = MainCtl.formatPath(md.path, path);
+
+			MainCtl.ins.particleEditCtl.updateImage(idx);
+			pointRenderBox.updateEmitterImage(idx);
+		}
+
+		//选择文件
+		private string selectFile(string defPath = "") {
+			//选择文件
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "图片(*.png;*.jpg;*.bmp;*.jpeg)|*.png;*.jpg;*.bmp;*.jpeg|所有文件(*.*)|*.*";
+			//if(File.Exists(txt.Text)) {
+			if(defPath != "" && File.Exists(defPath)) {
+				//ofd.InitialDirectory = System.IO.Path.GetDirectoryName(txt.Text);
+				ofd.InitialDirectory = System.IO.Path.GetDirectoryName(defPath);
+			}
+			ofd.ValidateNames = true;
+			ofd.CheckPathExists = true;
+			ofd.CheckFileExists = true;
+			if(ofd.ShowDialog() != true) {
+				return "";
+			}
+
+			//txt.Text = ofd.FileName;
+			return ofd.FileName;
+		}
+
+		private void grdEmitterBox_DragOver(object sender, DragEventArgs e) {
+			e.Effects = DragDropEffects.Link;
+			e.Handled = true;
+		}
+
+		private void grdEmitterBox_Drop(object sender, DragEventArgs e) {
+			ParticleEditVM vm = (sender as Grid)?.Tag as ParticleEditVM;
+			if(vm == null) {
+				return;
+			}
+
+			int idx = vm.idx;
+
+			string path = "";
+			//拖拽文件
+			try {
+				string[] docPath = (string[])e.Data.GetData(DataFormats.FileDrop);
+				if(docPath.Length > 0) {
+					//txt.Text = docPath[0];
+					path = docPath[0];
+				}
+			} catch(Exception) { }
+
+			if(path == "") {
+				return;
+			}
+
+			setEmitterImage(idx, path);
+		}
+
+		private void btnAddEmitter_Click(object sender, RoutedEventArgs e) {
+			int idx = ctl.createEmitter();
+			pointRenderBox.createEmitter(idx);
+
+			setSelectEmitter(idx);
+		}
+
+		private void btnRemoveEmitter_Click(object sender, RoutedEventArgs e) {
+			int idx = lstRes.SelectedIndex;
+			if(idx < 0 || idx >= ctl.lstVM.Count) {
+				return;
+			}
+
+			pointRenderBox.removeEmitter(idx);
+			ctl.removeEmitter(idx);
+
+			lstRes.SelectedIndex = -1;
+
+			selectEmitter = -1;
+			if(idx <= ctl.lstVM.Count - 1) {
+				setSelectEmitter(idx);
+			} else if(idx > 0) {
+				setSelectEmitter(idx - 1);
+			} else {
+				setSelectProject();
+			}
+			//Dispatcher.Invoke(() => {
+			//});
+		}
+
+		private void btnTest_Click(object sender, RoutedEventArgs e) {
+			EventServer.ins.onCopyToClipboard();
 		}
 	}
 

@@ -18,5 +18,15 @@ namespace gifEdit.services {
 		public void onPointEngineInited() {
 			pointEngineInitedEvent?.Invoke();
 		}
+
+		public event Action<double> updateFPSEvent;
+		public void onUpdateFPSEvent(double fps) {
+			updateFPSEvent?.Invoke(fps);
+		}
+
+		public event Action copyToClipboard;
+		public void onCopyToClipboard() {
+			copyToClipboard?.Invoke();
+		}
 	}
 }

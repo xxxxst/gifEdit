@@ -24,7 +24,7 @@ namespace gifEdit.control {
 		
 		uint attrBufferId = 0;
 		uint texId = 0;
-		uint texFraBufferId = 0;
+		//uint texFraBufferId = 0;
 
 		private uint ProgramName;
 		private int LocationMVP;
@@ -54,7 +54,7 @@ namespace gifEdit.control {
 			attrBufferId = Gl.GenBuffer();
 			//bufferId = Gl.GenVertexArray();
 			texId = Gl.GenTexture();
-			texFraBufferId = Gl.GenFramebuffer();
+			//texFraBufferId = Gl.GenFramebuffer();
 
 			string[] vetex = ComUtil.loadEmbedShader("vParticleEmitter.glsl");
 			string[] fragment = ComUtil.loadEmbedShader("fParticleEmitter.glsl");
@@ -94,7 +94,7 @@ namespace gifEdit.control {
 				LocationStartPos = getUniformId("startPos");
 			}
 
-			udpateImage();
+			updateImage();
 			updateAttr();
 		}
 
@@ -103,7 +103,7 @@ namespace gifEdit.control {
 			arrStartPos[1] = y;
 		}
 
-		public void udpateImage() {
+		public void updateImage() {
 			_isTextureExist = false;
 			var rootMd = MainModel.ins.particleEditModel;
 

@@ -6,88 +6,41 @@
              xmlns:local="clr-namespace:gifEdit.view"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="1000" Loaded="UserControl_Loaded">
+             d:DesignHeight="630" d:DesignWidth="1000" Loaded="UserControl_Loaded">
 	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="200" MinWidth="100"/>
-			<ColumnDefinition Width="4"/>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="4"/>
-			<ColumnDefinition Width="200" MinWidth="100"/>
-		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="2"/>
+			<RowDefinition Height="25"/>
+		</Grid.RowDefinitions>
+		<Grid Margin="8,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="200" MinWidth="100"/>
+				<ColumnDefinition Width="4"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="4"/>
+				<ColumnDefinition Width="200" MinWidth="100"/>
+			</Grid.ColumnDefinitions>
 
-		<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="4"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="0"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
+			<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="4"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="0"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
 
-			<StackPanel Grid.Row="0">
-				<Grid Margin="2,0,0,0" Background="Transparent" Name="grdProjectName" MouseLeftButtonUp="grdProjectName_MouseLeftButtonUp">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
-					<Border Margin="0,4,0,4" Width="2" HorizontalAlignment="Left">
-						<Border.Style>
-							<Style TargetType="Border">
-								<Setter Property="Visibility" Value="Hidden"/>
-								<Setter Property="Background" Value="#9d9d9d"/>
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
-										<Setter Property="Visibility" Value="Visible"/>
-									</DataTrigger>
-									<DataTrigger Binding="{Binding IsSelectProjectName}" Value="True">
-										<Setter Property="Visibility" Value="Visible"/>
-										<Setter Property="Background" Value="#fff"/>
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Border.Style>
-					</Border>
-					<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="#fff" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
-					<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="#fff" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" FontWeight="Bold" Content="" x:Name="lblProjName"/>
-				</Grid>
-			</StackPanel>
-
-			<Grid Grid.Row="2">
-				<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="发射器"/>
-				<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
-					<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png"/>
-					<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png"/>
-				</StackPanel>
-			</Grid>
-
-			<ListBox Grid.Row="4" Background="Transparent" BorderThickness="0" Name="lstRes">
-				<ListBox.ItemContainerStyle>
-					<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
-						<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-						<Setter Property="Padding" Value="0"/>
-						<Style.Resources>
-							<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
-							<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
-							<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
-						</Style.Resources>
-					</Style>
-				</ListBox.ItemContainerStyle>
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<Grid Background="Transparent" Name="grdEmitterBox" MouseLeftButtonUp="grdEmitterBox_MouseLeftButtonUp">
-							<Border Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="#fff" Background="Transparent" Visibility="{Binding IsLastVisibile}"></Border>
-
-							<Grid Margin="2,0,0,2" Height="50" Background="Transparent">
+					<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1">
+						<StackPanel Grid.Row="0">
+							<Grid Margin="2,0,0,0" Background="Transparent" Name="grdProjectName" MouseLeftButtonUp="grdProjectName_MouseLeftButtonUp">
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto"/>
-									<ColumnDefinition Width="5"/>
-									<ColumnDefinition Width="50"/>
+									<ColumnDefinition Width="Auto"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
-
-								<Border Margin="0,4,0,4" Width="2">
+								<Border Margin="0,4,0,4" Width="2" HorizontalAlignment="Left">
 									<Border.Style>
 										<Style TargetType="Border">
 											<Setter Property="Visibility" Value="Hidden"/>
@@ -96,7 +49,7 @@
 												<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
 													<Setter Property="Visibility" Value="Visible"/>
 												</DataTrigger>
-												<DataTrigger Binding="{Binding IsSelect}" Value="True">
+												<DataTrigger Binding="{Binding IsSelectProjectName}" Value="True">
 													<Setter Property="Visibility" Value="Visible"/>
 													<Setter Property="Background" Value="#fff"/>
 												</DataTrigger>
@@ -104,84 +57,164 @@
 										</Style>
 									</Border.Style>
 								</Border>
-
-								<Grid Margin="0,2,0,2" Width="46" Grid.Column="2">
-									<Border BorderThickness="1" BorderBrush="#8a8a8a" />
-									<Image Margin="5" Source="{Binding Image}"/>
-								</Grid>
+								<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="#fff" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
+								<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="#fff" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" FontWeight="Bold" Content="" x:Name="lblProjName"/>
 							</Grid>
-						</Grid>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
-		</Grid>
+						</StackPanel>
+					</Border>
 
-		<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
+					<Grid Grid.Row="2">
+						<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="发射器"/>
+						<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png" x:Name="btnAddEmitter" Click="btnAddEmitter_Click"/>
+							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png" x:Name="btnRemoveEmitter" Click="btnRemoveEmitter_Click"/>
+						</StackPanel>
+					</Grid>
 
-		<Grid Grid.Column="2">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="4"/>
-				<RowDefinition Height="140"/>
-				<RowDefinition Height="30"/>
-			</Grid.RowDefinitions>
-			<local:ParticleRenderBox x:Name="pointRenderBox"/>
+					<ListBox Grid.Row="4" Background="Transparent" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,1,0,0" Name="lstRes">
+						<ListBox.ItemContainerStyle>
+							<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
+								<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+								<Setter Property="Padding" Value="0"/>
+								<Style.Resources>
+									<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+								</Style.Resources>
+							</Style>
+						</ListBox.ItemContainerStyle>
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Grid Background="Transparent" AllowDrop="True" Tag="{Binding .}" Name="grdEmitterBox" MouseLeftButtonUp="grdEmitterBox_MouseLeftButtonUp" DragOver="grdEmitterBox_DragOver" Drop="grdEmitterBox_Drop">
+									<Border Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource comBorderColor}" Background="Transparent" Visibility="{Binding IsLineVisibile}"></Border>
 
-			<Grid Grid.Row="2">
-				<Border BorderBrush="#777777" BorderThickness="1"/>
-				<Grid Name="grdSetUIProject">
-					<StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Left">
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="*"/>
-								<RowDefinition Height="100"/>
-							</Grid.RowDefinitions>
-							<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
-							<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Height="100" Width="100" EnableAlpha="False" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
-						</Grid>
-					</StackPanel>
+									<Grid Margin="2,0,0,2" Height="50" Background="Transparent">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"/>
+											<ColumnDefinition Width="5"/>
+											<ColumnDefinition Width="50"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+
+										<Border Margin="0,4,0,4" Width="2">
+											<Border.Style>
+												<Style TargetType="Border">
+													<Setter Property="Visibility" Value="Hidden"/>
+													<Setter Property="Background" Value="#9d9d9d"/>
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
+															<Setter Property="Visibility" Value="Visible"/>
+														</DataTrigger>
+														<DataTrigger Binding="{Binding IsSelect}" Value="True">
+															<Setter Property="Visibility" Value="Visible"/>
+															<Setter Property="Background" Value="#fff"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Border.Style>
+										</Border>
+
+										<Grid Margin="0,2,0,2" Width="46" Grid.Column="2">
+											<Border BorderThickness="1" BorderBrush="#8a8a8a" />
+											<Image Margin="5" Cursor="Hand" Tag="{Binding .}" Source="{Binding Image}" Name="imgEmitter" MouseLeftButtonUp="imgEmitter_MouseLeftButtonUp"/>
+										</Grid>
+									</Grid>
+								</Grid>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
 				</Grid>
+			</Border>
+
+			<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+			<Grid Grid.Column="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="4"/>
+					<RowDefinition Height="140"/>
+					<RowDefinition Height="2"/>
+					<RowDefinition Height="30"/>
+				</Grid.RowDefinitions>
+				<local:ParticleRenderBox x:Name="pointRenderBox"/>
+
+				<Border Grid.Row="2" BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
+					<Grid>
+						<Grid Name="grdSetUIProject">
+							<StackPanel Margin="4" Orientation="Horizontal" HorizontalAlignment="Left">
+								<Grid>
+									<Grid.RowDefinitions>
+										<RowDefinition Height="*"/>
+										<RowDefinition Height="100"/>
+									</Grid.RowDefinitions>
+									<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
+									<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Height="100" Width="100" EnableAlpha="False" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
+								</Grid>
+							</StackPanel>
+						</Grid>
+					</Grid>
+				</Border>
+
+				<Border Grid.Row="4" BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
+					<Grid>
+						<!--<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
+						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
+						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Content="" Name="lblFps"/>
+					</StackPanel>-->
+					</Grid>
+				</Border>
 			</Grid>
+
+			<GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+			<Border Grid.Column="4" BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="4"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+
+					<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1" Content="设置"/>
+
+					<!--<StackPanel Grid.Row="3">
+					<supUI:TextBoxLabel Foreground="#fff" ContentColor="#fff" Content="位置"/>
+				</StackPanel>-->
+
+					<!--<Grid Grid.Row="3" Name="grdProjectSetting">-->
+					<local:AttrText Grid.Row="3" x:Name="atxProject" TextChangedByUser="atxProject_TextChangedByUser"/>
+					<local:AttrText Grid.Row="3" Visibility="Collapsed" x:Name="atxEmitter" TextChangedByUser="atxEmitter_TextChangedByUser"/>
+					<!--</Grid>-->
+
+					<!--<Grid Grid.Row="3" Visibility="Collapsed" Name="grdParticleSetting">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="4*"/>
+						<ColumnDefinition Width="3"/>
+						<ColumnDefinition Width="3*"/>
+					</Grid.ColumnDefinitions>
+
+					<TextBox Grid.Column="0" Padding="0,3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="12" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" TextAlignment="Right" Background="Transparent" Name="txtAttrDesc" IsReadOnly="True"/>
+					<Grid Background="Transparent"/>
+
+					<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+					<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged" TextChanged="txtAttrValue_TextChanged"/>
+				</Grid>-->
+				</Grid>
+			</Border>
 		</Grid>
 
-		<GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Background="Transparent"/>
-
-		<Grid Grid.Column="4">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="4"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
-
-			<Border Grid.RowSpan="4" BorderBrush="#777777" BorderThickness="1"/>
-			
-			<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" Content="设置"/>
-
-			<!--<StackPanel Grid.Row="3">
-				<supUI:TextBoxLabel Foreground="#fff" ContentColor="#fff" Content="位置"/>
-			</StackPanel>-->
-
-			<!--<Grid Grid.Row="3" Name="grdProjectSetting">-->
-			<local:AttrText Grid.Row="3" x:Name="atxProject" TextChangedByUser="atxProject_TextChangedByUser"/>
-			<local:AttrText Grid.Row="3" Visibility="Collapsed" x:Name="atxEmitter" TextChangedByUser="atxEmitter_TextChangedByUser"/>
-			<!--</Grid>-->
-
-			<!--<Grid Grid.Row="3" Visibility="Collapsed" Name="grdParticleSetting">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="4*"/>
-					<ColumnDefinition Width="3"/>
-					<ColumnDefinition Width="3*"/>
-				</Grid.ColumnDefinitions>
-
-				<TextBox Grid.Column="0" Padding="0,3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="12" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" TextAlignment="Right" Background="Transparent" Name="txtAttrDesc" IsReadOnly="True"/>
-				<Grid Background="Transparent"/>
-
-				<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
-
-				<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged" TextChanged="txtAttrValue_TextChanged"/>
-			</Grid>-->
-		</Grid>
+		<!--status bar-->
+		<Border Grid.Row="2" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,1,0,0">
+			<Grid>
+				<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
+					<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
+					<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Content="" Name="lblFps"/>
+					<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest" Click="btnTest_Click"/>
+				</StackPanel>
+			</Grid>
+		</Border>
 
 		<Grid.Style>
 			<Style TargetType="Grid">

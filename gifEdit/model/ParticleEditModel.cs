@@ -31,7 +31,7 @@ namespace gifEdit.model {
 		[XmlAttr("path")]						public string path = "";					//路径
 
 		[XmlValue("x")]							public float x = 100;						//坐标x
-		[XmlValue("xFloat")]					public float xFloat = 0;					//坐标x浮动
+		[XmlValue("xFloat")]					public float xFloat = 50;					//坐标x浮动
 
 		[XmlValue("y")]							public float y = 100;						//坐标y
 		[XmlValue("yFloat")]					public float yFloat = 0;					//坐标y浮动
@@ -40,7 +40,7 @@ namespace gifEdit.model {
 		[XmlValue("endAlpha")]					public float endAlpha = 1;                  //结束透明度
 
 		[XmlValue("gravityValue")]				public float gravityValue = 0;				//重力
-		[XmlValue("gravityAngle")]				public float gravityAngle = 100;			//重力方向
+		[XmlValue("gravityAngle")]				public float gravityAngle = 0;				//重力方向
 
 		[XmlValue("startSpeed")]				public float startSpeed = 20;				//开始速度
 		[XmlValue("startSpeedFloat")]			public float startSpeedFloat = 0;			//开始速度浮动

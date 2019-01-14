@@ -43,6 +43,8 @@ namespace gifEdit.control {
 				string imgPath = md.lstResource[i].path;
 				ImageSource img = loadImage(imgPath, path);
 				ParticleEditVM vm = new ParticleEditVM() {
+					idx = i,
+					md = md.lstResource[i],
 					Image = img
 				};
 				lstVM.Add(vm);
@@ -51,6 +53,15 @@ namespace gifEdit.control {
 			if(lstVM.Count > 0) {
 				lstVM.Last().IsLast = true;
 			}
+		}
+
+		public void updateImage(int idx) {
+			if(idx < 0 || idx >= lstVM.Count) {
+				return;
+			}
+
+			string imgPath = md.lstResource[idx].path;
+			lstVM[idx].Image = loadImage(imgPath, md.path);
 		}
 
 		private ImageSource loadImage(string path, string basePath) {
@@ -69,6 +80,43 @@ namespace gifEdit.control {
 			return null;
 		}
 
+		public int createEmitter() {
+			ParticleResourceModel resMd = new ParticleResourceModel();
+			md.lstResource.Add(resMd);
+
+			int idx = lstVM.Count;
+			if(idx > 0) {
+				lstVM[idx - 1].IsLast = false;
+			}
+
+			ParticleEditVM vm = new ParticleEditVM() {
+				idx = idx,
+				md = resMd,
+				Image = null,
+				IsLast = true
+			};
+			lstVM.Add(vm);
+
+			return idx;
+		}
+
+		public void removeEmitter(int idx) {
+			if(idx < 0 || idx >= lstVM.Count) {
+				return;
+			}
+
+			if(idx > 0 && idx == lstVM.Count - 1) {
+				lstVM[idx - 1].IsLast = true;
+			}
+
+			lstVM.RemoveAt(idx);
+			md.lstResource.RemoveAt(idx);
+
+			for(int i = idx; i < lstVM.Count; ++i) {
+				lstVM[i].idx = i;
+			}
+		}
+
 		public void save() {
 			srv?.save();
 		}
@@ -76,6 +124,9 @@ namespace gifEdit.control {
 	}
 	
 	public class ParticleEditVM : INotifyPropertyChanged {
+		public int idx = 0;
+		public ParticleResourceModel md = null;
+
 		//image
 		ImageSource _Image = null;
 		public ImageSource Image {
@@ -94,11 +145,11 @@ namespace gifEdit.control {
 		bool _IsLast = false;
 		public bool IsLast {
 			get { return _IsLast; }
-			set { _IsLast = value; updatePro("IsLastVisibile"); }
+			set { _IsLast = value; updatePro("IsLineVisibile"); }
 		}
 
-		//IsLastVisibile
-		public Visibility IsLastVisibile {
+		//IsLineVisibile
+		public Visibility IsLineVisibile {
 			get { return _IsLast ? Visibility.Collapsed : Visibility.Visible; }
 		}
 
