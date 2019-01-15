@@ -9,7 +9,7 @@
 			 xmlns:opengl="clr-namespace:OpenGL;assembly=OpenGL.Net.WinForms"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500">
+             d:DesignHeight="500" d:DesignWidth="500" BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" Name="ctlParticaleRenderBox" Focusable="True" IsVisibleChanged="ctlParticaleRenderBox_IsVisibleChanged" GotFocus="ctlParticaleRenderBox_GotFocus" LostFocus="ctlParticaleRenderBox_LostFocus" KeyDown="ctlParticaleRenderBox_KeyDown" KeyUp="ctlParticaleRenderBox_KeyUp">
 	<Grid Background="#414141">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -33,7 +33,5 @@
 
 		<ScrollBar Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource ComScrollBarStyle}" SmallChange="30" Name="slbHor" ValueChanged="slbHor_ValueChanged"/>
 		<ScrollBar Grid.Column="1" Orientation="Vertical" Style="{DynamicResource ComScrollBarStyle}" SmallChange="30" Name="slbVer" ValueChanged="slbVer_ValueChanged"/>
-
-		<Border Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="#777777" BorderThickness="1"/>
 	</Grid>
 </UserControl>

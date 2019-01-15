@@ -99,5 +99,6 @@
 	</Style>
 
 	<SolidColorBrush x:Key="comBorderColor" Color="#5a5a5a"/>
+	<SolidColorBrush x:Key="comBorderColorActivate" Color="#888888"/>
 
 </ResourceDictionary>

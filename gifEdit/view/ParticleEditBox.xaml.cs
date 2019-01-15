@@ -1,4 +1,5 @@
 ﻿using csharpHelp.util;
+using FreeImageAPI;
 using gifEdit.control;
 using gifEdit.model;
 using gifEdit.services;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,11 +61,61 @@ namespace gifEdit.view {
 			};
 
 			EventServer.ins.copyToClipboard += () => {
-				pointRenderBox.renderToBuffer();
+				ImageModel md = pointRenderBox.renderToBuffer();
+				//saveImage(md, "bbb.png");
+				saveToClipboard(md);
 			};
 
 			initAttr();
 			//initAttrDesc();
+		}
+
+		private void saveToClipboard(ImageModel md) {
+			System.Drawing.Bitmap pic = new System.Drawing.Bitmap(md.width, md.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+			//System.Drawing.Image img = System.Drawing.Image.FromStream();
+
+			for(int x = 0; x < md.width; x++) {
+				for(int y = 0; y < md.height; y++) {
+					int idx = (y * md.width + x) * md.pxChannel;
+					System.Drawing.Color c = System.Drawing.Color.FromArgb(
+						md.data[idx + 3],
+						md.data[idx + 2],
+						md.data[idx + 1],
+						md.data[idx + 0]
+					);
+					pic.SetPixel(x, md.height - 1 - y, c);
+				}
+			}
+
+			//BitmapSource bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+			//	pic.GetHbitmap(),
+			//	IntPtr.Zero,
+			//	Int32Rect.Empty,
+			//	BitmapSizeOptions.FromWidthAndHeight(md.width, md.height)
+			//);
+
+			//Clipboard.SetImage(bs);
+
+			ClipboardImageCtl.SetClipboardImage(pic, null, null);
+		}
+		
+		private void saveImage(ImageModel md, string outPath) {
+			//FIMEMORY ms = new FIMEMORY();
+
+			FIBITMAP dib = FreeImage.Allocate(md.width, md.height, 32, 8, 8, 8);
+			IntPtr pFibData = FreeImage.GetBits(dib);
+			Marshal.Copy(md.data, 0, pFibData, md.data.Length);
+
+			FreeImage.Save(FREE_IMAGE_FORMAT.FIF_PNG, dib, outPath, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+			//FreeImage.SaveToMemory(FREE_IMAGE_FORMAT.FIF_PNG, dib, ms, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+
+			//int size = FreeImage.TellMemory(ms);
+			//byte[] buffer = new byte[size];
+			//FreeImage.SeekMemory(ms, 0, SeekOrigin.Begin);
+			//FreeImage.ReadMemory(buffer, (uint)size, (uint)size, ms);
+
+			FreeImage.Unload(dib);
 		}
 
 		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
@@ -570,6 +622,9 @@ namespace gifEdit.view {
 			if(!isEngineInited) {
 				return;
 			}
+			if(isEditGlobalAttrByUI) {
+				return;
+			}
 
 			pointRenderBox.updateGlobalAttr();
 
@@ -588,6 +643,9 @@ namespace gifEdit.view {
 
 		private void atxEmitter_TextChangedByUser(object sender, RoutedEventArgs e) {
 			if(!isEngineInited) {
+				return;
+			}
+			if(isEditGlobalAttrByUI) {
 				return;
 			}
 
@@ -736,7 +794,7 @@ namespace gifEdit.view {
 		}
 
 		private void btnTest_Click(object sender, RoutedEventArgs e) {
-			EventServer.ins.onCopyToClipboard();
+			//EventServer.ins.onCopyToClipboard();
 		}
 	}
 

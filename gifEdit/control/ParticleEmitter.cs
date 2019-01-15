@@ -138,9 +138,10 @@ namespace gifEdit.control {
 			imageWidth = (int)FreeImage.GetWidth(dib);
 			imageHeight = (int)FreeImage.GetHeight(dib);
 
-			//var dib2 = FreeImage.Rescale(dib, 16, 16, FREE_IMAGE_FILTER.FILTER_BILINEAR);
+			//int size = 12;
+			//var dib2 = FreeImage.Rescale(dib, size, size, FREE_IMAGE_FILTER.FILTER_BILINEAR);
 			//var bits = FreeImage.GetBits(dib2);
-			//imageWidth = imageHeight = 16;
+			//imageWidth = imageHeight = size;
 			var bits = FreeImage.GetBits(dib);
 			pImageData = bits;
 
@@ -158,19 +159,23 @@ namespace gifEdit.control {
 		}
 
 		//const int GL_NEAREST = 0x2600;
-		const int GL_LINEAR = 0x2601;
-		const int GL_REPEAT = 0x2901;
-		const int GL_REPLACE = 0x1E01;
+		//const int GL_LINEAR = 0x2601;
+		//const int GL_REPEAT = 0x2901;
+		//const int GL_REPLACE = 0x1E01;
 
 		private void initTexture() {
 			//Gl.ActiveTexture(TextureUnit.Texture0);
 
 			Gl.BindTexture(TextureTarget.Texture2d, texId);
-			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, new int[] { GL_REPEAT });
-			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, new int[] { GL_REPEAT });
-			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, new int[] { GL_LINEAR });
-			Gl.TexParameterI(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, new int[] { GL_LINEAR });
-			Gl.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, GL_REPLACE);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.GenerateMipmap, Gl.TRUE);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+			//Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToBorder);
+			//Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+			//Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.LinearMipmapLinear);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+			//Gl.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)LightEnvModeSGIX.Replace);
 
 			Gl.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgba, imageWidth, imageHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pImageData);
 			Gl.BindTexture(TextureTarget.Texture2d, 0);
@@ -178,10 +183,12 @@ namespace gifEdit.control {
 			//Gl.TexImage2DMultisample(TextureTarget.Texture2dMultisample, 0, InternalFormat.Rgba, imageWidth, imageHeight, true);
 			//Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2dMultisample, texId, 0);
 
-			//Gl.GenerateMipmap(TextureTarget.Texture2d);
+			Gl.GenerateMipmap(TextureTarget.Texture2d);
 			//Gl.GetnTexImage(TextureTarget.Texture2d, 2, PixelFormat.Rgba, PixelType.UnsignedByte, 
 			//Gl.BindFramebuffer(FramebufferTarget.Framebuffer, texFraBufferId);
 			//Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2d, texFraBufferId, 1);
+
+			Gl.BindTexture(TextureTarget.Texture2d, 0);
 		}
 
 		public void updateAttr(int _maxRenderTime = -1) {
@@ -325,7 +332,7 @@ namespace gifEdit.control {
 				
 				//attr
 				Gl.BindBufferBase(BufferTarget.ShaderStorageBuffer, 0, attrBufferId);
-				Gl.UnmapBuffer(BufferTarget.ShaderStorageBuffer);
+				//Gl.UnmapBuffer(BufferTarget.ShaderStorageBuffer);
 				
 				Gl.Uniform1(LocationNowTime, (float)renderTime);
 				Gl.Uniform1(LocationTotalLifeTime, (float)maxRenderTime);
@@ -341,6 +348,7 @@ namespace gifEdit.control {
 				//Gl.DrawArraysInstanced(PrimitiveType.Points, 0, _ArrayIndex.Length / 2, particleCount);
 			}
 
+			Gl.BindBufferBase(BufferTarget.ShaderStorageBuffer, 0, 0);
 			Gl.BindTexture(TextureTarget.Texture2d, 0);
 			Gl.UseProgram(0);
 
@@ -384,6 +392,13 @@ namespace gifEdit.control {
 			1, 1,
 		};
 
+		//private static readonly float[] _ArrayCoord = new float[] {
+		//	0, 0.9f,
+		//	0, 0,
+		//	0.9f, 0,
+		//	0.9f, 0.9f,
+		//};
+
 		public void Dispose() {
 			if(ProgramName > 0) {
 				Gl.DeleteProgram(ProgramName);
@@ -391,7 +406,7 @@ namespace gifEdit.control {
 			}
 
 			if(texId > 0) {
-				Gl.DeleteTextures(new uint[] { texId });
+				Gl.DeleteTextures(texId);
 				texId = 0;
 			}
 		}

@@ -1,5 +1,4 @@
-﻿using FreeImageAPI;
-using gifEdit.control;
+﻿using gifEdit.control;
 using gifEdit.control.glEngine;
 using gifEdit.model;
 using gifEdit.services;
@@ -19,6 +18,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -34,8 +34,9 @@ namespace gifEdit.view {
 		GlTime glTime = new GlTime();
 		FpsCtl fpsCtl = new FpsCtl();
 		
+		private float[] bufferMVP = null;
 		private float[] mMVP = null;
-		
+
 		List<ParticleEmitter> lstEmitter = new List<ParticleEmitter>();
 		
 		int boxWidth = 0;
@@ -44,10 +45,23 @@ namespace gifEdit.view {
 		int slbX = 0;
 		int slbY = 0;
 
+		int bufWidth = 0;
+		int bufHeight = 0;
+		uint glbufTexCache = 0;
 		uint glbufOutput = 0;
+		MemoryLock mlBufferCache = null;
+		byte[] bufferCache = new byte[0];
+		byte[] bufferOutput = new byte[0];
+		MemoryLock mlBufferOutput = null;
+
+		SolidColorBrush coBorderDef = null;
+		SolidColorBrush coBorderAct = null;
 
 		public ParticleRenderBox() {
 			InitializeComponent();
+
+			coBorderDef = FindResource("comBorderColor") as SolidColorBrush;
+			coBorderAct = FindResource("comBorderColorActivate") as SolidColorBrush;
 			
 			if(DesignerProperties.GetIsInDesignMode(this)) {
 				glControl.Animation = false;
@@ -77,7 +91,8 @@ namespace gifEdit.view {
 				updateRenderBoxSize();
 				
 				if(isEngineInited) {
-					update();
+					//update();
+					initOutputBuffer();
 				}
 			} catch(Exception ex) {
 				Debug.WriteLine(ex.ToString());
@@ -202,15 +217,23 @@ namespace gifEdit.view {
 			Gl.Enable(EnableCap.AlphaTest);
 			Gl.Enable(EnableCap.Blend);
 			Gl.Enable(EnableCap.Texture2d);
-			Gl.Enable(EnableCap.PolygonSmooth);
-			Gl.Enable(EnableCap.LineSmooth);
+			//Gl.Enable(EnableCap.PolygonSmooth);
+			//Gl.Enable(EnableCap.LineSmooth);
+			//Gl.Disable(EnableCap.CullFace);
+			//Gl.PolygonMode(MaterialFace.Back, PolygonMode.Fill);
+			//Gl.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
 			//Gl.Enable(EnableCap.DepthTest);
 			//Gl.Enable(EnableCap.Multisample);
 			//Gl.Enable(EnableCap.PrimitiveRestart);
 			Gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 			//Gl.DepthFunc(DepthFunction.Less);
 
+			glbufTexCache = Gl.GenTexture();
 			glbufOutput = Gl.GenFramebuffer();
+			Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+			Gl.DrawBuffers(Gl.COLOR_ATTACHMENT0);
+			Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+			Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
 			updateGlSize();
 
@@ -271,12 +294,25 @@ namespace gifEdit.view {
 
 		private void glControl_ContextDestroying(object sender, GlControlEventArgs e) {
 			clear();
+			if(mlBufferCache != null) {
+				mlBufferCache.Dispose();
+				mlBufferCache = null;
+			}
+			if(mlBufferOutput != null) {
+				mlBufferOutput.Dispose();
+				mlBufferOutput = null;
+			}
+			if(glbufTexCache > 0) {
+				Gl.DeleteTextures(glbufTexCache);
+				glbufTexCache = 0;
+			}
+			if(glbufOutput > 0) {
+				Gl.DeleteFramebuffers(glbufOutput);
+				glbufOutput = 0;
+			}
 		}
 
-		int fpsUpdateIdx = 0;
-		//int idx = 0;
-		private void update() {
-			//time
+		private void updateTime() {
 			float gapTime = glTime.getTime();
 			renderTime = (int)(renderTime + gapTime);
 			if(renderTime >= maxRenderTime) {
@@ -284,15 +320,10 @@ namespace gifEdit.view {
 			} else {
 				renderTime = renderTime % maxRenderTime;
 			}
+		}
 
-			//test
-			//++idx;
-			//if(idx > 20) {
-			//	lblTest.Content = renderTime;
-			//	idx = 0;
-			//}
-
-			//fps
+		int fpsUpdateIdx = 0;
+		private void updateFps() {
 			fpsCtl.update();
 			++fpsUpdateIdx;
 			if(fpsUpdateIdx > 60) {
@@ -300,107 +331,23 @@ namespace gifEdit.view {
 				EventServer.ins.onUpdateFPSEvent(fpsCtl.getFps());
 				fpsUpdateIdx = 0;
 			}
+		}
+
+		//int idx = 0;
+		private void update() {
+			//time
+			updateTime();
+
+			//fps
+			updateFps();
 			
 			if(!isEngineInited) {
 				return;
 			}
-
-			//var senderControl = glControl;
-
-			//int vpx = 0;
-			//int vpy = 0;
-			//int vpw = senderControl.ClientSize.Width;
-			//int vph = senderControl.ClientSize.Height;
-			//Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-			//ParticleEditModel md = MainModel.ins.particleEditModel;
-			//if(md == null || boxWidth == 0 || boxHeight == 0) {
-			//	return;
-			//}
-
-			bool isOk = isRenderToBuffer;
-			isRenderToBuffer = false;
-			if(isOk) {
-				_renderToBuffer();
-			} else {
-				renderGl();
-			}
-
-			//var w = boxWidth;
-			//var h = boxHeight;
-
-			//float x = slbX + (boxWidth - md.width) / 2 + 0.5f;
-			//float y = slbY + (boxHeight - md.height) / 2 + 0.5f;
-
-			//Gl.Viewport(vpx, vpy, vpw, vph);
-			//Gl.Clear(ClearBufferMask.ColorBufferBit);
-
-			//Gl.MatrixMode(MatrixMode.Projection);
-			//Gl.LoadIdentity();
-			//Gl.Ortho(0.0, w, 0.0, h, 0.0, 1.0);
-
-			//Gl.MatrixMode(MatrixMode.Modelview);
-			//Gl.LoadIdentity();
-
-			////line 1
-			//float xl1 = x;
-			//float yl1 = y;
-
-			//Gl.LineWidth(1f);
-			//Gl.Begin(PrimitiveType.LineLoop);
-			//Gl.Color3(1.0f, 1.0f, 1.0f);
-			//Gl.Vertex2(xl1, yl1);
-			//Gl.Vertex2(xl1 + md.width, yl1);
-			//Gl.Vertex2(xl1 + md.width, yl1 + md.height);
-			//Gl.Vertex2(xl1, yl1 + md.height);
-			//Gl.End();
-
-			////line 2
-			//float xl2 = x - 1;
-			//float yl2 = y - 1;
-
-			//Gl.Begin(PrimitiveType.LineLoop);
-			//Gl.Color3(0.0f, 0.0f, 0.0f);
-			//Gl.Vertex2(xl2, yl2);
-			//Gl.Vertex2(xl2 + md.width + 2, yl2);
-			//Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
-			//Gl.Vertex2(xl2, yl2 + md.height + 2);
-			//Gl.End();
-
-			////mask
-			//if(md.isMaskBox) {
-			//	Gl.Enable(EnableCap.ScissorTest);
-			//	Gl.Scissor((int)x, (int)y, md.width, md.height);
-			//}
-
-			////emitter
-			//for(int i = 0; i < lstEmitter.Count; ++i) {
-			//	lstEmitter[i].setStartPos((int)x, (int)y);
-			//	lstEmitter[i].render(mMVP, renderTime);
-			//}
-
-			////mask
-			//if(md.isMaskBox) {
-			//	Gl.Disable(EnableCap.ScissorTest);
-			//}
+			renderGl();
 		}
 
-		private void renderGl(bool isOutput = false) {
-			ParticleEditModel md = MainModel.ins.particleEditModel;
-			if(md == null || md.width == 0 || md.height == 0) {
-				return;
-			}
-
-			float x = 0;
-			float y = 0;
-			if(!isOutput) {
-				x = slbX + (boxWidth - md.width) / 2 + 0.5f;
-				y = slbY + (boxHeight - md.height) / 2 + 0.5f;
-			}
-
-			var w = boxWidth;
-			var h = boxHeight;
-
+		private void renderInitMatrix(int w, int h) {
 			int vpx = 0;
 			int vpy = 0;
 			int vpw = w;
@@ -415,33 +362,63 @@ namespace gifEdit.view {
 
 			Gl.MatrixMode(MatrixMode.Modelview);
 			Gl.LoadIdentity();
+		}
 
-			if(!isOutput) {
-				//line 1
-				float xl1 = x;
-				float yl1 = y;
-
-				Gl.LineWidth(1f);
-				Gl.Begin(PrimitiveType.LineLoop);
-				Gl.Color3(1.0f, 1.0f, 1.0f);
-				Gl.Vertex2(xl1, yl1);
-				Gl.Vertex2(xl1 + md.width, yl1);
-				Gl.Vertex2(xl1 + md.width, yl1 + md.height);
-				Gl.Vertex2(xl1, yl1 + md.height);
-				Gl.End();
-
-				//line 2
-				float xl2 = x - 1;
-				float yl2 = y - 1;
-
-				Gl.Begin(PrimitiveType.LineLoop);
-				Gl.Color3(0.0f, 0.0f, 0.0f);
-				Gl.Vertex2(xl2, yl2);
-				Gl.Vertex2(xl2 + md.width + 2, yl2);
-				Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
-				Gl.Vertex2(xl2, yl2 + md.height + 2);
-				Gl.End();
+		private void renderGl() {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.width == 0 || md.height == 0) {
+				return;
 			}
+
+			float x = slbX + (boxWidth - md.width) / 2 + 0.5f;
+			float y = slbY + (boxHeight - md.height) / 2 + 0.5f;
+
+			var w = boxWidth;
+			var h = boxHeight;
+
+			//int vpx = 0;
+			//int vpy = 0;
+			//int vpw = w;
+			//int vph = h;
+
+			//Gl.Viewport(vpx, vpy, vpw, vph);
+			//Gl.Clear(ClearBufferMask.ColorBufferBit);
+
+			//Gl.MatrixMode(MatrixMode.Projection);
+			//Gl.LoadIdentity();
+			//Gl.Ortho(0.0, w, 0.0, h, 0.0, 1.0);
+
+			//Gl.MatrixMode(MatrixMode.Modelview);
+			//Gl.LoadIdentity();
+
+			Gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+			renderInitMatrix(w, h);
+
+			//line 1
+			float xl1 = x;
+			float yl1 = y;
+
+			Gl.LineWidth(1f);
+			Gl.Begin(PrimitiveType.LineLoop);
+			Gl.Color3(1.0f, 1.0f, 1.0f);
+			Gl.Vertex2(xl1, yl1);
+			Gl.Vertex2(xl1 + md.width, yl1);
+			Gl.Vertex2(xl1 + md.width, yl1 + md.height);
+			Gl.Vertex2(xl1, yl1 + md.height);
+			Gl.End();
+
+			//line 2
+			float xl2 = x - 1;
+			float yl2 = y - 1;
+
+			Gl.Begin(PrimitiveType.LineLoop);
+			Gl.Color3(0.0f, 0.0f, 0.0f);
+			Gl.Vertex2(xl2, yl2);
+			Gl.Vertex2(xl2 + md.width + 2, yl2);
+			Gl.Vertex2(xl2 + md.width + 2, yl2 + md.height + 2);
+			Gl.Vertex2(xl2, yl2 + md.height + 2);
+			Gl.End();
 
 			//mask
 			if(md.isMaskBox) {
@@ -461,56 +438,168 @@ namespace gifEdit.view {
 			}
 		}
 
-		bool isRenderToBuffer = false;
-
-		public void renderToBuffer() {
-			isRenderToBuffer = true;
-			return;
-		}
-
-		public void _renderToBuffer() {
-			if(!isEngineInited) {
-				return;
-			}
+		private void renderGlToBuffer() {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 			if(md == null || md.width == 0 || md.height == 0) {
 				return;
 			}
-			//glControl.Animation = false;
-			const int pxSize = 4;
 
+			float x = 0;
+			float y = 0;
 			int w = md.width;
 			int h = md.height;
 
+			//int vpx = 0;
+			//int vpy = 0;
+			//int vpw = w;
+			//int vph = h;
+
+			//Gl.Viewport(vpx, vpy, vpw, vph);
+			//Gl.Clear(ClearBufferMask.ColorBufferBit);
+
+			//Gl.MatrixMode(MatrixMode.Projection);
+			//Gl.LoadIdentity();
+			//Gl.Ortho(0.0, w, 0.0, h, 0.0, 1.0);
+
+			//Gl.MatrixMode(MatrixMode.Modelview);
+			//Gl.LoadIdentity();
+			//Gl.BlendEquation(BlendEquationMode.FuncAdd);
+			Gl.BlendFuncSeparate(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha, BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
+			renderInitMatrix(w, h);
+
+			//mask
+			if(md.isMaskBox) {
+				Gl.Enable(EnableCap.ScissorTest);
+				Gl.Scissor((int)x, (int)y, md.width, md.height);
+			}
+
+			//emitter
+			for(int i = 0; i < lstEmitter.Count; ++i) {
+				lstEmitter[i].setStartPos((int)x, (int)y);
+				lstEmitter[i].render(bufferMVP, renderTime);
+			}
+
+			//mask
+			if(md.isMaskBox) {
+				Gl.Disable(EnableCap.ScissorTest);
+			}
+		}
+
+		//bool isRenderToBuffer = false;
+
+		//public void renderToBuffer() {
+		//	isRenderToBuffer = true;
+		//	return;
+		//}
+
+		const int pxChannel = 4;
+		
+		private void initOutputBuffer() {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.width == 0 || md.height == 0) {
+				return;
+			}
+
+			if(bufWidth == md.width && bufHeight == md.height) {
+				return;
+			}
+			
+			int w = md.width;
+			int h = md.height;
+
+			bufWidth = w;
+			bufHeight = h;
+
+			bufferMVP = calcMVP(w, h);
+
+			//Gl.Enable(EnableCap.FramebufferSrgb);
+
+			if(mlBufferCache != null) {
+				mlBufferCache.Dispose();
+			}
+			if(mlBufferOutput != null) {
+				mlBufferOutput.Dispose();
+			}
+
+			int size = w * h * pxChannel;
+			bufferCache = new byte[size];
+			mlBufferCache = new MemoryLock(bufferCache);
+
+			bufferOutput = new byte[size];
+			mlBufferOutput = new MemoryLock(bufferOutput);
+
+			//Gl.BufferData(BufferTarget.PixelPackBuffer, (uint)size, mlImageData.Address, BufferUsage.DynamicRead);
+
+			Gl.BindTexture(TextureTarget.Texture2d, glbufTexCache);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+			//Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+			Gl.TexParameter(TextureTarget.Texture2d, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			//Gl.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, (int)LightEnvModeSGIX.Replace);
+
+			Gl.TexImage2D(TextureTarget.Texture2d, 0, InternalFormat.Rgba, w, h, 0, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferCache.Address);
+			Gl.BindTexture(TextureTarget.Texture2d, 0);
+
+			Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+			Gl.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2d, glbufTexCache, 0);
+			Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+		}
+
+		public ImageModel renderToBuffer() {
+			if(!isEngineInited) {
+				return null;
+			}
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.width == 0 || md.height == 0) {
+				return null;
+			}
+			//glControl.Animation = false;
+
+			int w = md.width;
+			int h = md.height;
+			int size = w * h * pxChannel;
+
 			try {
-				Gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, glbufOutput);
-				renderGl(true);
-
-				int size = w * h * pxSize;
-				IntPtr pBuffer = Marshal.AllocHGlobal(size);
-
-				Gl.ReadPixels(0, 0, w, h, PixelFormat.Bgra, PixelType.UnsignedByte, pBuffer);
-				IntPtr pData = Gl.MapBuffer(BufferTarget.PixelPackBuffer, BufferAccess.ReadOnly);
-
-				byte[] data = new byte[size];
-				Marshal.Copy(pBuffer, data, 0, data.Length);
-
-				Marshal.Release(pBuffer);
-
-				Gl.UnmapBuffer(BufferTarget.PixelPackBuffer);
-				Gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, 0);
+				//Gl.Enable(EnableCap.FramebufferSrgb);
 				
-				FIBITMAP dib = FreeImage.Allocate(w, h, 32, 8, 8, 8);
-				IntPtr pFibData = FreeImage.GetBits(dib);
-				Marshal.Copy(data, 0, pFibData, data.Length);
+				initOutputBuffer();
 
-				FreeImage.Save(FREE_IMAGE_FORMAT.FIF_PNG, dib, "bbb.png", FREE_IMAGE_SAVE_FLAGS.DEFAULT);
-				FreeImage.Unload(dib);
+				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+				//Gl.DrawBuffers(Gl.COLOR_ATTACHMENT0);
+
+				//glClear(0x0);
+				glClear(0x00808080);
+				renderGlToBuffer();
+				glClear(md.background);
+
+				//IntPtr pBuffer = Marshal.AllocHGlobal(size);
+				//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+				//Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+				//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+				Gl.ReadPixels(0, 0, w, h, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferOutput.Address);
+
+				//byte[] data = new byte[size];
+				//Marshal.Copy(mlBufferOutput.Address, data, 0, data.Length);
+				//Marshal.Release(pBuffer);
+
+				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+				//Gl.Disable(EnableCap.FramebufferSrgb);
+
+
+				return new ImageModel() {
+					width = w,
+					height = h,
+					data = bufferOutput,
+				};
+
+				//saveImage(bufferOutput, w, h, "bbb.png");
 
 			} catch(Exception ex) {
 				Debug.WriteLine(ex.ToString());
 			}
 
+			return null;
 		}
 
 		private void glControl_Render(object sender, GlControlEventArgs e) {
@@ -529,9 +618,16 @@ namespace gifEdit.view {
 			//Gl.MatrixMode(MatrixMode.Modelview);
 			//Gl.LoadIdentity();
 
+			//OrthoProjectionMatrix projectionMatrix = new OrthoProjectionMatrix(0.0f, w, 0.0f, h, 0.0f, 1000000.0f);
+			//ModelMatrix modelMatrix = new ModelMatrix();
+			//mMVP = (projectionMatrix * modelMatrix).ToArray();
+			mMVP = calcMVP(w, h);
+		}
+
+		private float[] calcMVP(float w, float h) {
 			OrthoProjectionMatrix projectionMatrix = new OrthoProjectionMatrix(0.0f, w, 0.0f, h, 0.0f, 1000000.0f);
 			ModelMatrix modelMatrix = new ModelMatrix();
-			mMVP = (projectionMatrix * modelMatrix).ToArray();
+			return (projectionMatrix * modelMatrix).ToArray();
 		}
 
 		private void glControl_Resize(object sender, EventArgs e) {
@@ -591,6 +687,39 @@ namespace gifEdit.view {
 
 		private bool isDownShift() {
 			return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+		}
+
+		private void ctlParticaleRenderBox_GotFocus(object sender, RoutedEventArgs e) {
+			BorderBrush = coBorderAct;
+		}
+
+		private void ctlParticaleRenderBox_LostFocus(object sender, RoutedEventArgs e) {
+			BorderBrush = coBorderDef;
+		}
+
+		private void ctlParticaleRenderBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+			if(IsVisible) {
+				//glControl.Focus();
+				//FocusManager.SetFocusedElement(this);
+				Keyboard.Focus(this);
+			}
+		}
+
+		private bool isDoDownEvent = false;
+
+		private void ctlParticaleRenderBox_KeyDown(object sender, KeyEventArgs e) {
+			if(e.Key != Key.C || !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) ) {
+				return;
+			}
+			if(isDoDownEvent) {
+				return;
+			}
+			isDoDownEvent = true;
+			EventServer.ins.onCopyToClipboard();
+		}
+
+		private void ctlParticaleRenderBox_KeyUp(object sender, KeyEventArgs e) {
+			isDoDownEvent = false;
 		}
 	}
 }
