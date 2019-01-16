@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:gifEdit.view"
+             xmlns:util="clr-namespace:gifEdit.view.util"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
              d:DesignHeight="630" d:DesignWidth="1000" Loaded="UserControl_Loaded">
@@ -136,7 +137,7 @@
 					<RowDefinition Height="2"/>
 					<RowDefinition Height="30"/>
 				</Grid.RowDefinitions>
-				<local:ParticleRenderBox x:Name="pointRenderBox"/>
+				<local:ParticleRenderBox x:Name="particleRenderBox"/>
 
 				<Border Grid.Row="2" BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
 					<Grid>
@@ -161,6 +162,7 @@
 						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
 						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Content="" Name="lblFps"/>
 					</StackPanel>-->
+						<util:KeyFrame x:Name="keyFrame"/>
 					</Grid>
 				</Border>
 			</Grid>
@@ -213,6 +215,7 @@
 					<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Width="50" Content="" Name="lblFps"/>
 					<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest" Click="btnTest_Click"/>
 				</StackPanel>
+				<Label HorizontalAlignment="Right" Name="lblTest"/>
 			</Grid>
 		</Border>
 

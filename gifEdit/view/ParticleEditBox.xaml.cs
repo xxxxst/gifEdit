@@ -1,6 +1,7 @@
 ﻿using csharpHelp.util;
 using FreeImageAPI;
 using gifEdit.control;
+using gifEdit.control.glEngine;
 using gifEdit.model;
 using gifEdit.services;
 using Microsoft.Win32;
@@ -24,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace gifEdit.view {
 	/// <summary>粒子系统</summary>
@@ -40,6 +42,9 @@ namespace gifEdit.view {
 
 		private bool isEditGlobalAttrByText = false;
 		private bool isEditGlobalAttrByUI = false;
+
+		private DispatcherTimer timer = new DispatcherTimer();
+		private int nowTime = 0;
 
 		public ParticleEditBox() {
 			InitializeComponent();
@@ -61,13 +66,108 @@ namespace gifEdit.view {
 			};
 
 			EventServer.ins.copyToClipboard += () => {
-				ImageModel md = pointRenderBox.renderToBuffer();
+				ImageModel md = particleRenderBox.renderToBuffer();
 				//saveImage(md, "bbb.png");
 				saveToClipboard(md);
 			};
 
 			initAttr();
 			//initAttrDesc();
+
+			timer.Interval = TimeSpan.FromMilliseconds(8);
+			timer.Tick += Timer_Tick;
+			timer.Start();
+		}
+
+		bool isRenderPause = false;
+		int oldFrameIdx = 0;
+		int totalFrame = 0;
+
+		int renderTime = 0;
+		int oldMaxRenderTime = 0;
+		GlTime glTime = new GlTime();
+		private void Timer_Tick(object sender, EventArgs e) {
+			int maxRenderTime = particleRenderBox.getMaxRenderTime();
+			updateMaxFrame(maxRenderTime);
+
+			if(isRenderPause) {
+				return;
+			}
+
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.fps <= 0) {
+				return;
+			}
+
+			float gapTime = glTime.getTime();
+			if(maxRenderTime == 0) {
+				return;
+			}
+
+			//if(maxRenderTime != oldMaxRenderTime) {
+			//	oldMaxRenderTime = maxRenderTime;
+			//	updateMaxFrame();
+			//}
+
+			if(totalFrame == 0) {
+				return;
+			}
+
+			renderTime = (int)(renderTime + gapTime);
+			if(renderTime >= maxRenderTime) {
+				renderTime = maxRenderTime + renderTime % maxRenderTime;
+			} else {
+				renderTime = renderTime % maxRenderTime;
+			}
+
+			particleRenderBox.setRenderTime(renderTime);
+
+			int frameIdx = (int)(renderTime / 1000f * md.fps);
+			//frameIdx = frameIdx % totalFrame;
+			//if(frameIdx == oldFrameIdx) {
+			//	return;
+			//}
+			//oldFrameIdx = frameIdx;
+			updateFrame(frameIdx);
+
+			//lblTest.Content = frameIdx;
+
+			//if(frameIdx > 237) {
+			//	Debug.WriteLine(frameIdx);
+			//}
+
+			//particleRenderBox.setRenderTime((int)(oldFrameIdx * 1000f / md.fps));
+		}
+		
+		private void updateFrame(int frameIdx) {
+			if(oldFrameIdx == frameIdx) {
+				return;
+			}
+
+			oldFrameIdx = frameIdx;
+			frameIdx = frameIdx % totalFrame;
+		}
+
+		private void updateMaxFrame(int maxRenderTime) {
+			if(maxRenderTime == oldMaxRenderTime) {
+				return;
+			}
+
+			oldMaxRenderTime = maxRenderTime;
+
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.fps <= 0) {
+				oldMaxRenderTime = 0;
+				oldFrameIdx = 0;
+				totalFrame = 0;
+				return;
+			}
+
+			totalFrame = (int)Math.Ceiling(oldMaxRenderTime / 1000f * md.fps) * 2;
+			//Debug.WriteLine(totalFrame);
+			oldFrameIdx = oldFrameIdx % totalFrame;
+
+			keyFrame.MaxFrame = totalFrame;
 		}
 
 		private void saveToClipboard(ImageModel md) {
@@ -128,24 +228,28 @@ namespace gifEdit.view {
 					"背景颜色",
 					"宽度",
 					"高度",
+					"FPS",
 					"隐藏超出部分",
 				},
 				new string[] {
 					"4D4D4D",
 					"400",
 					"400",
+					"30",
 					"true | false",
 				},
 				new Func<object, string>[] {
 					(m) => ((ParticleEditModel)m).background,
 					(m) => ((ParticleEditModel)m).width.ToString(),
 					(m) => ((ParticleEditModel)m).height.ToString(),
+					(m) => ((ParticleEditModel)m).fps.ToString(),
 					(m) => ((ParticleEditModel)m).isMaskBox.ToString().ToLower(),
 				},
 				new Action<object, string>[] {
 					(m, s)=> ((ParticleEditModel)m).background = s,
 					(m, s)=> ((ParticleEditModel)m).width = getInt(s, 0),
 					(m, s)=> ((ParticleEditModel)m).height = getInt(s, 0),
+					(m, s)=> ((ParticleEditModel)m).fps = getInt(s, 0),
 					(m, s)=> ((ParticleEditModel)m).isMaskBox = s.Trim().ToLower().FirstOrDefault() == 't',
 				}
 			);
@@ -313,7 +417,7 @@ namespace gifEdit.view {
 					ctl.save();
 				} catch(Exception) { }
 			};
-			pointRenderBox.init();
+			particleRenderBox.init();
 
 			//if (ctl.md.lstResource.Count > 0) {
 			//	selectEmitter = 0;
@@ -626,7 +730,7 @@ namespace gifEdit.view {
 				return;
 			}
 
-			pointRenderBox.updateGlobalAttr();
+			particleRenderBox.updateGlobalAttr();
 
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 			if(md == null) {
@@ -654,7 +758,7 @@ namespace gifEdit.view {
 				return;
 			}
 
-			pointRenderBox.updateEmitterAttr(idx);
+			particleRenderBox.updateEmitterAttr(idx);
 		}
 
 		private void cpkBackground_ValueChanged(object sender, RoutedEventArgs e) {
@@ -671,7 +775,7 @@ namespace gifEdit.view {
 			co = co & 0xffffff;
 			md.background = Convert.ToString(co, 16);
 
-			pointRenderBox.updateGlobalAttr();
+			particleRenderBox.updateGlobalAttr();
 
 			isEditGlobalAttrByUI = true;
 			atxProject.updateText();
@@ -709,7 +813,7 @@ namespace gifEdit.view {
 			vm.md.path = MainCtl.formatPath(md.path, path);
 
 			MainCtl.ins.particleEditCtl.updateImage(idx);
-			pointRenderBox.updateEmitterImage(idx);
+			particleRenderBox.updateEmitterImage(idx);
 		}
 
 		//选择文件
@@ -765,7 +869,7 @@ namespace gifEdit.view {
 
 		private void btnAddEmitter_Click(object sender, RoutedEventArgs e) {
 			int idx = ctl.createEmitter();
-			pointRenderBox.createEmitter(idx);
+			particleRenderBox.createEmitter(idx);
 
 			setSelectEmitter(idx);
 		}
@@ -776,7 +880,7 @@ namespace gifEdit.view {
 				return;
 			}
 
-			pointRenderBox.removeEmitter(idx);
+			particleRenderBox.removeEmitter(idx);
 			ctl.removeEmitter(idx);
 
 			lstRes.SelectedIndex = -1;

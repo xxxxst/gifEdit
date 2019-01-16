@@ -145,6 +145,9 @@
     <Compile Include="view\ParticleRenderBox.xaml.cs">
       <DependentUpon>ParticleRenderBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="view\util\KeyFrame\KeyFrame.xaml.cs">
+      <DependentUpon>KeyFrame.xaml</DependentUpon>
+    </Compile>
     <Page Include="sdk\csharpHelp\BorderLabel\BorderLabel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -304,6 +307,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="view\util\KeyFrame\KeyFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -354,6 +361,7 @@
   <ItemGroup>
     <Resource Include="resource\image\color-picker-h.png" />
     <Resource Include="resource\image\color-picker-sv.png" />
+    <Resource Include="resource\image\export.png" />
     <Content Include="sdk\freeImage\x32\FreeImage.dll" />
     <Content Include="sdk\freeImage\x64\FreeImage.dll" />
   </ItemGroup>

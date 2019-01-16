@@ -92,5 +92,9 @@ namespace gifEdit.view {
 			NewProjectWin win = new NewProjectWin();
 			win.show(this);
 		}
+
+		private void btnExportProject_Click(object sender, RoutedEventArgs e) {
+
+		}
 	}
 }

@@ -18,7 +18,7 @@ namespace gifEdit.model {
 		[XmlValue("config.background")]		public string background = "24252c";
 		[XmlValue("config.seed")]			public int seed = 0;
 		[XmlValue("config.isSeedAuto")]		public bool isSeedAuto = true;
-		[XmlValue("config.fps")]			public int fps = 60;
+		[XmlValue("config.fps")]			public int fps = 30;
 		[XmlValue("config.exportPath")]		public string exportPath = "";
 		[XmlValue("config.width")]			public int width = 400;
 		[XmlValue("config.height")]			public int height = 400;

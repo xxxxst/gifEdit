@@ -23,6 +23,7 @@
 			<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1"/>
 			<StackPanel Margin="0,2" Orientation="Horizontal">
 				<local:IconButton Margin="5,0,0,0" Padding="4,5,8,5" Height="28" ImagePadding="5,5,0,5" Radius="5" Source="/gifEdit;component/resource/image/add.png" Content="新建项目" x:Name="btnNewProject" Click="btnNewProject_Click"/>
+				<local:IconButton Margin="5,0,0,0" Padding="4,5,8,5" Height="28" ImagePadding="5,5,0,5" Radius="5" Source="/gifEdit;component/resource/image/export.png" Content="导出项目" x:Name="btnExportProject" Click="btnExportProject_Click"/>
 			</StackPanel>
 
 			<Grid Grid.Row="2" Margin="8,0,8,8" Name="grdNav">

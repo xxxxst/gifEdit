@@ -322,6 +322,14 @@ namespace gifEdit.view {
 			}
 		}
 
+		public void setRenderTime(int time) {
+			renderTime = time;
+		}
+
+		public int getMaxRenderTime() {
+			return maxRenderTime;
+		}
+
 		int fpsUpdateIdx = 0;
 		private void updateFps() {
 			fpsCtl.update();
@@ -336,7 +344,7 @@ namespace gifEdit.view {
 		//int idx = 0;
 		private void update() {
 			//time
-			updateTime();
+			//updateTime();
 
 			//fps
 			updateFps();
@@ -463,8 +471,8 @@ namespace gifEdit.view {
 
 			//Gl.MatrixMode(MatrixMode.Modelview);
 			//Gl.LoadIdentity();
-			//Gl.BlendEquation(BlendEquationMode.FuncAdd);
 			Gl.BlendFuncSeparate(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha, BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
+			Gl.BlendEquation(BlendEquationMode.FuncAdd);
 			renderInitMatrix(w, h);
 
 			//mask
@@ -496,9 +504,9 @@ namespace gifEdit.view {
 		
 		private void initOutputBuffer() {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
-			if(md == null || md.width == 0 || md.height == 0) {
-				return;
-			}
+			//if(md == null || md.width == 0 || md.height == 0) {
+			//	return;
+			//}
 
 			if(bufWidth == md.width && bufHeight == md.height) {
 				return;
@@ -554,53 +562,122 @@ namespace gifEdit.view {
 			if(md == null || md.width == 0 || md.height == 0) {
 				return null;
 			}
-			//glControl.Animation = false;
+
+			int w = md.width;
+			int h = md.height;
+			int size = w * h * pxChannel;
+
+			byte[] data1 = new byte[size];
+			_renderOneBuffer(0);
+			Array.Copy(bufferOutput, 0, data1, 0, size);
+
+			//byte[] data2 = new byte[size];
+			//_renderOneBuffer(0x00ffffff);
+			//Array.Copy(bufferOutput, 0, data2, 0, size);
+
+			//for(int i = 0; i < data1.Length; ++i) {
+			//	data1[i] = (byte)((data1[i] + data2[i]) / 2);
+			//}
+			const int imageChannel = 4;
+			for(int x = 0; x < w; ++x) {
+				for(int y = 0; y < h; ++y) {
+					int idx = (y * w + x) * imageChannel;
+					if(data1[idx + 3] == 0) {
+						continue;
+					}
+					data1[idx + 0] = (byte)(data1[idx + 0] / ( (float)(data1[idx + 3]) / 255));
+					data1[idx + 1] = (byte)(data1[idx + 1] / ( (float)(data1[idx + 3]) / 255));
+					data1[idx + 2] = (byte)(data1[idx + 2] / ( (float)(data1[idx + 3]) / 255));
+				}
+			}
+
+			return new ImageModel() {
+				width = w,
+				height = h,
+				data = data1,
+			};
+		}
+
+		private void _renderOneBuffer(uint background) {
+			ParticleEditModel md = MainModel.ins.particleEditModel;
 
 			int w = md.width;
 			int h = md.height;
 			int size = w * h * pxChannel;
 
 			try {
-				//Gl.Enable(EnableCap.FramebufferSrgb);
-				
 				initOutputBuffer();
 
 				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
-				//Gl.DrawBuffers(Gl.COLOR_ATTACHMENT0);
 
-				//glClear(0x0);
-				glClear(0x00808080);
+				glClear(background);
+				//glClear(0x00808080);
 				renderGlToBuffer();
 				glClear(md.background);
-
-				//IntPtr pBuffer = Marshal.AllocHGlobal(size);
-				//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
-				//Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
-				//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+				
 				Gl.ReadPixels(0, 0, w, h, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferOutput.Address);
 
-				//byte[] data = new byte[size];
-				//Marshal.Copy(mlBufferOutput.Address, data, 0, data.Length);
-				//Marshal.Release(pBuffer);
-
 				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-				//Gl.Disable(EnableCap.FramebufferSrgb);
-
-
-				return new ImageModel() {
-					width = w,
-					height = h,
-					data = bufferOutput,
-				};
-
-				//saveImage(bufferOutput, w, h, "bbb.png");
-
 			} catch(Exception ex) {
 				Debug.WriteLine(ex.ToString());
 			}
-
-			return null;
 		}
+
+		//public ImageModel _renderToBuffer() {
+		//	if(!isEngineInited) {
+		//		return null;
+		//	}
+		//	ParticleEditModel md = MainModel.ins.particleEditModel;
+		//	if(md == null || md.width == 0 || md.height == 0) {
+		//		return null;
+		//	}
+		//	//glControl.Animation = false;
+
+		//	int w = md.width;
+		//	int h = md.height;
+		//	int size = w * h * pxChannel;
+
+		//	try {
+		//		//Gl.Enable(EnableCap.FramebufferSrgb);
+				
+		//		initOutputBuffer();
+
+		//		Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+		//		//Gl.DrawBuffers(Gl.COLOR_ATTACHMENT0);
+
+		//		glClear(0x0);
+		//		//glClear(0x00808080);
+		//		renderGlToBuffer();
+		//		glClear(md.background);
+
+		//		//IntPtr pBuffer = Marshal.AllocHGlobal(size);
+		//		//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+		//		//Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
+		//		//Gl.ReadBuffer(ReadBufferMode.ColorAttachment0);
+		//		Gl.ReadPixels(0, 0, w, h, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferOutput.Address);
+
+		//		//byte[] data = new byte[size];
+		//		//Marshal.Copy(mlBufferOutput.Address, data, 0, data.Length);
+		//		//Marshal.Release(pBuffer);
+
+		//		Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+		//		//Gl.Disable(EnableCap.FramebufferSrgb);
+
+
+		//		return new ImageModel() {
+		//			width = w,
+		//			height = h,
+		//			data = bufferOutput,
+		//		};
+
+		//		//saveImage(bufferOutput, w, h, "bbb.png");
+
+		//	} catch(Exception ex) {
+		//		Debug.WriteLine(ex.ToString());
+		//	}
+
+		//	return null;
+		//}
 
 		private void glControl_Render(object sender, GlControlEventArgs e) {
 			update();
