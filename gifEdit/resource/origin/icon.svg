@@ -29,11 +29,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="12.86709"
-     inkscape:cy="15.918033"
+     inkscape:zoom="15.999999"
+     inkscape:cx="23.626488"
+     inkscape:cy="6.6533338"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer5"
      inkscape:showpageshadow="false"
      showgrid="false" />
   <metadata
@@ -113,12 +113,48 @@
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="export">
+     inkscape:label="export"
+     style="display:none">
     <path
        style="fill:#49a1dc;fill-opacity:1;stroke:none;stroke-width:0.0078125px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 0.23492057,0.01626406 c 0.007716,0.051453 -0.0184194,0.1237868 -0.0260008,0.1316465 -0.002265,-0.015831 -0.0177775,-0.044141 -0.0262672,-0.059595 -0.0525161,0.043648 -0.0434061,0.1154134 -0.0486473,0.1570697 -0.006366,-0.0129644 -0.0227974,-0.0555814 -0.0410776,-0.0711563 -0.0129442,-0.0133046 -0.05831361,-0.0164871 -0.07925746,-0.007979 0.02434637,-0.0505946 0.07589996,-0.0836956 0.13589874,-0.1164634 -0.008155,-0.0108555 -0.0613115,-0.030679 -0.0613115,-0.030679 0.0316871,-0.0209392 0.10029676,-0.0167462 0.14666303,-0.0028475 z"
        id="path823"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccccc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="frameBox">
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0078125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect832"
+       width="0.0078125"
+       height="0.09375"
+       x="0"
+       y="0.15625"
+       inkscape:export-filename="E:\00workself\csharp\project\gifEdit\gifEdit\resource\image\frameBox.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0078125;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect836"
+       width="0.3125"
+       height="0.140625"
+       x="0"
+       y="0.10937499"
+       inkscape:export-filename="E:\00workself\csharp\project\gifEdit\gifEdit\resource\image\frameBox.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <rect
+       inkscape:export-ydpi="96"
+       inkscape:export-xdpi="96"
+       inkscape:export-filename="E:\00workself\csharp\project\gifEdit\gifEdit\resource\image\frameBox.png"
+       y="0.203125"
+       x="0.15625"
+       height="0.046875"
+       width="0.0078125"
+       id="use838"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.00451055;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
   </g>
 </svg>

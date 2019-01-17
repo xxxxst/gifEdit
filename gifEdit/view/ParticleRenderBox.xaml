@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:gifEdit.view"
+             xmlns:util="clr-namespace:gifEdit.view.util"
              xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
 		     xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
 			 xmlns:opengl="clr-namespace:OpenGL;assembly=OpenGL.Net.WinForms"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500" BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" Name="ctlParticaleRenderBox" Focusable="True" IsVisibleChanged="ctlParticaleRenderBox_IsVisibleChanged" GotFocus="ctlParticaleRenderBox_GotFocus" LostFocus="ctlParticaleRenderBox_LostFocus" KeyDown="ctlParticaleRenderBox_KeyDown" KeyUp="ctlParticaleRenderBox_KeyUp">
-	<Grid Background="#414141">
+             d:DesignHeight="500" d:DesignWidth="500" BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" Name="ctlParticaleRenderBox" KeyDown="ctlParticaleRenderBox_KeyDown" KeyUp="ctlParticaleRenderBox_KeyUp">
+	<Grid Background="#414141" Name="grdBox" MouseWheel="GrdBox_MouseWheel">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="12"/>
@@ -26,9 +27,16 @@
 		<!--<Label VerticalAlignment="Top" Foreground="#fff" HorizontalAlignment="Right" Margin="0,0,10,0" Name="lblTest"/>-->
 
 		<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="0" Margin="1" Name="bdRenderBox" SizeChanged="bdRenderBox_SizeChanged">
-			<wfi:WindowsFormsHost Width="400" Height="400" Name="formHost">
-				<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="True" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize" MouseWheel="glControl_MouseWheel"/>
-			</wfi:WindowsFormsHost>
+			<Grid>
+				<wfi:WindowsFormsHost Width="400" Height="400" Name="formHost">
+					<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="True" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize" MouseWheel="glControl_MouseWheel" MouseHover="GlControl_MouseHover" MouseLeave="GlControl_MouseLeave"/>
+				</wfi:WindowsFormsHost>
+				<!--<wfi:WindowsFormsHost>
+					<ElementHost BackColorTransparent="True" BackColor="Transparent">
+						<Grid Background="Transparent" Name="grdRenderOver" MouseWheel="GrdRenderOver_MouseWheel"/>
+					</ElementHost>
+				</wfi:WindowsFormsHost>-->
+			</Grid>
 		</Border>
 
 		<ScrollBar Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource ComScrollBarStyle}" SmallChange="30" Name="slbHor" ValueChanged="slbHor_ValueChanged"/>

@@ -6,17 +6,32 @@
              xmlns:local="clr-namespace:gifEdit.view.util"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="200" Name="userControl" SizeChanged="userControl_SizeChanged">
-    <Grid>
+             d:DesignHeight="38" d:DesignWidth="200" Name="userControl" SizeChanged="userControl_SizeChanged">
+	<Grid Name="grdBox" MouseWheel="GrdBox_MouseWheel">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
+			<RowDefinition Height="18"/>
 			<RowDefinition Height="12"/>
+			<RowDefinition Height="8"/>
 		</Grid.RowDefinitions>
 
-		<Border Grid.Row="1" Background="#6d6d6d" CornerRadius="6" Name="bdText" ClipToBounds="True">
-			<Grid Name="grdText" MouseLeftButtonDown="grdText_MouseLeftButtonDown"/>
+		<Grid Grid.Row="1" ClipToBounds="True" Background="Transparent" Name="grdFrameBox" MouseLeftButtonDown="GrdFrameBox_MouseLeftButtonDown">
+			<Border Width="8" Background="#26ae63" HorizontalAlignment="Left" Name="bdSelectFrame"/>
+			<Border HorizontalAlignment="Left" Name="bdFrameBox">
+				<Border.Background>
+					<ImageBrush TileMode="Tile" Stretch="Uniform" AlignmentX="Left" Viewport="0,0,40,18" ViewportUnits="Absolute" ImageSource="/gifEdit;component/resource/image/frameBox.png"/>
+				</Border.Background>
+			</Border>
+		</Grid>
+
+		<Border Grid.Row="2" Background="#6d6d6d" CornerRadius="6" Name="bdText" ClipToBounds="True">
+			<Grid Name="grdText" HorizontalAlignment="Left" MouseLeftButtonDown="grdText_MouseLeftButtonDown"/>
 		</Border>
-		
+
+		<Grid Grid.Row="3" Background="Transparent" ClipToBounds="True" Name="grdThumb" MouseLeftButtonDown="GrdThumb_MouseLeftButtonDown" SizeChanged="GrdThumb_SizeChanged">
+			<Border Width="5" Background="#26ae63" HorizontalAlignment="Left" CornerRadius="2" Name="bdThumbPoint"/>
+		</Grid>
+
 		<!--<ListBox Grid.Row="4" Background="Transparent" BorderThickness="0" Name="lstFrame">
 			<ListBox.ItemContainerStyle>
 				<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
@@ -48,7 +63,7 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>-->
-		
+
 		<Grid.Style>
 			<Style TargetType="Grid">
 				<Style.Triggers>

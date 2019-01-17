@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:gifEdit.view"
 	    xmlns:supUI="clr-namespace:csharpHelp.ui"
         mc:Ignorable="d"
-        Title="GIF编辑器" Height="700" Width="1000" AllowDrop="True" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="GIF编辑器" Height="800" Width="1000" AllowDrop="True" Loaded="Window_Loaded" Closed="Window_Closed">
 	<Grid Background="#4d4d4d">
 		<Grid>
 			<Grid.RowDefinitions>

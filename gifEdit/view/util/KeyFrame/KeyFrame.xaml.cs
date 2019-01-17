@@ -26,13 +26,28 @@ namespace gifEdit.view.util {
 			InitializeComponent();
 
 			coText = FindResource("conTextColor") as SolidColorBrush;
+
+			grdText.Margin = new Thickness(textGapLeft, 0, 0, 0);
+			bdFrameBox.Margin = new Thickness(textGapLeft, 0, 0, 0);
+			bdSelectFrame.Margin = new Thickness(-oneFrameWidth, 0, 0, 0);
+			bdThumbPoint.Margin = new Thickness(-thumbPointWidth, 0, 0, 0);
+			bdFrameBox.Width = 0;
 		}
 
 		//SelectFrame
-		public static readonly DependencyProperty SelectFrameProperty = DependencyProperty.Register("SelectFrame", typeof(int), typeof(KeyFrame), new FrameworkPropertyMetadata(-1, new PropertyChangedCallback(OnValueChanged)));
+		public static readonly DependencyProperty SelectFrameProperty = DependencyProperty.Register("SelectFrame", typeof(int), typeof(KeyFrame), new FrameworkPropertyMetadata(-1, new PropertyChangedCallback(OnSelectFrameChanged)));
 		public int SelectFrame {
 			get { return (int)GetValue(SelectFrameProperty); }
 			set { SetCurrentValue(SelectFrameProperty, value); }
+		}
+		
+		private static void OnSelectFrameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+			var ele = d as KeyFrame;
+			if(ele == null) {
+				return;
+			}
+
+			ele.updateSelectFramePos();
 		}
 
 		//MinFrame
@@ -48,18 +63,20 @@ namespace gifEdit.view.util {
 			get { return (int)GetValue(MaxFrameProperty); }
 			set { SetCurrentValue(MaxFrameProperty, value); }
 		}
-
-
+		
 		private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
 			var ele = d as KeyFrame;
 			if(ele == null) {
 				return;
 			}
 
+			ele.updateThumbSize();
 			ele.updatePos();
 		}
 
 		int startPos = 6;
+		//int boxStartPos = 6;
+		//int boxFrameIdx = 0;
 		int textStartPos = 6;
 		int textFrameIdx = 0;
 		List<Label> lstLabel = new List<Label>();
@@ -77,45 +94,129 @@ namespace gifEdit.view.util {
 			
 		}
 
-		const int showGap = 6;
+		//const int boxGapLeft = 4;
+		const int textGapLeft = 8;
+		const int textGapRight = 50;
 		const int textFrameGap = 5;
+
+		private void updateSelectFramePos() {
+			int idx = SelectFrame;
+			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+			if(MaxFrame <= MinFrame) {
+				idx = MinFrame - 1;
+			}
+
+			if(idx < MinFrame) {
+				bdSelectFrame.Margin = new Thickness(-oneFrameWidth, 0, 0, 0);
+				return;
+			}
+
+			int pos = startPos + idx * oneFrameWidth;
+			bdSelectFrame.Margin = new Thickness(pos, 0, 0, 0);
+
+			updateThumbPos();
+		}
+
+		int minThumbPointWidth = 5;
+		int thumbPointWidth = 5;
+		private void updateThumbSize() {
+			int totalCount = MaxFrame - MinFrame + 1;
+			if(totalCount <= MinFrame) {
+				thumbPointWidth = (int)grdThumb.ActualWidth;
+			} else {
+				thumbPointWidth = (int)(grdThumb.ActualWidth / totalCount);
+				thumbPointWidth = Math.Max(thumbPointWidth, minThumbPointWidth);
+			}
+
+			bdThumbPoint.Width = thumbPointWidth;
+
+			updateThumbPos();
+		}
+
+		private void updateThumbPos() {
+			const int thumbWidth = 4;
+
+			int idx = SelectFrame;
+			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+			int totalCount = MaxFrame - MinFrame + 1;
+
+			if(totalCount <= 0) {
+				idx = MinFrame - 1;
+			}
+			
+			if(idx < MinFrame) {
+				bdThumbPoint.Margin = new Thickness(-thumbPointWidth, 0, 0, 0);
+				return;
+			}
+
+			int pos = (int)((float)(idx - MinFrame) / totalCount * (ActualWidth - thumbWidth));
+			bdThumbPoint.Margin = new Thickness(pos, 0, 0, 0);
+		}
+
 		private void updatePos() {
 			int w = (int)ActualWidth;
 			int textGap = oneFrameWidth * textFrameGap;
+			int textMaxFrame = MaxFrame + 1;
 
-			int count = MaxFrame - MinFrame + 1;
+			int count = textMaxFrame - MinFrame + 1;
 			int totalWidth = oneFrameWidth * count;
 			int r = startPos + totalWidth;
-			if(r + showGap < w) {
-				startPos = w - showGap - totalWidth;
+			if(r + textGapRight < w) {
+				startPos = w - textGapRight - totalWidth;
 			}
-			if(startPos > showGap) {
-				startPos = showGap;
+			if(startPos > textGapLeft) {
+				startPos = textGapLeft;
 			}
 
-			int startFrameIdx = -(startPos - showGap) / oneFrameWidth;
-			startFrameIdx = (startFrameIdx / 5) * 5;
-			startFrameIdx = Math.Max(startFrameIdx, 0);
+			//int startBoxIdx = -(startPos - textGapLeft) / oneFrameWidth;
+			//startBoxIdx = Math.Max(startBoxIdx, 0);
+			//int newBoxFrameIdx = (startPos - textGapLeft) % oneFrameWidth + textGapLeft;
+			//if(boxStartPos != newBoxFrameIdx) {
+			//	boxStartPos = newBoxFrameIdx;
+			//	bdFrameBox.Margin = new Thickness(boxStartPos, 0, 0, 0);
+			//}
 
-			bool isStartFrameIdxUpdate = (textFrameIdx != startFrameIdx);
-			textFrameIdx = startFrameIdx;
-			textStartPos = (startPos - showGap) % textGap + showGap;
-			grdText.Margin = new Thickness(textStartPos, 0, 0, 0);
+			int startTextIdx = -(startPos - textGapLeft) / oneFrameWidth;
+			startTextIdx = (startTextIdx / 5) * 5;
+			startTextIdx = Math.Max(startTextIdx, 0);
 
-			int showCount = ((w - showGap * 2) / textGap) + 1;
-			showCount = Math.Max(0, Math.Min(showCount, (MaxFrame + 1 - startFrameIdx) / 5));
+			bool isStartFrameIdxUpdate = (textFrameIdx != startTextIdx);
+			textFrameIdx = startTextIdx;
+			int newTextStartPos = (startPos - textGapLeft) % textGap + textGapLeft;
+			//if(textStartPos != newTextStartPos) {
+			if(textStartPos != newTextStartPos) {
+				textStartPos = newTextStartPos;
+				grdText.Margin = new Thickness(textStartPos, 0, 0, 0);
+				bdFrameBox.Margin = new Thickness(textStartPos, 0, 0, 0);
+			}
 
-			if(lstLabel.Count < showCount) {
-				for(int i = lstLabel.Count; i < showCount; ++i) {
+			//int showBoxCount = (int)Math.Ceiling((w - textGapLeft + textGapRight) / (float)oneFrameWidth) + 1;
+			//if((startBoxIdx + showBoxCount - 1) > MaxFrame) {
+			//	showBoxCount = MaxFrame - startTextIdx + 1;
+			//}
+			//bdFrameBox.Width = showBoxCount * oneFrameWidth;
+
+			int showTextCount = (int)Math.Ceiling((w - textGapLeft + textGapRight) / (float)textGap) + 1;
+			//showCount = Math.Max(0, Math.Min(showCount, (MaxFrame + 6 - startFrameIdx) / textFrameGap));
+			if((startTextIdx + (showTextCount - 1) * textFrameGap) > textMaxFrame) {
+				showTextCount = (textMaxFrame - startTextIdx) / textFrameGap + 1;
+			}
+			showTextCount = Math.Max(0, showTextCount);
+
+			bdFrameBox.Width = (showTextCount) * oneFrameWidth * textFrameGap;
+			updateSelectFramePos();
+
+			if(lstLabel.Count < showTextCount) {
+				for(int i = lstLabel.Count; i < showTextCount; ++i) {
 					Label lbl = createLabel(i);
 					grdText.Children.Add(lbl);
 					lstLabel.Add(lbl);
 				}
-			} else if(lstLabel.Count > showCount) {
-				for(int i = showCount; i < lstLabel.Count; ++i) {
+			} else if(lstLabel.Count > showTextCount) {
+				for(int i = showTextCount; i < lstLabel.Count; ++i) {
 					grdText.Children.Remove(lstLabel[i]);
 				}
-				lstLabel.RemoveRange(showCount, lstLabel.Count - showCount);
+				lstLabel.RemoveRange(showTextCount, lstLabel.Count - showTextCount);
 			} else {
 				if(!isStartFrameIdxUpdate) {
 					return;
@@ -123,7 +224,7 @@ namespace gifEdit.view.util {
 			}
 
 			for(int i = 0; i < lstLabel.Count; ++i) {
-				lstLabel[i].Content = startFrameIdx + i * textFrameGap;
+				lstLabel[i].Content = (startTextIdx + i * textFrameGap).ToString();
 			}
 		}
 
@@ -157,6 +258,7 @@ namespace gifEdit.view.util {
 
 			parentWin.MouseLeftButtonUp += Win_MouseLeftButtonUp; ;
 			parentWin.MouseMove += Win_MouseMove;
+			parentWin.CaptureMouse();
 		}
 
 		private void Win_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -164,6 +266,7 @@ namespace gifEdit.view.util {
 				return;
 			}
 
+			parentWin.ReleaseMouseCapture();
 			parentWin.MouseLeftButtonUp -= Win_MouseLeftButtonUp;
 			parentWin.MouseMove -= Win_MouseMove;
 		}
@@ -171,6 +274,47 @@ namespace gifEdit.view.util {
 		private void Win_MouseMove(object sender, MouseEventArgs e) {
 			int x = (int)Mouse.GetPosition(bdText).X;
 			startPos = (x - downX) + downStartPos;
+			updatePos();
+		}
+
+		private void GrdFrameBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+			Point pos = e.GetPosition(grdFrameBox);
+			int idx = (int)((pos.X - startPos) / oneFrameWidth);
+			if(idx < MinFrame || idx > MaxFrame) {
+				return;
+			}
+
+			SelectFrame = idx;
+		}
+
+		private void GrdThumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+			if(grdThumb.ActualWidth <= 0) {
+				return;
+			}
+			int totalCount = MaxFrame - MinFrame + 1;
+			if(totalCount <= 0) {
+				return;
+			}
+
+			Point pos = e.GetPosition(grdThumb);
+			int idx = (int)Math.Floor(pos.X / grdThumb.ActualWidth * totalCount) + MinFrame;
+			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+			
+			SelectFrame = idx;
+		}
+
+		private void GrdThumb_SizeChanged(object sender, SizeChangedEventArgs e) {
+			updateThumbSize();
+		}
+
+		private void GrdBox_MouseWheel(object sender, MouseWheelEventArgs e) {
+			const int scrollWidth = 30;
+
+			if(e.Delta > 0) {
+				startPos += scrollWidth;
+			} else {
+				startPos -= scrollWidth;
+			}
 			updatePos();
 		}
 	}

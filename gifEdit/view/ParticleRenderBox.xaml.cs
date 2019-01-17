@@ -25,7 +25,7 @@ using System.Windows.Shapes;
 
 namespace gifEdit.view {
 	/// <summary>粒子渲染区域</summary>
-	public partial class ParticleRenderBox : UserControl {
+	public partial class ParticleRenderBox : UserControl, System.Windows.Forms.IMessageFilter {
 		bool isEngineInited = false;
 
 		int renderTime = 0;
@@ -67,6 +67,25 @@ namespace gifEdit.view {
 				glControl.Animation = false;
 				glControl.Visible = false;
 			}
+
+			System.Windows.Forms.Application.AddMessageFilter(this);
+		}
+
+		private bool isMouseOverGlControl = false;
+		public bool PreFilterMessage(ref System.Windows.Forms.Message msg) {
+			switch(msg.Msg) {
+				case 0x20a: {
+					if(!isMouseOverGlControl) {
+						break;
+					}
+					int delta = msg.WParam.ToInt32();
+					delta = delta >> 16;
+					updateScroll(delta);
+					break;
+				}
+			}
+
+			return false;
 		}
 
 		public void init() {
@@ -680,6 +699,7 @@ namespace gifEdit.view {
 		//}
 
 		private void glControl_Render(object sender, GlControlEventArgs e) {
+			//needUpdate = true;
 			update();
 		}
 
@@ -750,11 +770,11 @@ namespace gifEdit.view {
 			slbY = (int)slbVer.Value;
 		}
 
-		private void glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e) {
+		private void updateScroll(int delta) {
 			ScrollBar slb = isDownShift() ? slbHor : slbVer;
 
 			double oldVal = slb.Value;
-			double newVal = oldVal + slb.SmallChange * (e.Delta < 0 ? 1 : -1);
+			double newVal = oldVal + slb.SmallChange * (delta < 0 ? 1 : -1);
 			if(oldVal * newVal < 0) {
 				newVal = 0;
 			}
@@ -762,25 +782,39 @@ namespace gifEdit.view {
 			slb.Value = newVal;
 		}
 
+		private void glControl_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e) {
+			//ScrollBar slb = isDownShift() ? slbHor : slbVer;
+
+			//double oldVal = slb.Value;
+			//double newVal = oldVal + slb.SmallChange * (e.Delta < 0 ? 1 : -1);
+			//if(oldVal * newVal < 0) {
+			//	newVal = 0;
+			//}
+
+			//slb.Value = newVal;
+
+			//updateScroll(e.Delta);
+		}
+
 		private bool isDownShift() {
 			return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 		}
 
-		private void ctlParticaleRenderBox_GotFocus(object sender, RoutedEventArgs e) {
-			BorderBrush = coBorderAct;
-		}
+		//private void ctlParticaleRenderBox_GotFocus(object sender, RoutedEventArgs e) {
+		//	//BorderBrush = coBorderAct;
+		//}
 
-		private void ctlParticaleRenderBox_LostFocus(object sender, RoutedEventArgs e) {
-			BorderBrush = coBorderDef;
-		}
+		//private void ctlParticaleRenderBox_LostFocus(object sender, RoutedEventArgs e) {
+		//	//BorderBrush = coBorderDef;
+		//}
 
-		private void ctlParticaleRenderBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
-			if(IsVisible) {
-				//glControl.Focus();
-				//FocusManager.SetFocusedElement(this);
-				Keyboard.Focus(this);
-			}
-		}
+		//private void ctlParticaleRenderBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+		//	if(IsVisible) {
+		//		//glControl.Focus();
+		//		//FocusManager.SetFocusedElement(this);
+		//		//Keyboard.Focus(this);
+		//	}
+		//}
 
 		private bool isDoDownEvent = false;
 
@@ -797,6 +831,18 @@ namespace gifEdit.view {
 
 		private void ctlParticaleRenderBox_KeyUp(object sender, KeyEventArgs e) {
 			isDoDownEvent = false;
+		}
+
+		private void GrdBox_MouseWheel(object sender, MouseWheelEventArgs e) {
+			updateScroll(e.Delta);
+		}
+
+		private void GlControl_MouseHover(object sender, EventArgs e) {
+			isMouseOverGlControl = true;
+		}
+
+		private void GlControl_MouseLeave(object sender, EventArgs e) {
+			isMouseOverGlControl = false;
 		}
 	}
 }
