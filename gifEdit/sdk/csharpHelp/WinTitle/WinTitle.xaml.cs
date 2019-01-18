@@ -19,8 +19,8 @@ namespace csharpHelp.ui {
 	/// <summary>
 	/// SupWinTitle.xaml 的交互逻辑
 	/// </summary>
-	public partial class SupWinTitle : BaseWinTitle {
-		public SupWinTitle():base() {
+	public partial class WinTitle : BaseWinTitle {
+		public WinTitle():base() {
 			InitializeComponent();
 		}
 

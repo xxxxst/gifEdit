@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace csharpHelp.util {
-	class SupRelayCommand : ICommand {
+	class ActionRelayCommand : ICommand {
 		private Action action;
-		public SupRelayCommand(Action _action) {
+		public ActionRelayCommand(Action _action) {
 			action = _action;
 		}
 
@@ -26,9 +26,9 @@ namespace csharpHelp.util {
 		}
 	}
 
-	class SupRelayCommand<T> : ICommand {
+	class ActionRelayCommand<T> : ICommand {
 		private Action<T> action;
-		public SupRelayCommand(Action<T> _action) {
+		public ActionRelayCommand(Action<T> _action) {
 			action = _action;
 		}
 

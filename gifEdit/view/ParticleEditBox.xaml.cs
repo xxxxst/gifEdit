@@ -44,12 +44,21 @@ namespace gifEdit.view {
 		private bool isEditGlobalAttrByUI = false;
 
 		private Timer timer = null;
-		private int nowTime = 0;
+		//private int nowTime = 0;
+
+		private Brush coFrameDef = null;
+		private Brush coFrameLoop = null;
+		private ImageDataCtl imageDataCtl = new ImageDataCtl();
 
 		public ParticleEditBox() {
 			InitializeComponent();
 
 			DataContext = vm;
+
+			coFrameDef = keyFrame.FramePointColor;
+			coFrameLoop = FindResource("coFrameLoop") as Brush;
+
+			imageDataCtl.getImageModel = particleRenderBox.renderToBuffer;
 
 			EventServer.ins.pointEngineInitedEvent += () => {
 				isEngineInited = true;
@@ -66,9 +75,10 @@ namespace gifEdit.view {
 			};
 
 			EventServer.ins.copyToClipboard += () => {
-				ImageModel md = particleRenderBox.renderToBuffer();
+				//ImageModel md = particleRenderBox.renderToBuffer();
 				//saveImage(md, "bbb.png");
-				saveToClipboard(md);
+				//saveToClipboard(md);
+				imageDataCtl.saveToClipboard();
 			};
 
 			initAttr();
@@ -83,6 +93,7 @@ namespace gifEdit.view {
 		bool isRenderPause = false;
 		int oldFrameIdx = 0;
 		int totalFrame = 0;
+		bool isFrameInLoop = false;
 
 		int renderTime = 0;
 		int oldMaxRenderTime = 0;
@@ -143,14 +154,54 @@ namespace gifEdit.view {
 
 			//particleRenderBox.setRenderTime((int)(oldFrameIdx * 1000f / md.fps));
 		}
+
+		private void updateRenderTimeByFrame(int frameIdx) {
+			if(!isEngineInited) {
+				return;
+			}
+			int maxRenderTime = particleRenderBox.getMaxRenderTime();
+
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null || md.fps <= 0) {
+				return;
+			}
+
+			renderTime = (int)((float)frameIdx / md.fps * 1000);
+			if(renderTime >= maxRenderTime) {
+				renderTime = maxRenderTime + renderTime % maxRenderTime;
+			} else {
+				renderTime = renderTime % maxRenderTime;
+			}
+
+			particleRenderBox.setRenderTime(renderTime);
+		}
 		
 		private void updateFrame(int frameIdx) {
 			if(oldFrameIdx == frameIdx) {
 				return;
 			}
 
-			oldFrameIdx = frameIdx;
 			frameIdx = frameIdx % totalFrame;
+
+			Dispatcher.Invoke(() => {
+				oldFrameIdx = frameIdx;
+				//bool isLoop = frameIdx >= totalFrame / 2;
+				//if(isLoop != isFrameInLoop) {
+				//	isFrameInLoop = isLoop;
+				//	keyFrame.FramePointColor = isLoop ? coFrameLoop : coFrameDef;
+				//}
+
+				keyFrame.SelectFrame = frameIdx;
+				updateFrameLabel();
+			});
+		}
+
+		private void updateFrameLabel() {
+			if(oldFrameIdx < 0) {
+				nowFrame.Content = "";
+			} else {
+				nowFrame.Content = oldFrameIdx;
+			}
 		}
 
 		private void updateMaxFrame() {
@@ -180,53 +231,53 @@ namespace gifEdit.view {
 			});
 		}
 
-		private void saveToClipboard(ImageModel md) {
-			System.Drawing.Bitmap pic = new System.Drawing.Bitmap(md.width, md.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+		//private void saveToClipboard(ImageModel md) {
+		//	System.Drawing.Bitmap pic = new System.Drawing.Bitmap(md.width, md.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-			//System.Drawing.Image img = System.Drawing.Image.FromStream();
+		//	//System.Drawing.Image img = System.Drawing.Image.FromStream();
 
-			for(int x = 0; x < md.width; x++) {
-				for(int y = 0; y < md.height; y++) {
-					int idx = (y * md.width + x) * md.pxChannel;
-					System.Drawing.Color c = System.Drawing.Color.FromArgb(
-						md.data[idx + 3],
-						md.data[idx + 2],
-						md.data[idx + 1],
-						md.data[idx + 0]
-					);
-					pic.SetPixel(x, md.height - 1 - y, c);
-				}
-			}
+		//	for(int x = 0; x < md.width; x++) {
+		//		for(int y = 0; y < md.height; y++) {
+		//			int idx = (y * md.width + x) * md.pxChannel;
+		//			System.Drawing.Color c = System.Drawing.Color.FromArgb(
+		//				md.data[idx + 3],
+		//				md.data[idx + 2],
+		//				md.data[idx + 1],
+		//				md.data[idx + 0]
+		//			);
+		//			pic.SetPixel(x, md.height - 1 - y, c);
+		//		}
+		//	}
 
-			//BitmapSource bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-			//	pic.GetHbitmap(),
-			//	IntPtr.Zero,
-			//	Int32Rect.Empty,
-			//	BitmapSizeOptions.FromWidthAndHeight(md.width, md.height)
-			//);
+		//	//BitmapSource bs = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+		//	//	pic.GetHbitmap(),
+		//	//	IntPtr.Zero,
+		//	//	Int32Rect.Empty,
+		//	//	BitmapSizeOptions.FromWidthAndHeight(md.width, md.height)
+		//	//);
 
-			//Clipboard.SetImage(bs);
+		//	//Clipboard.SetImage(bs);
 
-			ClipboardImageCtl.SetClipboardImage(pic, null, null);
-		}
+		//	ClipboardImageCtl.SetClipboardImage(pic, null, null);
+		//}
 		
-		private void saveImage(ImageModel md, string outPath) {
-			//FIMEMORY ms = new FIMEMORY();
+		//private void saveImage(ImageModel md, string outPath) {
+		//	//FIMEMORY ms = new FIMEMORY();
 
-			FIBITMAP dib = FreeImage.Allocate(md.width, md.height, 32, 8, 8, 8);
-			IntPtr pFibData = FreeImage.GetBits(dib);
-			Marshal.Copy(md.data, 0, pFibData, md.data.Length);
+		//	FIBITMAP dib = FreeImage.Allocate(md.width, md.height, 32, 8, 8, 8);
+		//	IntPtr pFibData = FreeImage.GetBits(dib);
+		//	Marshal.Copy(md.data, 0, pFibData, md.data.Length);
 
-			FreeImage.Save(FREE_IMAGE_FORMAT.FIF_PNG, dib, outPath, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
-			//FreeImage.SaveToMemory(FREE_IMAGE_FORMAT.FIF_PNG, dib, ms, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+		//	FreeImage.Save(FREE_IMAGE_FORMAT.FIF_PNG, dib, outPath, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+		//	//FreeImage.SaveToMemory(FREE_IMAGE_FORMAT.FIF_PNG, dib, ms, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
 
-			//int size = FreeImage.TellMemory(ms);
-			//byte[] buffer = new byte[size];
-			//FreeImage.SeekMemory(ms, 0, SeekOrigin.Begin);
-			//FreeImage.ReadMemory(buffer, (uint)size, (uint)size, ms);
+		//	//int size = FreeImage.TellMemory(ms);
+		//	//byte[] buffer = new byte[size];
+		//	//FreeImage.SeekMemory(ms, 0, SeekOrigin.Begin);
+		//	//FreeImage.ReadMemory(buffer, (uint)size, (uint)size, ms);
 
-			FreeImage.Unload(dib);
-		}
+		//	FreeImage.Unload(dib);
+		//}
 
 		private void UserControl_Loaded(object sender, RoutedEventArgs e) {
 
@@ -695,6 +746,72 @@ namespace gifEdit.view {
 
 		private void btnTest_Click(object sender, RoutedEventArgs e) {
 			//EventServer.ins.onCopyToClipboard();
+		}
+
+		private void KeyFrame_SelectFrameChanged(object sender, RoutedEventArgs e) {
+			int idx = keyFrame.SelectFrame;
+
+			bool isLoop = idx >= totalFrame / 2;
+			if(isLoop != isFrameInLoop) {
+				isFrameInLoop = isLoop;
+				keyFrame.FramePointColor = isLoop ? coFrameLoop : coFrameDef;
+			}
+
+			if(oldFrameIdx == idx) {
+				return;
+			}
+			if(idx < 0) {
+				return;
+			}
+
+			pauseFrame();
+			//Debug.WriteLine(keyFrame.SelectFrame);
+			oldFrameIdx = idx;
+			updateRenderTimeByFrame(idx);
+			updateFrameLabel();
+		}
+
+		private void BtnPreFrame_Click(object sender, RoutedEventArgs e) {
+			pauseFrame();
+
+			int idx = oldFrameIdx - 1;
+			if(idx < 0) {
+				return;
+			}
+
+			updateRenderTimeByFrame(idx);
+			updateFrame(idx);
+			keyFrame.setSelectFrameCenter();
+		}
+
+		private void BtnStartFrame_Click(object sender, RoutedEventArgs e) {
+			glTime.getTime();
+
+			isRenderPause = false;
+			btnStartFrame.Visibility = Visibility.Collapsed;
+			btnPauseFrame.Visibility = Visibility.Visible;
+		}
+
+		private void pauseFrame() {
+			isRenderPause = true;
+			btnPauseFrame.Visibility = Visibility.Collapsed;
+			btnStartFrame.Visibility = Visibility.Visible;
+		}
+
+		private void BtnPauseFrame_Click(object sender, RoutedEventArgs e) {
+			pauseFrame();
+		}
+
+		private void BtnNextFrame_Click(object sender, RoutedEventArgs e) {
+			pauseFrame();
+			int idx = oldFrameIdx + 1;
+			if(idx >= totalFrame) {
+				return;
+			}
+
+			updateRenderTimeByFrame(idx);
+			updateFrame(idx);
+			keyFrame.setSelectFrameCenter();
 		}
 	}
 

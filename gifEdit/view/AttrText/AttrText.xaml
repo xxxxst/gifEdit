@@ -15,7 +15,7 @@
 		</Grid.ColumnDefinitions>
 
 		<TextBox Grid.Column="0" Padding="0,3" BorderThickness="0" Foreground="#fff" CaretBrush="#fff" FontSize="12" TextBlock.LineHeight="20" AcceptsReturn="False" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden" TextAlignment="Right" Background="Transparent" IsReadOnly="True" Name="txtAttrDesc"/>
-		<Grid Background="Transparent"/>
+		<Grid Background="Transparent" Name="grdAttrDescMask" MouseWheel="GrdAttrDescMask_MouseWheel"/>
 
 		<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
 

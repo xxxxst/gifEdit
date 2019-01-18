@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:gifEdit.view"
              xmlns:util="clr-namespace:gifEdit.view.util"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
+			 xmlns:comStyle="clr-namespace:comStyle"
              mc:Ignorable="d" 
              d:DesignHeight="630" d:DesignWidth="1000" Loaded="UserControl_Loaded">
 	<Grid>
@@ -92,7 +93,7 @@
 									<Grid Margin="2,0,0,2" Height="50" Background="Transparent">
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="Auto"/>
-											<ColumnDefinition Width="5"/>
+											<ColumnDefinition Width="0"/>
 											<ColumnDefinition Width="50"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
@@ -116,7 +117,7 @@
 										</Border>
 
 										<Grid Margin="0,2,0,2" Width="46" Grid.Column="2">
-											<Border BorderThickness="1" BorderBrush="#8a8a8a" />
+											<Border BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" />
 											<Image Margin="5" Cursor="Hand" Tag="{Binding .}" Source="{Binding Image}" Name="imgEmitter" MouseLeftButtonUp="imgEmitter_MouseLeftButtonUp"/>
 										</Grid>
 									</Grid>
@@ -158,11 +159,27 @@
 
 				<Border Grid.Row="4" BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
 					<Grid>
-						<!--<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
-						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
-						<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Content="" Name="lblFps"/>
-					</StackPanel>-->
-						<util:KeyFrame x:Name="keyFrame"/>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<util:KeyFrame x:Name="keyFrame" SelectFrameChanged="KeyFrame_SelectFrameChanged"/>
+						<Grid Grid.Column="1" Margin="2,0,0,0">
+							<Grid VerticalAlignment="Top" Height="20">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Label Grid.Column="0" Foreground="#fff" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="帧"/>
+								<Label Grid.Column="1" Foreground="#fff" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="1" Name="nowFrame"/>
+							</Grid>
+							<StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+								<supUI:MiniButton Height="16" ImagePadding="2" Radius="2" Source="/gifEdit;component/resource/image/preFrame.png" ToolTip="上一帧" x:Name="btnPreFrame" Click="BtnPreFrame_Click" />
+								<supUI:MiniButton Height="16" Width="24" ImagePadding="1" Radius="4" Source="/gifEdit;component/resource/image/start.png" ToolTip="播放" Visibility="Collapsed" x:Name="btnStartFrame" Click="BtnStartFrame_Click" />
+								<supUI:MiniButton Height="16" Width="24" ImagePadding="1" Radius="4" Source="/gifEdit;component/resource/image/pause.png" ToolTip="暂停" x:Name="btnPauseFrame" Click="BtnPauseFrame_Click" />
+								<supUI:MiniButton Height="16" ImagePadding="2" Radius="2" Source="/gifEdit;component/resource/image/nextFrame.png" ToolTip="下一帧" x:Name="btnNextFrame" Click="BtnNextFrame_Click" />
+							</StackPanel>
+						</Grid>
 					</Grid>
 				</Border>
 			</Grid>

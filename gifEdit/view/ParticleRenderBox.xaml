@@ -10,7 +10,7 @@
 			 xmlns:opengl="clr-namespace:OpenGL;assembly=OpenGL.Net.WinForms"
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500" BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" Name="ctlParticaleRenderBox" KeyDown="ctlParticaleRenderBox_KeyDown" KeyUp="ctlParticaleRenderBox_KeyUp">
+             d:DesignHeight="500" d:DesignWidth="500" BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" Focusable="True" Name="ctlParticaleRenderBox" GotFocus="ctlParticaleRenderBox_GotFocus" LostFocus="ctlParticaleRenderBox_LostFocus" IsVisibleChanged="ctlParticaleRenderBox_IsVisibleChanged" KeyDown="ctlParticaleRenderBox_KeyDown" KeyUp="ctlParticaleRenderBox_KeyUp">
 	<Grid Background="#414141" Name="grdBox" MouseWheel="GrdBox_MouseWheel">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -39,7 +39,7 @@
 			</Grid>
 		</Border>
 
-		<ScrollBar Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource ComScrollBarStyle}" SmallChange="30" Name="slbHor" ValueChanged="slbHor_ValueChanged"/>
+		<ScrollBar Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource ComScrollBarStyle}"  SmallChange="30" Name="slbHor" ValueChanged="slbHor_ValueChanged"/>
 		<ScrollBar Grid.Column="1" Orientation="Vertical" Style="{DynamicResource ComScrollBarStyle}" SmallChange="30" Name="slbVer" ValueChanged="slbVer_ValueChanged"/>
 	</Grid>
 </UserControl>

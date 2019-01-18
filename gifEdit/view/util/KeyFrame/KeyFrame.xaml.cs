@@ -48,6 +48,17 @@ namespace gifEdit.view.util {
 			}
 
 			ele.updateSelectFramePos();
+			
+			//发送事件
+			RoutedEventArgs arg = new RoutedEventArgs(SelectFrameChangedProperty, ele);
+			ele.RaiseEvent(arg);
+		}
+
+		//FramePointColor
+		public static readonly DependencyProperty FramePointColorProperty = DependencyProperty.Register("FramePointColor", typeof(Brush), typeof(KeyFrame), new PropertyMetadata(new BrushConverter().ConvertFromString("#26ae63")) );
+		public Brush FramePointColor {
+			get { return (Brush)GetValue(FramePointColorProperty); }
+			set { SetCurrentValue(FramePointColorProperty, value); }
 		}
 
 		//MinFrame
@@ -72,6 +83,13 @@ namespace gifEdit.view.util {
 
 			ele.updateThumbSize();
 			ele.updatePos();
+		}
+
+		//SelectFrameChanged
+		public static readonly RoutedEvent SelectFrameChangedProperty = EventManager.RegisterRoutedEvent("SelectFrameChanged", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(KeyFrame));
+		public event RoutedEventHandler SelectFrameChanged {
+			add { AddHandler(SelectFrameChangedProperty, value); }
+			remove { RemoveHandler(SelectFrameChangedProperty, value); }
 		}
 
 		int startPos = 6;
@@ -101,14 +119,14 @@ namespace gifEdit.view.util {
 
 		private void updateSelectFramePos() {
 			int idx = SelectFrame;
-			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
-			if(MaxFrame <= MinFrame) {
-				idx = MinFrame - 1;
-			}
-
 			if(idx < MinFrame) {
 				bdSelectFrame.Margin = new Thickness(-oneFrameWidth, 0, 0, 0);
 				return;
+			}
+
+			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+			if(MaxFrame <= MinFrame) {
+				idx = MinFrame - 1;
 			}
 
 			int pos = startPos + idx * oneFrameWidth;
@@ -137,6 +155,11 @@ namespace gifEdit.view.util {
 			const int thumbWidth = 4;
 
 			int idx = SelectFrame;
+			if(idx < MinFrame) {
+				bdThumbPoint.Margin = new Thickness(-thumbPointWidth, 0, 0, 0);
+				return;
+			}
+
 			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
 			int totalCount = MaxFrame - MinFrame + 1;
 
@@ -144,11 +167,6 @@ namespace gifEdit.view.util {
 				idx = MinFrame - 1;
 			}
 			
-			if(idx < MinFrame) {
-				bdThumbPoint.Margin = new Thickness(-thumbPointWidth, 0, 0, 0);
-				return;
-			}
-
 			int pos = (int)((float)(idx - MinFrame) / totalCount * (ActualWidth - thumbWidth));
 			bdThumbPoint.Margin = new Thickness(pos, 0, 0, 0);
 		}
@@ -244,14 +262,34 @@ namespace gifEdit.view.util {
 			updatePos();
 		}
 
+		MouseDownType mouseDownType = MouseDownType.None;
 		int downStartPos = 0;
 		int downX = 0;
 		Window parentWin = null;
-		private void grdText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-			parentWin = Window.GetWindow(this);
-			if(parentWin == null) {
+		private void bdText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+			//Window win = Window.GetWindow(this);
+			//if(win == null) {
+			//	return;
+			//}
+			//parentWin = win;
+			//mouseDownType = MouseDownType.Text;
+
+			//downStartPos = startPos;
+			//downX = (int)Mouse.GetPosition(bdText).X;
+
+			//parentWin.MouseLeftButtonUp += Win_MouseLeftButtonUp; ;
+			//parentWin.MouseMove += Win_MouseMove;
+			//parentWin.CaptureMouse();
+			mouseDownHandler(MouseDownType.Text);
+		}
+
+		private void mouseDownHandler(MouseDownType type) {
+			Window win = Window.GetWindow(this);
+			if(win == null) {
 				return;
 			}
+			parentWin = win;
+			mouseDownType = type;
 
 			downStartPos = startPos;
 			downX = (int)Mouse.GetPosition(bdText).X;
@@ -262,6 +300,8 @@ namespace gifEdit.view.util {
 		}
 
 		private void Win_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+			mouseDownType = MouseDownType.None;
+
 			if(parentWin == null) {
 				return;
 			}
@@ -269,38 +309,91 @@ namespace gifEdit.view.util {
 			parentWin.ReleaseMouseCapture();
 			parentWin.MouseLeftButtonUp -= Win_MouseLeftButtonUp;
 			parentWin.MouseMove -= Win_MouseMove;
+			parentWin = null;
 		}
 
 		private void Win_MouseMove(object sender, MouseEventArgs e) {
-			int x = (int)Mouse.GetPosition(bdText).X;
-			startPos = (x - downX) + downStartPos;
+			switch(mouseDownType) {
+				case MouseDownType.Frame: {
+					Point pos = e.GetPosition(grdFrameBox);
+					int idx = (int)((pos.X - startPos) / oneFrameWidth);
+					if(idx < MinFrame || idx > MaxFrame) {
+						return;
+					}
+					if(idx == SelectFrame) {
+						break;
+					}
+
+					SelectFrame = idx;
+					break;
+				}
+				case MouseDownType.Text: {
+					int x = (int)Mouse.GetPosition(bdText).X;
+					startPos = -(x - downX) + downStartPos;
+					updatePos();
+					break;
+				}
+				case MouseDownType.Thumb: {
+					if(grdThumb.ActualWidth <= 0) {
+						return;
+					}
+					int totalCount = MaxFrame - MinFrame + 1;
+					if(totalCount <= 0) {
+						return;
+					}
+
+					Point pos = e.GetPosition(grdThumb);
+					int idx = (int)Math.Floor(pos.X / grdThumb.ActualWidth * totalCount) + MinFrame;
+					idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+					if(idx == SelectFrame) {
+						break;
+					}
+					setCenterPosByFrameIdx(idx);
+
+					SelectFrame = idx;
+					break;
+				}
+			}
+		}
+
+		public void setSelectFrameCenter() {
+			startPos = (int)(-(SelectFrame * oneFrameWidth) + bdText.ActualWidth / 2);
+			updatePos();
+		}
+
+		private void setCenterPosByFrameIdx(int idx) {
+			startPos = (int)(-(idx * oneFrameWidth) + bdText.ActualWidth / 2);
 			updatePos();
 		}
 
 		private void GrdFrameBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-			Point pos = e.GetPosition(grdFrameBox);
-			int idx = (int)((pos.X - startPos) / oneFrameWidth);
-			if(idx < MinFrame || idx > MaxFrame) {
-				return;
-			}
+			//Point pos = e.GetPosition(grdFrameBox);
+			//int idx = (int)((pos.X - startPos) / oneFrameWidth);
+			//if(idx < MinFrame || idx > MaxFrame) {
+			//	return;
+			//}
 
-			SelectFrame = idx;
+			//SelectFrame = idx;
+
+			mouseDownHandler(MouseDownType.Frame);
 		}
 
 		private void GrdThumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-			if(grdThumb.ActualWidth <= 0) {
-				return;
-			}
-			int totalCount = MaxFrame - MinFrame + 1;
-			if(totalCount <= 0) {
-				return;
-			}
+			//if(grdThumb.ActualWidth <= 0) {
+			//	return;
+			//}
+			//int totalCount = MaxFrame - MinFrame + 1;
+			//if(totalCount <= 0) {
+			//	return;
+			//}
 
-			Point pos = e.GetPosition(grdThumb);
-			int idx = (int)Math.Floor(pos.X / grdThumb.ActualWidth * totalCount) + MinFrame;
-			idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
+			//Point pos = e.GetPosition(grdThumb);
+			//int idx = (int)Math.Floor(pos.X / grdThumb.ActualWidth * totalCount) + MinFrame;
+			//idx = Math.Max(MinFrame, Math.Min(idx, MaxFrame));
 			
-			SelectFrame = idx;
+			//SelectFrame = idx;
+
+			mouseDownHandler(MouseDownType.Thumb);
 		}
 
 		private void GrdThumb_SizeChanged(object sender, SizeChangedEventArgs e) {
@@ -317,5 +410,10 @@ namespace gifEdit.view.util {
 			}
 			updatePos();
 		}
+
+		enum MouseDownType {
+			None, Frame, Text, Thumb
+		}
 	}
+
 }

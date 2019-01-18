@@ -31,7 +31,7 @@ namespace csharpHelp.ui {
 
 		public TextBoxFile() : base() {
 			//Loaded += TextBoxFile_Loaded;
-			CmdOpenFile = new SupRelayCommand(new Action(onOpenFile));
+			CmdOpenFile = new ActionRelayCommand(new Action(onOpenFile));
 
 			//TextChanged += (object sender, TextChangedEventArgs e) => {
 			//	if (e.OriginalSource != this) {

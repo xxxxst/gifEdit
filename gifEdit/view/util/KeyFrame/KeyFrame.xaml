@@ -16,7 +16,7 @@
 		</Grid.RowDefinitions>
 
 		<Grid Grid.Row="1" ClipToBounds="True" Background="Transparent" Name="grdFrameBox" MouseLeftButtonDown="GrdFrameBox_MouseLeftButtonDown">
-			<Border Width="8" Background="#26ae63" HorizontalAlignment="Left" Name="bdSelectFrame"/>
+			<Border Width="8" Background="{Binding FramePointColor, ElementName=userControl}" HorizontalAlignment="Left" Name="bdSelectFrame"/>
 			<Border HorizontalAlignment="Left" Name="bdFrameBox">
 				<Border.Background>
 					<ImageBrush TileMode="Tile" Stretch="Uniform" AlignmentX="Left" Viewport="0,0,40,18" ViewportUnits="Absolute" ImageSource="/gifEdit;component/resource/image/frameBox.png"/>
@@ -24,12 +24,12 @@
 			</Border>
 		</Grid>
 
-		<Border Grid.Row="2" Background="#6d6d6d" CornerRadius="6" Name="bdText" ClipToBounds="True">
-			<Grid Name="grdText" HorizontalAlignment="Left" MouseLeftButtonDown="grdText_MouseLeftButtonDown"/>
+		<Border Grid.Row="2" Background="#6d6d6d" CornerRadius="4" Name="bdText" ClipToBounds="True" MouseLeftButtonDown="bdText_MouseLeftButtonDown">
+			<Grid Name="grdText" HorizontalAlignment="Left"/>
 		</Border>
 
 		<Grid Grid.Row="3" Background="Transparent" ClipToBounds="True" Name="grdThumb" MouseLeftButtonDown="GrdThumb_MouseLeftButtonDown" SizeChanged="GrdThumb_SizeChanged">
-			<Border Width="5" Background="#26ae63" HorizontalAlignment="Left" CornerRadius="2" Name="bdThumbPoint"/>
+			<Border Width="5" Background="{Binding FramePointColor, ElementName=userControl}" HorizontalAlignment="Left" CornerRadius="2" Name="bdThumbPoint"/>
 		</Grid>
 
 		<!--<ListBox Grid.Row="4" Background="Transparent" BorderThickness="0" Name="lstFrame">

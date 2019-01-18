@@ -167,5 +167,9 @@ namespace gifEdit.view {
 			RaiseEvent(arg);
 		}
 
+		private void GrdAttrDescMask_MouseWheel(object sender, MouseWheelEventArgs e) {
+			int param = e.Delta < 0 ? 1 : -1;
+			txtAttrValue.ScrollToVerticalOffset(txtAttrValue.VerticalOffset + (txtAttrValue.FontSize + 3) * 3 * param);
+		}
 	}
 }

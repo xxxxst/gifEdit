@@ -119,6 +119,7 @@
     <Compile Include="control\glEngine\FpsCtl.cs" />
     <Compile Include="control\glEngine\GlObject.cs" />
     <Compile Include="control\glEngine\GlTime.cs" />
+    <Compile Include="control\ImageDataCtl.cs" />
     <Compile Include="control\LastProjectCtl.cs" />
     <Compile Include="control\ParticleEditCtl.cs" />
     <Compile Include="control\ParticleEmitter.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="view\AttrText\AttrText.xaml.cs">
       <DependentUpon>AttrText.xaml</DependentUpon>
     </Compile>
+    <Compile Include="view\style\ComScrollViewDep.cs" />
     <Compile Include="view\util\ColorPicker\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
@@ -180,7 +182,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="sdk\csharpHelp\SupWinTitle\SupWinTitle.xaml">
+    <Page Include="sdk\csharpHelp\WinTitle\WinTitle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -241,9 +243,9 @@
     <Compile Include="sdk\csharpHelp\services\XmlModelServer.cs" />
     <Compile Include="sdk\csharpHelp\SingleEvent.cs" />
     <Compile Include="sdk\csharpHelp\StringReplace.cs" />
-    <Compile Include="sdk\csharpHelp\SupWinTitle\BaseWinTitle.cs" />
-    <Compile Include="sdk\csharpHelp\SupWinTitle\SupWinTitle.xaml.cs">
-      <DependentUpon>SupWinTitle.xaml</DependentUpon>
+    <Compile Include="sdk\csharpHelp\WinTitle\BaseWinTitle.cs" />
+    <Compile Include="sdk\csharpHelp\WinTitle\WinTitle.xaml.cs">
+      <DependentUpon>WinTitle.xaml</DependentUpon>
     </Compile>
     <Compile Include="sdk\csharpHelp\SystemCtl.cs" />
     <Compile Include="sdk\csharpHelp\TableCtl.cs" />
@@ -259,7 +261,7 @@
     <Compile Include="sdk\csharpHelp\ui\BehaviorBox.cs" />
     <Compile Include="sdk\csharpHelp\ui\BindModel.cs" />
     <Compile Include="sdk\csharpHelp\ui\IsDesignBind.cs" />
-    <Compile Include="sdk\csharpHelp\ui\SupRelayCommand.cs" />
+    <Compile Include="sdk\csharpHelp\ui\ActionRelayCommand.cs" />
     <Compile Include="sdk\csharpHelp\ui\XCtl.cs" />
     <Compile Include="sdk\csharpHelp\ui\XCvt.cs" />
     <Compile Include="sdk\csharpHelp\ui\XEvtTrigger.cs" />
@@ -363,6 +365,11 @@
     <Resource Include="resource\image\color-picker-h.png" />
     <Resource Include="resource\image\color-picker-sv.png" />
     <Resource Include="resource\image\export.png" />
+    <Resource Include="resource\image\pause.png" />
+    <Resource Include="resource\image\start.png" />
+    <Resource Include="resource\image\nextFrame.png" />
+    <Resource Include="resource\image\preFrame.png" />
+    <Resource Include="resource\image\stop.png" />
     <Content Include="sdk\freeImage\x32\FreeImage.dll" />
     <Content Include="sdk\freeImage\x64\FreeImage.dll" />
   </ItemGroup>

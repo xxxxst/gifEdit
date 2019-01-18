@@ -24,8 +24,8 @@ namespace csharpHelp.ui {
 
 		public TextBoxCheckbox():base() {
 			//Loaded +=TextBoxCheckbox_Loaded;
-			CmdChecked = new SupRelayCommand(new Action(onChecked));
-			CmdUnchecked = new SupRelayCommand(new Action(onUnchecked));
+			CmdChecked = new ActionRelayCommand(new Action(onChecked));
+			CmdUnchecked = new ActionRelayCommand(new Action(onUnchecked));
 		}
 
 		//private void TextBoxCheckbox_Loaded(object sender, RoutedEventArgs e) {

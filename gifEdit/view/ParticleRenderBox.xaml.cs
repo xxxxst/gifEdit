@@ -54,14 +54,14 @@ namespace gifEdit.view {
 		byte[] bufferOutput = new byte[0];
 		MemoryLock mlBufferOutput = null;
 
-		SolidColorBrush coBorderDef = null;
-		SolidColorBrush coBorderAct = null;
+		Brush coBorderDef = null;
+		Brush coBorderAct = null;
 
 		public ParticleRenderBox() {
 			InitializeComponent();
 
-			coBorderDef = FindResource("comBorderColor") as SolidColorBrush;
-			coBorderAct = FindResource("comBorderColorActivate") as SolidColorBrush;
+			coBorderDef = FindResource("comBorderColor") as Brush;
+			coBorderAct = FindResource("comBorderColorActivate") as Brush;
 			
 			if(DesignerProperties.GetIsInDesignMode(this)) {
 				glControl.Animation = false;
@@ -800,21 +800,21 @@ namespace gifEdit.view {
 			return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 		}
 
-		//private void ctlParticaleRenderBox_GotFocus(object sender, RoutedEventArgs e) {
-		//	//BorderBrush = coBorderAct;
-		//}
+		private void ctlParticaleRenderBox_GotFocus(object sender, RoutedEventArgs e) {
+			BorderBrush = coBorderAct;
+		}
 
-		//private void ctlParticaleRenderBox_LostFocus(object sender, RoutedEventArgs e) {
-		//	//BorderBrush = coBorderDef;
-		//}
+		private void ctlParticaleRenderBox_LostFocus(object sender, RoutedEventArgs e) {
+			BorderBrush = coBorderDef;
+		}
 
-		//private void ctlParticaleRenderBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
-		//	if(IsVisible) {
-		//		//glControl.Focus();
-		//		//FocusManager.SetFocusedElement(this);
-		//		//Keyboard.Focus(this);
-		//	}
-		//}
+		private void ctlParticaleRenderBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+			if(IsVisible) {
+				//glControl.Focus();
+				//FocusManager.SetFocusedElement(this);
+				Keyboard.Focus(this);
+			}
+		}
 
 		private bool isDoDownEvent = false;
 
