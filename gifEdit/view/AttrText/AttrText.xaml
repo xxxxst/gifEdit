@@ -19,7 +19,7 @@
 
 		<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
 
-		<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#a0a0a0" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#686868" Name="txtHintInfo"/>
+		<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#a0a0a0" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="#555555" Name="txtHintInfo"/>
 		<TextBox Grid.Column="2" Padding="3" BorderThickness="0" Foreground="#ffffff" CaretBrush="#fff" FontSize="14" TextBlock.LineHeight="20" AcceptsReturn="True" TextWrapping="NoWrap" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Background="Transparent" Name="txtAttrValue" ScrollViewer.ScrollChanged="txtAttrValue_ScrollChanged" TextChanged="txtAttrValue_TextChanged"/>
 
 		<Grid.Style>
