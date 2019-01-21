@@ -58,7 +58,7 @@ namespace gifEdit.view {
 			coFrameDef = keyFrame.FramePointColor;
 			coFrameLoop = FindResource("coFrameLoop") as Brush;
 
-			imageDataCtl.getImageModel = particleRenderBox.renderToBuffer;
+			imageDataCtl.getImageModelByFrame = particleRenderBox.renderToBuffer;
 
 			EventServer.ins.pointEngineInitedEvent += () => {
 				isEngineInited = true;
@@ -75,10 +75,21 @@ namespace gifEdit.view {
 			};
 
 			EventServer.ins.copyToClipboard += () => {
+				ParticleEditModel md = MainModel.ins.particleEditModel;
+				if(md == null || md.fps <= 0) {
+					return;
+				}
+
 				//ImageModel md = particleRenderBox.renderToBuffer();
 				//saveImage(md, "bbb.png");
 				//saveToClipboard(md);
-				imageDataCtl.saveToClipboard();
+
+				//imageDataCtl.saveToClipboard();
+
+				//imageDataCtl.saveAsPng("bbb.png", 60);
+
+				int frameTime = (int)(1000f / md.fps + 0.5f);
+				imageDataCtl.saveAsGif("bbb.gif", 0, 60, frameTime);
 			};
 
 			initAttr();

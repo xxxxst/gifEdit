@@ -125,6 +125,17 @@
     <Compile Include="control\ParticleEmitter.cs" />
     <Compile Include="model\ImageModel.cs" />
     <Compile Include="model\ParticleEditModel.cs" />
+    <Compile Include="sdk\AnimatedGif\AnimatedGif.cs" />
+    <Compile Include="sdk\AnimatedGif\AnimatedGifCreator.cs" />
+    <Compile Include="sdk\AnimatedGif\Extensions.cs" />
+    <Compile Include="sdk\AnimatedGif\GifClass.cs" />
+    <Compile Include="sdk\AnimatedGif\GifProperties.cs" />
+    <Compile Include="sdk\AnimatedGif\GrayscaleQuantizer.cs" />
+    <Compile Include="sdk\AnimatedGif\Helper.cs" />
+    <Compile Include="sdk\AnimatedGif\OctreeQuantizer.cs" />
+    <Compile Include="sdk\AnimatedGif\PaletteQuantizer.cs" />
+    <Compile Include="sdk\AnimatedGif\Quantizer.cs" />
+    <Compile Include="sdk\AnimatedGif\VideoEncoder.cs" />
     <Compile Include="sdk\csharpHelp\BorderLabel\BorderLabel.cs" />
     <Compile Include="view\AttrText\AttrText.xaml.cs">
       <DependentUpon>AttrText.xaml</DependentUpon>

@@ -465,7 +465,7 @@ namespace gifEdit.view {
 			}
 		}
 
-		private void renderGlToBuffer() {
+		private void renderGlToBuffer(int frameIdx = -1) {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 			if(md == null || md.width == 0 || md.height == 0) {
 				return;
@@ -475,6 +475,11 @@ namespace gifEdit.view {
 			float y = 0;
 			int w = md.width;
 			int h = md.height;
+
+			int time = renderTime;
+			if(frameIdx >= 0) {
+				time = (int)((float)frameIdx / md.fps * 1000);
+			}
 
 			//int vpx = 0;
 			//int vpy = 0;
@@ -503,7 +508,7 @@ namespace gifEdit.view {
 			//emitter
 			for(int i = 0; i < lstEmitter.Count; ++i) {
 				lstEmitter[i].setStartPos((int)x, (int)y);
-				lstEmitter[i].render(bufferMVP, renderTime);
+				lstEmitter[i].render(bufferMVP, time);
 			}
 
 			//mask
@@ -573,7 +578,7 @@ namespace gifEdit.view {
 			Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 		}
 
-		public ImageModel renderToBuffer() {
+		public ImageModel renderToBuffer(int frameIdx = -1, bool isTransplate = false) {
 			if(!isEngineInited) {
 				return null;
 			}
@@ -587,7 +592,7 @@ namespace gifEdit.view {
 			int size = w * h * pxChannel;
 
 			byte[] data1 = new byte[size];
-			_renderOneBuffer(0);
+			_renderOneBuffer(isTransplate, frameIdx);
 			Array.Copy(bufferOutput, 0, data1, 0, size);
 
 			//byte[] data2 = new byte[size];
@@ -617,7 +622,7 @@ namespace gifEdit.view {
 			};
 		}
 
-		private void _renderOneBuffer(uint background) {
+		private void _renderOneBuffer(bool isTransplate, int frameIdx = -1) {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 
 			int w = md.width;
@@ -629,9 +634,11 @@ namespace gifEdit.view {
 
 				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, glbufOutput);
 
-				glClear(background);
+				if(isTransplate) {
+					glClear(0);
+				}
 				//glClear(0x00808080);
-				renderGlToBuffer();
+				renderGlToBuffer(frameIdx);
 				glClear(md.background);
 				
 				Gl.ReadPixels(0, 0, w, h, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferOutput.Address);
