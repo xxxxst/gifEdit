@@ -25,6 +25,7 @@ namespace gifEdit.view {
 	/// MainWindow.xaml 的交互逻辑
 	/// </summary>
 	public partial class MainWindow : Window {
+		PrjoectType nowType = PrjoectType.Unknown;
 
 		public MainWindow() {
 			InitializeComponent();
@@ -56,6 +57,7 @@ namespace gifEdit.view {
 		}
 
 		public void openProject(string path, PrjoectType type) {
+			nowType = type;
 			switch (type) {
 				case PrjoectType.Spirit: {
 					break;
@@ -94,7 +96,8 @@ namespace gifEdit.view {
 		}
 
 		private void btnExportProject_Click(object sender, RoutedEventArgs e) {
-
+			ExportWin win = new ExportWin();
+			win.show(this, nowType);
 		}
 	}
 }

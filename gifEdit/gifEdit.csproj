@@ -60,6 +60,10 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="APNGLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>sdk\APNGLib\APNGLib.dll</HintPath>
+    </Reference>
     <Reference Include="Costura, Version=3.2.1.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.3.2.1\lib\net40\Costura.dll</HintPath>
     </Reference>
@@ -119,7 +123,7 @@
     <Compile Include="control\glEngine\FpsCtl.cs" />
     <Compile Include="control\glEngine\GlObject.cs" />
     <Compile Include="control\glEngine\GlTime.cs" />
-    <Compile Include="control\ImageDataCtl.cs" />
+    <Compile Include="control\ExportCtl.cs" />
     <Compile Include="control\LastProjectCtl.cs" />
     <Compile Include="control\ParticleEditCtl.cs" />
     <Compile Include="control\ParticleEmitter.cs" />
@@ -136,9 +140,16 @@
     <Compile Include="sdk\AnimatedGif\PaletteQuantizer.cs" />
     <Compile Include="sdk\AnimatedGif\Quantizer.cs" />
     <Compile Include="sdk\AnimatedGif\VideoEncoder.cs" />
+    <Compile Include="sdk\APNGLib\APNGAssemblerEx.cs" />
     <Compile Include="sdk\csharpHelp\BorderLabel\BorderLabel.cs" />
     <Compile Include="view\AttrText\AttrText.xaml.cs">
       <DependentUpon>AttrText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="view\ExportApngWin.xaml.cs">
+      <DependentUpon>ExportApngWin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="view\ExportWin.xaml.cs">
+      <DependentUpon>ExportWin.xaml</DependentUpon>
     </Compile>
     <Compile Include="view\style\ComScrollViewDep.cs" />
     <Compile Include="view\util\ColorPicker\ColorPicker.xaml.cs">
@@ -174,6 +185,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="view\AttrText\AttrText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="view\ExportApngWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="view\ExportWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -381,6 +400,7 @@
     <Resource Include="resource\image\nextFrame.png" />
     <Resource Include="resource\image\preFrame.png" />
     <Resource Include="resource\image\stop.png" />
+    <Content Include="sdk\APNGLib\APNGLib.dll" />
     <Content Include="sdk\freeImage\x32\FreeImage.dll" />
     <Content Include="sdk\freeImage\x64\FreeImage.dll" />
   </ItemGroup>

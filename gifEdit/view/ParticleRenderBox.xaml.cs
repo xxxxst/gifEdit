@@ -603,15 +603,17 @@ namespace gifEdit.view {
 			//	data1[i] = (byte)((data1[i] + data2[i]) / 2);
 			//}
 			const int imageChannel = 4;
-			for(int x = 0; x < w; ++x) {
-				for(int y = 0; y < h; ++y) {
-					int idx = (y * w + x) * imageChannel;
-					if(data1[idx + 3] == 0) {
-						continue;
+			if(isTransplate) {
+				for(int x = 0; x < w; ++x) {
+					for(int y = 0; y < h; ++y) {
+						int idx = (y * w + x) * imageChannel;
+						if(data1[idx + 3] == 0) {
+							continue;
+						}
+						data1[idx + 0] = (byte)(data1[idx + 0] / ((float)(data1[idx + 3]) / 255));
+						data1[idx + 1] = (byte)(data1[idx + 1] / ((float)(data1[idx + 3]) / 255));
+						data1[idx + 2] = (byte)(data1[idx + 2] / ((float)(data1[idx + 3]) / 255));
 					}
-					data1[idx + 0] = (byte)(data1[idx + 0] / ( (float)(data1[idx + 3]) / 255));
-					data1[idx + 1] = (byte)(data1[idx + 1] / ( (float)(data1[idx + 3]) / 255));
-					data1[idx + 2] = (byte)(data1[idx + 2] / ( (float)(data1[idx + 3]) / 255));
 				}
 			}
 
@@ -639,8 +641,8 @@ namespace gifEdit.view {
 				}
 				//glClear(0x00808080);
 				renderGlToBuffer(frameIdx);
-				glClear(md.background);
-				
+				glClear(md.background, 1);
+
 				Gl.ReadPixels(0, 0, w, h, OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mlBufferOutput.Address);
 
 				Gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

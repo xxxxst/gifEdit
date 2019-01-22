@@ -1,0 +1,12 @@
+﻿<Window x:Class="gifEdit.view.ExportWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:gifEdit.view"
+        mc:Ignorable="d"
+        Title="导出" Height="400" Width="600" WindowStartupLocation="CenterOwner">
+	<Grid Background="#4d4d4d">
+		<local:ExportApngWin x:Name="winApng"/>
+	</Grid>
+</Window>

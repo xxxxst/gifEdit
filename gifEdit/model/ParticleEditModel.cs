@@ -25,6 +25,8 @@ namespace gifEdit.model {
 		[XmlValue("config.isMaskBox")]		public bool isMaskBox = true;
 
 		[XmlListChild("resourceBox.res")]	public List<ParticleResourceModel> lstResource = new List<ParticleResourceModel>();
+
+		public int frameCount = 0;
 	}
 
 	public class ParticleResourceModel {

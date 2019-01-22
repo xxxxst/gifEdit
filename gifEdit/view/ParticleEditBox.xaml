@@ -59,14 +59,14 @@
 										</Style>
 									</Border.Style>
 								</Border>
-								<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="#fff" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
-								<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="#fff" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" FontWeight="Bold" Content="" x:Name="lblProjName"/>
+								<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="{StaticResource conTextColor}" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
+								<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="{StaticResource conTextColor}" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" FontWeight="Bold" Content="" x:Name="lblProjName"/>
 							</Grid>
 						</StackPanel>
 					</Border>
 
 					<Grid Grid.Row="2">
-						<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="发射器"/>
+						<Label Foreground="{StaticResource conTextColor}" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="发射器"/>
 						<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
 							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png" x:Name="btnAddEmitter" Click="btnAddEmitter_Click"/>
 							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png" x:Name="btnRemoveEmitter" Click="btnRemoveEmitter_Click"/>
@@ -149,7 +149,7 @@
 										<RowDefinition Height="*"/>
 										<RowDefinition Height="100"/>
 									</Grid.RowDefinitions>
-									<Label Foreground="#fff" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
+									<Label Foreground="{StaticResource conTextColor}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="背景颜色"/>
 									<local:ColorPicker Grid.Row="1" HorizontalAlignment="Left" Height="100" Width="100" EnableAlpha="False" x:Name="cpkBackground" ValueChanged="cpkBackground_ValueChanged"/>
 								</Grid>
 							</StackPanel>
@@ -170,8 +170,8 @@
 									<ColumnDefinition Width="Auto"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
-								<Label Grid.Column="0" Foreground="#fff" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="帧"/>
-								<Label Grid.Column="1" Foreground="#fff" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="1" Name="nowFrame"/>
+								<Label Grid.Column="0" Foreground="{StaticResource conTextColor}" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="帧"/>
+								<Label Grid.Column="1" Foreground="{StaticResource conTextColor}" Padding="0,2,0,0" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="1" Name="nowFrame"/>
 							</Grid>
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
 								<supUI:MiniButton Height="16" ImagePadding="2" Radius="2" Source="/gifEdit;component/resource/image/preFrame.png" ToolTip="上一帧" x:Name="btnPreFrame" Click="BtnPreFrame_Click" />
@@ -195,7 +195,7 @@
 						<RowDefinition Height="*"/>
 					</Grid.RowDefinitions>
 
-					<Label Foreground="#fff" FontWeight="Bold" VerticalAlignment="Top" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1" Content="设置"/>
+					<Label Foreground="{StaticResource conTextColor}" FontWeight="Bold" VerticalAlignment="Top" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1" Content="设置"/>
 
 					<!--<StackPanel Grid.Row="3">
 					<supUI:TextBoxLabel Foreground="#fff" ContentColor="#fff" Content="位置"/>
@@ -228,8 +228,8 @@
 		<Border Grid.Row="2" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,1,0,0">
 			<Grid>
 				<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
-					<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
-					<Label Foreground="#fff" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Width="50" Content="" Name="lblFps"/>
+					<Label Foreground="{StaticResource conTextColor}" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
+					<Label Foreground="{StaticResource conTextColor}" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Width="50" Content="" Name="lblFps"/>
 					<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest" Click="btnTest_Click"/>
 				</StackPanel>
 				<Label HorizontalAlignment="Right" Name="lblTest"/>

@@ -48,7 +48,7 @@ namespace gifEdit.view {
 
 		private Brush coFrameDef = null;
 		private Brush coFrameLoop = null;
-		private ImageDataCtl imageDataCtl = new ImageDataCtl();
+		private ExportCtl imageDataCtl = new ExportCtl();
 
 		public ParticleEditBox() {
 			InitializeComponent();
@@ -88,8 +88,10 @@ namespace gifEdit.view {
 
 				//imageDataCtl.saveAsPng("bbb.png", 60);
 
-				int frameTime = (int)(1000f / md.fps + 0.5f);
-				imageDataCtl.saveAsGif("bbb.gif", 0, 60, frameTime);
+				//int frameTime = (int)(1000f / md.fps + 0.5f);
+				//imageDataCtl.saveAsGif("bbb.gif", 0, 60, frameTime);
+
+				imageDataCtl.saveAsAPNG("ccc.png", 0, 240, md.fps);
 			};
 
 			initAttr();
@@ -103,7 +105,7 @@ namespace gifEdit.view {
 
 		bool isRenderPause = false;
 		int oldFrameIdx = 0;
-		int totalFrame = 0;
+		//int totalFrame = 0;
 		bool isFrameInLoop = false;
 
 		int renderTime = 0;
@@ -136,7 +138,7 @@ namespace gifEdit.view {
 			//	updateMaxFrame();
 			//}
 
-			if(totalFrame == 0) {
+			if(md.frameCount == 0) {
 				return;
 			}
 
@@ -191,12 +193,16 @@ namespace gifEdit.view {
 			if(oldFrameIdx == frameIdx) {
 				return;
 			}
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
 
-			frameIdx = frameIdx % totalFrame;
+			frameIdx = frameIdx % md.frameCount;
 
 			Dispatcher.Invoke(() => {
 				oldFrameIdx = frameIdx;
-				//bool isLoop = frameIdx >= totalFrame / 2;
+				//bool isLoop = frameIdx >= md.frameCount / 2;
 				//if(isLoop != isFrameInLoop) {
 				//	isFrameInLoop = isLoop;
 				//	keyFrame.FramePointColor = isLoop ? coFrameLoop : coFrameDef;
@@ -220,7 +226,7 @@ namespace gifEdit.view {
 			if(md == null || md.fps <= 0) {
 				oldMaxRenderTime = 0;
 				oldFrameIdx = 0;
-				totalFrame = 0;
+				md.frameCount = 0;
 				return;
 			}
 
@@ -233,12 +239,12 @@ namespace gifEdit.view {
 			oldMaxRenderTime = maxRenderTime;
 			oldFPS = md.fps;
 
-			totalFrame = (int)Math.Ceiling(oldMaxRenderTime / 1000f * md.fps) * 2;
+			md.frameCount = (int)Math.Ceiling(oldMaxRenderTime / 1000f * md.fps) * 2;
 			//Debug.WriteLine(totalFrame);
-			oldFrameIdx = oldFrameIdx % totalFrame;
+			oldFrameIdx = oldFrameIdx % md.frameCount;
 			
 			Dispatcher.Invoke(() => {
-				keyFrame.MaxFrame = totalFrame - 1;
+				keyFrame.MaxFrame = md.frameCount - 1;
 			});
 		}
 
@@ -762,7 +768,12 @@ namespace gifEdit.view {
 		private void KeyFrame_SelectFrameChanged(object sender, RoutedEventArgs e) {
 			int idx = keyFrame.SelectFrame;
 
-			bool isLoop = idx >= totalFrame / 2;
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
+
+			bool isLoop = idx >= md.frameCount / 2;
 			if(isLoop != isFrameInLoop) {
 				isFrameInLoop = isLoop;
 				keyFrame.FramePointColor = isLoop ? coFrameLoop : coFrameDef;
@@ -815,8 +826,13 @@ namespace gifEdit.view {
 
 		private void BtnNextFrame_Click(object sender, RoutedEventArgs e) {
 			pauseFrame();
+			ParticleEditModel md = MainModel.ins.particleEditModel;
+			if(md == null) {
+				return;
+			}
+
 			int idx = oldFrameIdx + 1;
-			if(idx >= totalFrame) {
+			if(idx >= md.frameCount) {
 				return;
 			}
 

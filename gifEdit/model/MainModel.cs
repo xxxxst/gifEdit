@@ -41,7 +41,7 @@ namespace gifEdit.model {
 	}
 
 	public enum PrjoectType {
-		Spirit, Particle
+		Spirit, Particle, Unknown
 	}
 
 }
