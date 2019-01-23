@@ -48,7 +48,7 @@ namespace gifEdit.view {
 
 		private Brush coFrameDef = null;
 		private Brush coFrameLoop = null;
-		private ExportCtl imageDataCtl = new ExportCtl();
+		private ExportCtl exportCtl = new ExportCtl();
 
 		public ParticleEditBox() {
 			InitializeComponent();
@@ -58,9 +58,10 @@ namespace gifEdit.view {
 			coFrameDef = keyFrame.FramePointColor;
 			coFrameLoop = FindResource("coFrameLoop") as Brush;
 
-			imageDataCtl.getImageModelByFrame = particleRenderBox.renderToBuffer;
+			MainCtl.ins.getImageModelByFrame = particleRenderBox.renderToBuffer;
+			exportCtl.getImageModelByFrame = particleRenderBox.renderToBuffer;
 
-			EventServer.ins.pointEngineInitedEvent += () => {
+			EventServer.ins.pointEngineInited += () => {
 				isEngineInited = true;
 
 				if(cachePath != "") {
@@ -70,7 +71,7 @@ namespace gifEdit.view {
 				}
 			};
 
-			EventServer.ins.updateFPSEvent += (fps) => {
+			EventServer.ins.updateFPS += (fps) => {
 				lblFps.Content = fps;
 			};
 
@@ -91,7 +92,22 @@ namespace gifEdit.view {
 				//int frameTime = (int)(1000f / md.fps + 0.5f);
 				//imageDataCtl.saveAsGif("bbb.gif", 0, 60, frameTime);
 
-				imageDataCtl.saveAsAPNG("ccc.png", 0, 240, md.fps);
+				exportCtl.saveAsAPNG("ccc.png", 0, 240, md.fps);
+			};
+
+			EventServer.ins.preOpenExportWin += () => {
+				isWaitRender = true;
+				particleRenderBox.startAnimation(false);
+			};
+
+			EventServer.ins.CloseExportWin += () => {
+				glTime.getTime();
+				isWaitRender = false;
+				particleRenderBox.startAnimation(true);
+			};
+
+			EventServer.ins.mainWinExited += () => {
+				timer.Change(Timeout.Infinite, 15);
 			};
 
 			initAttr();
@@ -103,6 +119,7 @@ namespace gifEdit.view {
 			//timer.Start();
 		}
 
+		bool isWaitRender = false;
 		bool isRenderPause = false;
 		int oldFrameIdx = 0;
 		//int totalFrame = 0;
@@ -119,7 +136,7 @@ namespace gifEdit.view {
 			int maxRenderTime = particleRenderBox.getMaxRenderTime();
 			//updateMaxFrame(maxRenderTime);
 
-			if(isRenderPause) {
+			if(isRenderPause || isWaitRender) {
 				return;
 			}
 
@@ -489,7 +506,7 @@ namespace gifEdit.view {
 			//};
 			//win.Show();
 
-			EventServer.ins.mainWinExitedEvent += () => {
+			EventServer.ins.mainWinExited += () => {
 				try {
 					//win.Close();
 					ctl.save();
@@ -839,6 +856,16 @@ namespace gifEdit.view {
 			updateRenderTimeByFrame(idx);
 			updateFrame(idx);
 			keyFrame.setSelectFrameCenter();
+		}
+
+		private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
+			if(Visibility != Visibility.Visible) {
+				isWaitRender = true;
+				particleRenderBox.startAnimation(false);
+			} else {
+				isWaitRender = false;
+				particleRenderBox.startAnimation(true);
+			}
 		}
 	}
 

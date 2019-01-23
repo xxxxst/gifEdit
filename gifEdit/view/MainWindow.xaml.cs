@@ -31,6 +31,7 @@ namespace gifEdit.view {
 			InitializeComponent();
 
 			MainModel.ins.mainWin = this;
+			btnExportProject.Visibility = Visibility.Collapsed;
 
 			var md = MainModel.ins.configModel;
 			try{
@@ -58,6 +59,7 @@ namespace gifEdit.view {
 
 		public void openProject(string path, PrjoectType type) {
 			nowType = type;
+			btnExportProject.Visibility = Visibility.Visible;
 			switch (type) {
 				case PrjoectType.Spirit: {
 					break;
@@ -96,8 +98,12 @@ namespace gifEdit.view {
 		}
 
 		private void btnExportProject_Click(object sender, RoutedEventArgs e) {
+			EventServer.ins.onPreOpenExportWin();
+
 			ExportWin win = new ExportWin();
 			win.show(this, nowType);
+
+			EventServer.ins.onCloseExportWin();
 		}
 	}
 }

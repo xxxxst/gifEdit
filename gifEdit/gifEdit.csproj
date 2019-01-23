@@ -151,6 +151,9 @@
     <Compile Include="view\ExportWin.xaml.cs">
       <DependentUpon>ExportWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="view\SpiritEditBox.xaml.cs">
+      <DependentUpon>SpiritEditBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="view\style\ComScrollViewDep.cs" />
     <Compile Include="view\util\ColorPicker\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
@@ -193,6 +196,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="view\ExportWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="view\SpiritEditBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -400,6 +407,7 @@
     <Resource Include="resource\image\nextFrame.png" />
     <Resource Include="resource\image\preFrame.png" />
     <Resource Include="resource\image\stop.png" />
+    <Resource Include="resource\image\fire.png" />
     <Content Include="sdk\APNGLib\APNGLib.dll" />
     <Content Include="sdk\freeImage\x32\FreeImage.dll" />
     <Content Include="sdk\freeImage\x64\FreeImage.dll" />

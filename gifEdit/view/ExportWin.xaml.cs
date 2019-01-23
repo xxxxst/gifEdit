@@ -25,8 +25,6 @@ namespace gifEdit.view {
 		public void show(Window parent, PrjoectType type) {
 			Owner = parent;
 
-			ShowDialog();
-
 			switch(type) {
 				case PrjoectType.Spirit: {
 					break;
@@ -34,10 +32,24 @@ namespace gifEdit.view {
 
 				case PrjoectType.Particle: {
 					winApng.Visibility = Visibility.Visible;
-					winApng.onShow();
+					winApng.onShow(this);
 					break;
 				}
 			}
+
+			ShowDialog();
+		}
+
+		private bool isClosed = false;
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(!isClosed && !winApng.onCancel()) {
+				e.Cancel = true;
+			}
+		}
+
+		public void close() {
+			isClosed = true;
+			Close();
 		}
 	}
 }

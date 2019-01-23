@@ -45,7 +45,8 @@ namespace gifEdit.control {
 				ParticleEditVM vm = new ParticleEditVM() {
 					idx = i,
 					md = md.lstResource[i],
-					Image = img
+					Image = img,
+					ImgName = Path.GetFileName(imgPath)
 				};
 				lstVM.Add(vm);
 			}
@@ -62,6 +63,7 @@ namespace gifEdit.control {
 
 			string imgPath = md.lstResource[idx].path;
 			lstVM[idx].Image = loadImage(imgPath, md.path);
+			lstVM[idx].ImgName = Path.GetFileName(imgPath);
 		}
 
 		private ImageSource loadImage(string path, string basePath) {
@@ -132,6 +134,13 @@ namespace gifEdit.control {
 		public ImageSource Image {
 			get { return _Image; }
 			set { _Image = value; updatePro("Image"); }
+		}
+
+		//ImgName
+		string _ImgName = null;
+		public string ImgName {
+			get { return _ImgName; }
+			set { _ImgName = value; updatePro("ImgName"); }
 		}
 
 		//Is Select

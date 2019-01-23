@@ -15,6 +15,8 @@ namespace gifEdit.control {
 		public ParticleEditCtl particleEditCtl = new ParticleEditCtl();
 		public LastProjectCtl lastProjectCtl = new LastProjectCtl();
 
+		public Func<int, bool, ImageModel> getImageModelByFrame = null;
+
 		public CreateProjectResult createProject(string path, PrjoectType type) {
 			CreateProjectResult rst = CreateProjectResult.Ok;
 

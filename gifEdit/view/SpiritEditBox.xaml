@@ -1,0 +1,155 @@
+﻿<UserControl x:Class="gifEdit.view.SpiritEditBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:gifEdit.view"
+             xmlns:util="clr-namespace:gifEdit.view.util"
+	         xmlns:supUI="clr-namespace:csharpHelp.ui"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="2"/>
+			<RowDefinition Height="25"/>
+		</Grid.RowDefinitions>
+		
+		<Grid Margin="8,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="200" MinWidth="100"/>
+				<ColumnDefinition Width="4"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="4"/>
+				<ColumnDefinition Width="200" MinWidth="100"/>
+			</Grid.ColumnDefinitions>
+			
+			<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="1">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="4"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="0"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+
+					<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,0,0,1">
+						<StackPanel Grid.Row="0">
+							<Grid Margin="2,0,0,0" Background="Transparent" Name="grdProjectName">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Border Margin="0,4,0,4" Width="2" HorizontalAlignment="Left">
+									<Border.Style>
+										<Style TargetType="Border">
+											<Setter Property="Visibility" Value="Hidden"/>
+											<Setter Property="Background" Value="#9d9d9d"/>
+											<Style.Triggers>
+												<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
+													<Setter Property="Visibility" Value="Visible"/>
+												</DataTrigger>
+												<DataTrigger Binding="{Binding IsSelectProjectName}" Value="True">
+													<Setter Property="Visibility" Value="Visible"/>
+													<Setter Property="Background" Value="#fff"/>
+												</DataTrigger>
+											</Style.Triggers>
+										</Style>
+									</Border.Style>
+								</Border>
+								<Label Grid.Column="1" Padding="0,5,5,5" Margin="4,0,0,0" Foreground="{StaticResource conTextColor}" Height="35" VerticalAlignment="Top" VerticalContentAlignment="Center" Content="项目名:"/>
+								<Label Grid.Column="2" Padding="0,5,5,5" Margin="2,0,0,0" Foreground="{StaticResource conTextColor}" Height="30" VerticalAlignment="Top" VerticalContentAlignment="Center" FontWeight="Bold" Content="" x:Name="lblProjName"/>
+							</Grid>
+						</StackPanel>
+					</Border>
+
+					<Grid Grid.Row="2">
+						<Label Foreground="{StaticResource conTextColor}" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Content="精灵"/>
+						<StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/add.png" x:Name="btnAddRes"/>
+							<supUI:MiniButton Margin="4,2,0,2" Height="26" ImagePadding="3" Radius="5" Source="/gifEdit;component/resource/image/delete.png" x:Name="btnRemoveRes"/>
+						</StackPanel>
+					</Grid>
+
+					<ListBox Grid.Row="4" Background="Transparent" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,1,0,0" Name="lstRes">
+						<ListBox.ItemContainerStyle>
+							<Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemWin7}">
+								<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+								<Setter Property="Padding" Value="0"/>
+								<Style.Resources>
+									<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+									<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+								</Style.Resources>
+							</Style>
+						</ListBox.ItemContainerStyle>
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Grid Background="Transparent" AllowDrop="True" Tag="{Binding .}" Name="grdResBox">
+									<Border Grid.ColumnSpan="4" BorderThickness="0,0,0,1" BorderBrush="{StaticResource comBorderColor}" Background="Transparent" Visibility="{Binding IsLineVisibile}"></Border>
+
+									<Grid Margin="2,0,0,2" Height="50" Background="Transparent">
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"/>
+											<ColumnDefinition Width="0"/>
+											<ColumnDefinition Width="50"/>
+											<ColumnDefinition Width="2"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+
+										<Border Margin="0,4,0,4" Width="2">
+											<Border.Style>
+												<Style TargetType="Border">
+													<Setter Property="Visibility" Value="Hidden"/>
+													<Setter Property="Background" Value="#9d9d9d"/>
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
+															<Setter Property="Visibility" Value="Visible"/>
+														</DataTrigger>
+														<DataTrigger Binding="{Binding IsSelect}" Value="True">
+															<Setter Property="Visibility" Value="Visible"/>
+															<Setter Property="Background" Value="#fff"/>
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</Border.Style>
+										</Border>
+
+										<Grid Margin="0,2,0,2" Width="46" Grid.Column="2">
+											<Border BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" />
+											<Image Margin="5" Cursor="Hand" Tag="{Binding .}" Source="{Binding Image}" Name="imgRes"/>
+										</Grid>
+										
+										<Label Grid.Column="4" Foreground="{StaticResource conTextColor}" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{Binding ImgName}"/>
+									</Grid>
+								</Grid>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Border>
+		</Grid>
+
+		<!--status bar-->
+		<Border Grid.Row="2" BorderBrush="{StaticResource comBorderColor}" BorderThickness="0,1,0,0">
+			<Grid>
+				<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
+					<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest"/>
+				</StackPanel>
+				<Label HorizontalAlignment="Right" Name="lblTest"/>
+			</Grid>
+		</Border>
+
+		<Grid.Style>
+			<Style TargetType="Grid">
+				<Style.Triggers>
+					<DataTrigger Binding="{supUI:IsDesignBind}" Value="True">
+						<Setter Property="Background" Value="#4d4d4d"/>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</Grid.Style>
+	</Grid>
+</UserControl>

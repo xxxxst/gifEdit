@@ -5,8 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:gifEdit.view"
         mc:Ignorable="d"
-        Title="导出" Height="400" Width="600" WindowStartupLocation="CenterOwner">
+        Title="导出" Height="400" Width="600" WindowStartupLocation="CenterOwner" Closing="Window_Closing">
 	<Grid Background="#4d4d4d">
-		<local:ExportApngWin x:Name="winApng"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		
+		<local:ExportApngWin Grid.Row="1" x:Name="winApng"/>
 	</Grid>
 </Window>

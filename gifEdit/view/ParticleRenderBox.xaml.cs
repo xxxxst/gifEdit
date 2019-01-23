@@ -118,6 +118,10 @@ namespace gifEdit.view {
 			}
 		}
 
+		public void startAnimation(bool isStart) {
+			glControl.Animation = isStart;
+		}
+
 		public void createEmitter(int idx) {
 			ParticleEditModel md = MainModel.ins.particleEditModel;
 

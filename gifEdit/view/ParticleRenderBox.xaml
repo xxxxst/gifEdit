@@ -29,7 +29,7 @@
 		<Border BorderBrush="{StaticResource comBorderColor}" BorderThickness="0" Margin="1" Name="bdRenderBox" SizeChanged="bdRenderBox_SizeChanged">
 			<Grid>
 				<wfi:WindowsFormsHost Width="400" Height="400" Name="formHost">
-					<opengl:GlControl x:Name="glControl" Animation="True" AnimationTimer="True" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize" MouseWheel="glControl_MouseWheel" MouseHover="GlControl_MouseHover" MouseLeave="GlControl_MouseLeave"/>
+					<opengl:GlControl x:Name="glControl" Animation="False" AnimationTimer="True" ContextCreated="glControl_ContextCreated" ContextDestroying="glControl_ContextDestroying" Render="glControl_Render" Resize="glControl_Resize" MouseWheel="glControl_MouseWheel" MouseHover="GlControl_MouseHover" MouseLeave="GlControl_MouseLeave"/>
 				</wfi:WindowsFormsHost>
 				<!--<wfi:WindowsFormsHost>
 					<ElementHost BackColorTransparent="True" BackColor="Transparent">

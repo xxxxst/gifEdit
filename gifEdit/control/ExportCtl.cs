@@ -18,6 +18,7 @@ namespace gifEdit.control {
 	public class ExportCtl {
 		//public Func<ImageModel> getImageModel = null;
 		public Func<int, bool, ImageModel> getImageModelByFrame = null;
+		public Action<int, int> onUpdateProgress = null;
 
 		public Bitmap toBitMap(ImageModel md) {
 			Bitmap pic = new Bitmap(md.width, md.height, PixelFormat.Format32bppArgb);
@@ -146,58 +147,58 @@ namespace gifEdit.control {
 			initThread(savePath, startFrameIdx, frameCount, fps);
 			return;
 
-			try {
-				if(frameCount <= 0) {
-					return;
-				}
+			//try {
+			//	if(frameCount <= 0) {
+			//		return;
+			//	}
 				
-				APNG apngBase = new APNG();
-				for(int i = 0; i < frameCount; ++i) {
-					ImageModel md = getImageModelByFrame(startFrameIdx + i, false);
-					if(md == null) {
-						return;
-					}
+			//	APNG apngBase = new APNG();
+			//	for(int i = 0; i < frameCount; ++i) {
+			//		ImageModel md = getImageModelByFrame(startFrameIdx + i, false);
+			//		if(md == null) {
+			//			return;
+			//		}
 
-					FIBITMAP dib = FreeImage.Allocate(md.width, md.height, 32, 8, 8, 8);
-					IntPtr pFibData = FreeImage.GetBits(dib);
-					Marshal.Copy(md.data, 0, pFibData, md.data.Length);
+			//		FIBITMAP dib = FreeImage.Allocate(md.width, md.height, 32, 8, 8, 8);
+			//		IntPtr pFibData = FreeImage.GetBits(dib);
+			//		Marshal.Copy(md.data, 0, pFibData, md.data.Length);
 
-					//FIMEMORY fm = new FIMEMORY();
-					FIMEMORY fm = FreeImage.OpenMemory(IntPtr.Zero, 0);
-					FreeImage.SaveToMemory(FREE_IMAGE_FORMAT.FIF_PNG, dib, fm, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
+			//		//FIMEMORY fm = new FIMEMORY();
+			//		FIMEMORY fm = FreeImage.OpenMemory(IntPtr.Zero, 0);
+			//		FreeImage.SaveToMemory(FREE_IMAGE_FORMAT.FIF_PNG, dib, fm, FREE_IMAGE_SAVE_FLAGS.DEFAULT);
 
-					FreeImage.SeekMemory(fm, 0, SeekOrigin.End);
-					int bufferSize = FreeImage.TellMemory(fm);
-					//Debug.WriteLine("aaa:" + bufferSize);
+			//		FreeImage.SeekMemory(fm, 0, SeekOrigin.End);
+			//		int bufferSize = FreeImage.TellMemory(fm);
+			//		//Debug.WriteLine("aaa:" + bufferSize);
 
-					FreeImage.SeekMemory(fm, 0, SeekOrigin.Begin);
-					byte[] buffer = new byte[bufferSize];
-					FreeImage.ReadMemory(buffer, (uint)bufferSize, (uint)bufferSize, fm);
+			//		FreeImage.SeekMemory(fm, 0, SeekOrigin.Begin);
+			//		byte[] buffer = new byte[bufferSize];
+			//		FreeImage.ReadMemory(buffer, (uint)bufferSize, (uint)bufferSize, fm);
 
-					FreeImage.CloseMemory(fm);
-					FreeImage.Unload(dib);
+			//		FreeImage.CloseMemory(fm);
+			//		FreeImage.Unload(dib);
 
-					//using(FileStream fs = new FileStream("aaa_" + i + ".png", FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
-					//	fs.Write(buffer, 0, bufferSize);
-					//}
+			//		//using(FileStream fs = new FileStream("aaa_" + i + ".png", FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+			//		//	fs.Write(buffer, 0, bufferSize);
+			//		//}
 
-					//using(FileStream fs = new FileStream("aaa.png", FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
-					//	fs.Write(buffer, 0, bufferSize);
-					//}
+			//		//using(FileStream fs = new FileStream("aaa.png", FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
+			//		//	fs.Write(buffer, 0, bufferSize);
+			//		//}
 
-					PNG pngFrame = new PNG();
-					using(MemoryStream ms = new MemoryStream(buffer)) {
-						pngFrame.Load(ms);
-					}
+			//		PNG pngFrame = new PNG();
+			//		using(MemoryStream ms = new MemoryStream(buffer)) {
+			//			pngFrame.Load(ms);
+			//		}
 
-					apngBase.Add(pngFrame, fps);
-				}
+			//		apngBase.Add(pngFrame, fps);
+			//	}
 
-				apngBase.Save(savePath);
+			//	apngBase.Save(savePath);
 
-			} catch(Exception ex) {
-				Debug.WriteLine(ex.ToString());
-			}
+			//} catch(Exception ex) {
+			//	Debug.WriteLine(ex.ToString());
+			//}
 		}
 
 		ThreadManageModel mdThreadManage = new ThreadManageModel();
@@ -215,10 +216,14 @@ namespace gifEdit.control {
 		void initThread(string savePath, int startFrameIdx, int frameCount, int fps) {
 			clearThread();
 
+			nowProgress = 0;
+			totalProgress = frameCount + 1;
+
 			mdThreadManage = new ThreadManageModel();
 			mdThreadManage.startFrameIdx = startFrameIdx;
 			mdThreadManage.frameCount = frameCount;
 			mdThreadManage.fps = fps;
+			mdThreadManage.isTransparency = true;
 			mdThreadManage.th = new Thread(manageProc);
 			mdThreadManage.th.Priority = ThreadPriority.BelowNormal;
 			mdThreadManage.th.Start(mdThreadManage);
@@ -247,7 +252,7 @@ namespace gifEdit.control {
 			return false;
 		}
 
-		void clearThread() {
+		public void clearThread() {
 			const int waitTime = 300;
 
 			mdThreadManage.needStop = true;
@@ -354,11 +359,13 @@ namespace gifEdit.control {
 
 				for(int i = 0; i < lstData.Count; ++i) {
 					apngBase.Add(lstData[i], md.fps);
+					updateProgress();
 				}
 
 				md.nowFrameIdx += lstData.Count;
 				if(md.nowFrameIdx >= md.frameCount) {
 					apngBase.Save(md.savePath);
+					updateProgressToEnd();
 					clearThread();
 				}
 			} while(!md.needStop);
@@ -397,6 +404,29 @@ namespace gifEdit.control {
 					}
 				}
 			} while(!md.needStop);
+		}
+
+		int nowProgress = 0;
+		int totalProgress = 0;
+		object lockProgress = new object();
+		void updateProgress(int count = 1) {
+			int val = 0;
+			lock(lockProgress) {
+				nowProgress += count;
+				val = nowProgress;
+			}
+
+			onUpdateProgress?.Invoke(val, totalProgress);
+		}
+
+		void updateProgressToEnd() {
+			int val = 0;
+			lock(lockProgress) {
+				nowProgress = totalProgress;
+				val = nowProgress;
+			}
+
+			onUpdateProgress?.Invoke(val, totalProgress);
 		}
 
 		private PNG formatPng(ImageModel imgMd) {

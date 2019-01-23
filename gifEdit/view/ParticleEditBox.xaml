@@ -8,7 +8,7 @@
 	         xmlns:supUI="clr-namespace:csharpHelp.ui"
 			 xmlns:comStyle="clr-namespace:comStyle"
              mc:Ignorable="d" 
-             d:DesignHeight="630" d:DesignWidth="1000" Loaded="UserControl_Loaded">
+             d:DesignHeight="630" d:DesignWidth="1000" Loaded="UserControl_Loaded" IsVisibleChanged="UserControl_IsVisibleChanged">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -95,6 +95,7 @@
 											<ColumnDefinition Width="Auto"/>
 											<ColumnDefinition Width="0"/>
 											<ColumnDefinition Width="50"/>
+											<ColumnDefinition Width="2"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
 
@@ -120,6 +121,8 @@
 											<Border BorderThickness="1" BorderBrush="{StaticResource comBorderColor}" />
 											<Image Margin="5" Cursor="Hand" Tag="{Binding .}" Source="{Binding Image}" Name="imgEmitter" MouseLeftButtonUp="imgEmitter_MouseLeftButtonUp"/>
 										</Grid>
+
+										<Label Grid.Column="4" Foreground="{StaticResource conTextColor}" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{Binding ImgName}"/>
 									</Grid>
 								</Grid>
 							</DataTemplate>
@@ -230,7 +233,7 @@
 				<StackPanel Name="grdFpsBox" HorizontalAlignment="Left" Orientation="Horizontal">
 					<Label Foreground="{StaticResource conTextColor}" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="5,5,0,5" Content="fps: "/>
 					<Label Foreground="{StaticResource conTextColor}" HorizontalAlignment="Left" VerticalContentAlignment="Center" Padding="0,5,5,5" Width="50" Content="" Name="lblFps"/>
-					<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest" Click="btnTest_Click"/>
+					<!--<supUI:MiniButton Margin="5,0,0,0" Padding="10,0" Background="#333333" Radius="5" Content="test" x:Name="btnTest" Click="btnTest_Click"/>-->
 				</StackPanel>
 				<Label HorizontalAlignment="Right" Name="lblTest"/>
 			</Grid>
